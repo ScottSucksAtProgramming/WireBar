@@ -8,6 +8,7 @@ macOS menu bar utility built with Swift/SwiftUI that provides Wi-Fi status, VPN 
 
 ```
 wifi-menubar/
+  AGENTS.md
   CLAUDE.md
   INDEX.md
   .taskpaper
