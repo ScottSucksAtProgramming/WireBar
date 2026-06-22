@@ -20,7 +20,6 @@ DerivedData/
 Packages/
 Package.pins
 Package.resolved
-*.xcodeproj
 
 # CocoaPods
 Pods/
@@ -74,6 +73,33 @@ sentry.properties
 *.xcuserstate
 xcuserdata/
 *.xcscmblueprint
+
+# Distribution builds
+*.dmg
+*.pkg
+*.zip
+*.app
+
+# Notarization
+*.altool_output
+AuthKey_*.p8
+
+# Crash logs
+*.crash
+*.ips
+
+# SwiftLint
+.swiftlint.yml.bak
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
+
+# IDE
+.idea/
+.vscode/
 
 # Claude Code
 .claude/settings.local.json
