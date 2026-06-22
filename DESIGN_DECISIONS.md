@@ -74,15 +74,15 @@ Features are more important than App Store presence. Many successful Mac utiliti
 
 ## Q8: IP Address Display
 
-**Decision:** Both local and external IP. External IP fetched via lightweight HTTPS API (privacy-respecting, no personal data collection).
+**Decision:** Both local and external IP. External IP fetched via DNS query — Cloudflare `whoami.cloudflare` (primary), OpenDNS `myip.opendns.com` (fallback). Not an HTTPS API.
 
 **Refresh modes (user configurable):**
 - Timed interval (configurable)
 - On-demand only (manual refresh button)
 
-Auto-refresh on VPN state change regardless of mode. 30-second cache to avoid API spam. "Unavailable" with retry on failure.
+Auto-refresh on VPN state change regardless of mode. 30-second cache to avoid lookup spam. "Unavailable" with retry on failure.
 
-**Why:** External IP is especially useful with VPNs — confirms traffic is actually routing through the VPN.
+**Why:** External IP is especially useful with VPNs — confirms traffic is actually routing through the VPN. DNS queries are faster (milliseconds vs HTTP round trip), more private (no cookies, headers, or user agent string — just a raw DNS packet), and more reliable (DNS infrastructure uptime > web API uptime). Natural fit for a networking utility.
 
 ---
 
@@ -165,7 +165,9 @@ Auto-refresh on VPN state change regardless of mode. 30-second cache to avoid AP
 1. Curated list of popular VPN apps with pre-configured CLI commands (checkbox to enable)
 2. Advanced/custom option: user provides name + shell commands for status check, connect, disconnect
 
-**Why:** Approachable for most users, extensible for power users. Curated list grows over time.
+V1 ships with curated-only support (WireGuard, Tailscale, PIA). Custom VPN support is deferred to V1.x. A "Request a VPN" button in the app opens a GitHub issue template. When custom VPN support ships in V1.x, it will be limited to non-elevated commands only — no privileged helper access for custom commands.
+
+**Why:** Approachable for most users, extensible for power users. Curated list grows over time. Restricting custom commands to the non-elevated tier keeps the security surface minimal while the feature matures.
 
 ---
 
@@ -222,7 +224,9 @@ Auto-refresh on VPN state change regardless of mode. 30-second cache to avoid AP
 
 ## Q23: Ping/Latency Indicator
 
-**Decision:** Include lightweight ping indicator. Configurable target (default `1.1.1.1`). User can toggle on/off.
+**Decision:** Include lightweight ping indicator. Configurable target (default `1.1.1.1`). User can toggle on/off. Implementation uses TCP-based latency measurement via `NWConnection` to `1.1.1.1:443` — not ICMP ping. UI still labels it "Ping" since users understand the term.
+
+**Why:** ICMP ping requires raw sockets, which need either root access or a special entitlement that Apple doesn't easily grant for Developer ID apps. TCP connection latency gives an accurate, practical measurement without special permissions.
 
 ---
 
@@ -260,13 +264,13 @@ Auto-refresh on VPN state change regardless of mode. 30-second cache to avoid AP
 
 **Decision:** Freemium model with LemonSqueezy as storefront.
 - Free tier: core Wi-Fi features
-- Paid tier: $12.99 one-time (1 year updates included)
-- Renewal: $6.99/year for continued updates
-- App works at last installed version if not renewed
+- Paid tier: $12.99 one-time purchase (no renewal in V1)
+
+When V2 ships with major new features, it will be a separate product with a loyalty discount for V1 buyers. All V1.x updates are included with a V1 purchase.
 
 LemonSqueezy chosen for: simplest onboarding experience, merchant of record (handles global sales tax), Swift SDK for license validation, 5% + $0.50 per transaction.
 
-**Why:** Scott has never sold an app before — LemonSqueezy is the easiest path. Freemium builds adoption, paid tier converts power users, renewal generates recurring revenue without subscription stigma.
+**Why:** Scott has never sold an app before — LemonSqueezy is the easiest path. Freemium builds adoption, paid tier converts power users. One-time pricing avoids subscription stigma and matches market preference.
 
 ---
 
@@ -284,7 +288,7 @@ Paid: VPN monitoring/toggles, external IP, custom VPNs, configurable menu bar di
 
 ## Q29: Pricing Research
 
-**Decision:** $12.99 + $6.99 renewal based on competitive analysis.
+**Decision:** $12.99 one-time based on competitive analysis.
 
 **Market context:** Consumer Mac networking utilities cluster $9-$30 one-time. One-time purchase dominates (subscriptions deeply unpopular). Comparable apps: Radio Silence ($9), iStat Menus ($11.99), WiFi Explorer ($19.99). SignalDrop is unique in combining Wi-Fi + VPN + network info.
 
@@ -292,7 +296,7 @@ Paid: VPN monitoring/toggles, external IP, custom VPNs, configurable menu bar di
 
 ## Q30: Analytics/Telemetry
 
-**Decision:** Opt-in only. Sentry for crash reporting, off by default. No behavioral analytics in v1. LemonSqueezy provides basic business metrics via license activations.
+**Decision:** Opt-in only. No behavioral analytics. LemonSqueezy provides basic business metrics via license activations. Sentry crash reporting is deferred to V1.1 — V1 ships without crash reporting. When Sentry is added in V1.1, non-opted-in users will see a per-crash consent dialog before any data is sent.
 
 **Why:** "I want this app to be trusted." — Scott
 
@@ -328,3 +332,67 @@ Paid: VPN monitoring/toggles, external IP, custom VPNs, configurable menu bar di
 
 **Included in v1:**
 - Copy/export all network info to clipboard (useful for tech support)
+
+---
+
+## Q34: VPN Execution Model
+
+**Decision:** Two-tier execution. Non-elevated VPN commands (`tailscale up/down`, `piactl connect/disconnect`) run directly from the main app process. Elevated commands (`wg-quick up/down`) run through the PrivilegedHelper with a hardcoded whitelist. Custom VPN commands (V1.x) will only be allowed at the non-elevated tier.
+
+**Why:** Most VPN CLIs don't need sudo. Splitting tiers keeps the security surface minimal while supporting the common case without the helper.
+
+---
+
+## Q35: Privileged Helper Security
+
+**Decision:** Helper verifies caller's code signature via audit token and designated requirement. Commands executed via argv arrays (`posix_spawn`/`NSTask`), never shell strings. Only hardcoded whitelisted binaries are allowed.
+
+**Why:** Without caller verification, any local process could invoke the helper to run elevated commands. Shell string execution enables argument injection even with a whitelist.
+
+---
+
+## Q36: Helper Uninstall Flow
+
+**Decision:** Provide an in-app "Uninstall Helper" button that calls `SMAppService.unregister()`. Document manual removal steps for users. Helper must not survive app uninstallation without user knowledge.
+
+**Why:** `SMAppService` daemons persist after dragging the app to Trash. A privacy-focused utility leaving a root daemon is a bad look and generates support tickets.
+
+---
+
+## Q37: Offline License Validation
+
+**Decision:** LicenseManager caches license validation locally with a grace period. Paid features remain accessible when the network is down.
+
+**Why:** A network utility that locks features when the network is down defeats its own purpose. Users need VPN management most when troubleshooting connectivity.
+
+---
+
+## Q38: Update Entitlement
+
+**Decision:** Sparkle updates are public — anyone with the app gets updates. The license gates features, not updates. Appcast XML is hosted on public GitHub Releases with no per-license gating.
+
+**Why:** Gating updates requires a backend server or private appcast endpoint. Unnecessary complexity for V1 with no renewal model. All V1 buyers get all V1.x updates.
+
+---
+
+## Q39: Distribution Format
+
+**Decision:** `.dmg` (drag to Applications). No `.pkg` installer for V1.
+
+**Why:** Simplest distribution for a menu bar utility. The privileged helper is registered via `SMAppService` at first launch, not via a `.pkg` installer. Standard for indie Mac apps.
+
+---
+
+## Q40: External IP — DNS vs HTTP
+
+**Decision:** DNS-based lookup instead of HTTPS API. Cloudflare DNS (`whoami.cloudflare`) primary, OpenDNS (`myip.opendns.com`) fallback.
+
+**Why:** DNS queries are faster (milliseconds vs HTTP round trip), more private (no cookies, headers, or user agent string — just a raw DNS packet), and more reliable (DNS infrastructure uptime > web API uptime). Natural fit for a networking utility.
+
+---
+
+## Q41: Ping — TCP vs ICMP
+
+**Decision:** TCP-based latency measurement via `NWConnection` to `1.1.1.1:443` instead of ICMP ping.
+
+**Why:** ICMP ping requires raw sockets, which need either root access or a special entitlement that Apple doesn't easily grant for Developer ID apps. TCP connection latency gives an accurate, practical measurement without special permissions. UI still labels it "Ping."

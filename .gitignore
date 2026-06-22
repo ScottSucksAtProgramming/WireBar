@@ -103,3 +103,6 @@ AuthKey_*.p8
 
 # Claude Code
 .claude/settings.local.json
+
+# Session handoffs
+handoffs/

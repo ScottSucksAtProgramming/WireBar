@@ -9,11 +9,11 @@
 - **Language/Framework:** Swift + SwiftUI
 - **Minimum macOS:** 13 (Ventura)
 - **Maximum macOS:** 27 (Golden Gate, currently in beta) and forward
-- **Distribution:** Direct distribution (Developer ID signed + notarized), not App Store
+- **Distribution:** Direct distribution (Developer ID signed + notarized), distributed as a .dmg file, not App Store
 - **Updates:** Sparkle framework, hosted via GitHub Releases
 - **Licensing:** BSL (Business Source License), converts to Apache 2.0 after 3-4 years
 - **Storefront:** LemonSqueezy (merchant of record, handles global sales tax)
-- **Crash Reporting:** Sentry (opt-in only)
+- **Crash Reporting:** Sentry (opt-in only) — deferred to V1.1; V1 ships without crash reporting
 
 ## Pricing Model
 
@@ -27,10 +27,9 @@
 - Ethernet detection and display
 - Local IP address display
 
-**Paid tier ($12.99 one-time, includes 1 year of updates):**
+**Paid tier ($12.99 one-time):**
 - VPN status monitoring and toggle switches
 - External/public IP address
-- Custom VPN support (user-defined CLI commands)
 - Configurable menu bar display (choose what's shown)
 - Configurable global hotkeys
 - Advanced network details (channel, BSSID, DNS, gateway, subnet, link speed)
@@ -38,7 +37,7 @@
 - Notifications (VPN drops, IP changes, Wi-Fi disconnects)
 - Collapsible/configurable popover sections
 
-**Renewal:** $6.99/year for continued updates. App keeps working at the last installed version if not renewed.
+App keeps working forever at the last installed version.
 
 ---
 
@@ -122,9 +121,9 @@
 ## VPN Management
 
 ### Supported VPNs
-- **Built-in support:** WireGuard, Tailscale, Private Internet Access
+- **V1 curated VPNs:** WireGuard, Tailscale, Private Internet Access
 - **Curated library:** Growing list of popular VPN apps with pre-configured CLI commands (Mullvad, NordVPN, ExpressVPN, ProtonVPN, etc.)
-- **Custom VPNs:** User provides name + CLI commands for status check, connect, and disconnect
+- **Custom VPNs:** Deferred to V1.x (post-launch). Users can request additional VPN support via a GitHub issue template.
 
 ### VPN Controls
 - Simple on/off toggle for each VPN
@@ -133,6 +132,11 @@
   - WireGuard: `wg-quick up/down` or app CLI
   - Tailscale: `tailscale up/down`
   - PIA: `piactl connect/disconnect`
+
+### VPN Execution Model
+Two-tier execution to minimize privilege exposure:
+- **Non-elevated commands** (`tailscale`, `piactl`) run directly from the main app process.
+- **Elevated commands** (`wg-quick`) run through the PrivilegedHelper, which maintains a hardcoded whitelist of permitted commands and arguments. The helper never executes arbitrary shell strings — all commands use argv arrays.
 
 ### VPN Detection
 - Auto-detect installed VPNs on first launch
@@ -149,12 +153,14 @@
 - Available in free tier
 
 ### External/Public IP (paid tier)
-- Fetched via lightweight HTTPS API (privacy-respecting, no personal data collection)
+- Fetched via DNS query (privacy-respecting, no personal data collection):
+  - Primary: Cloudflare DNS (`whoami.cloudflare` via DNS-over-HTTPS or DNS TXT query)
+  - Fallback: OpenDNS (`myip.opendns.com`)
 - **Refresh modes (user configurable):**
   - Timed interval (configurable interval)
   - On-demand only (manual refresh button)
 - **Auto-refresh on VPN state change** (always, regardless of mode)
-- Cached for 30 seconds to avoid API spam
+- Cached for 30 seconds to avoid excessive DNS queries
 - Shows "Unavailable" with retry button on fetch failure
 - Click to copy to clipboard
 
@@ -162,11 +168,11 @@
 
 ## Ping / Latency Indicator (paid tier)
 
-- Single ping to configurable target (default: `1.1.1.1`)
+- TCP-based latency measurement via `NWConnection` to configurable target (default: `1.1.1.1:443`)
 - Displays latency in milliseconds
 - Lightweight, runs fast
 - User can toggle on/off
-- User can change ping target
+- User can change target host
 
 ---
 
@@ -204,8 +210,8 @@ All hotkeys are user-configurable:
 ### VPN Management
 - Enable/disable monitored VPNs
 - Add VPN from curated list
-- Add custom VPN (name + CLI commands)
 - Multiple VPN warning toggle
+- (Custom VPN support deferred to V1.x)
 
 ### Notifications
 - Individual toggle for each notification type
@@ -224,7 +230,7 @@ All hotkeys are user-configurable:
 - Utility shortcuts
 
 ### Privacy
-- Opt-in diagnostic/crash reporting (Sentry)
+- Opt-in diagnostic/crash reporting (Sentry) — added in V1.1 alongside a per-crash consent dialog
 - Off by default
 
 ### Appearance
@@ -234,10 +240,10 @@ All hotkeys are user-configurable:
 
 ## Security & Privacy
 
-- **Privileged helper** installed via `SMAppService` for VPN CLI commands requiring elevated privileges. User authorizes once during setup.
+- **Privileged helper** installed via `SMAppService` for VPN CLI commands requiring elevated privileges. User authorizes once during setup. Helper verifies the caller's code signature via audit token before executing any command. Commands are executed via argv arrays (never shell strings). An uninstall flow is available in settings.
 - **No data logging.** All network info is in-memory only, never written to disk.
-- **Opt-in crash reporting** via Sentry. Off by default.
-- **External IP fetched via HTTPS only.**
+- **Opt-in crash reporting** via Sentry (V1.1+). Off by default; consent dialog shown per-crash.
+- **External IP fetched via DNS query only** (Cloudflare / OpenDNS). No HTTPS API calls for IP lookup.
 - **Location Services permission** required for SSID reading (Apple requirement). First-run wizard explains why.
 
 ---

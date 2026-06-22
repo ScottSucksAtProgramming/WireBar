@@ -16,6 +16,7 @@ wifi-menubar/
   PRD.md
   ROADMAP.md
   DESIGN_DECISIONS.md
+  handoffs/          (local only, .gitignored — session handoff docs)
   context/
     conventions.md
     lessons.md
@@ -28,6 +29,14 @@ wifi-menubar/
 3. When creating, renaming, or deleting files, update the Tree section above.
 4. Follow the Note-Taking protocol: log lessons to `context/lessons.md` after completing tasks.
 5. Use `na next` to see pending tasks. Add tasks with `na add "Task text"`.
+
+## Git Workflow
+
+- Development uses **feature branches per phase**: `phase/1-walking-skeleton`, `phase/2-wifi-management`, etc.
+- Always create the phase branch before starting work. Never commit directly to `main` during development.
+- Merge to `main` only after the phase is complete and all manual testing passes.
+- Check `.taskpaper` for the current phase and branch name.
+- At the end of each session, run `/mattpocock-handoff` and save the handoff doc to `handoffs/` in the repo.
 
 ## Agent Guidelines
 

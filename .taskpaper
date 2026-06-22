@@ -1,4 +1,292 @@
-SignalDrop:
-	- @na Create a milestone-based development roadmap with phased implementation plan @added(2026-06-22)
-	- @na Initialize Xcode project with SwiftUI menu bar app template @added(2026-06-22)
-	- @done Set up Git repo and push to GitHub @added(2026-06-22) @done(2026-06-22)
+SignalDrop Development Plan:
+
+Pre-Development — Environment & Account Setup:
+	- Verify Developer ID Application certificate exists in Apple Developer account (Scott) @tags(scott, blocking)
+	- Create Developer ID Application certificate if missing (Scott) @tags(scott, blocking)
+	- Create app-specific password for notarytool via Apple ID → Security (Scott) @tags(scott)
+	- Research and validate app name "SignalDrop" — check Mac App Store, USPTO (TESS), domain availability @tags(research)
+	- Brainstorm alternative names if "SignalDrop" is taken @tags(research)
+	- Update all project docs if name changes @tags(docs)
+	- @done Set up Git repo and push to GitHub @done(2026-06-22)
+
+Parallel Business Tasks — Start During Early Phases:
+	- Create LemonSqueezy account (identity verification, banking, tax forms) (Scott) @tags(scott, lead-time)
+	- Draft privacy policy (human-readable, legally sound) @tags(docs, lead-time)
+	- Draft EULA / Terms of Sale (warranty disclaimer, liability limitation) @tags(docs, lead-time)
+	- Create BSL LICENSE file with 3-year conversion date to Apache 2.0 @tags(legal)
+	- Competitive research pass 1 — survey macOS network utilities, validate $12.99 pricing @tags(research)
+
+Phase 1 — Walking Skeleton:
+	Branch: phase/1-walking-skeleton
+	- Initialize Xcode project with SwiftUI menu bar app template
+	- Configure deployment target macOS 13 (Ventura)
+	- Configure app signing with Developer ID Application certificate
+	- Set LSUIElement = YES in Info.plist (no Dock icon)
+	- Enable hardened runtime entitlement (required for notarization)
+	- Add com.apple.security.network.client entitlement
+	- Add NSLocationWhenInUseUsageDescription to Info.plist
+	- Set up Swift Package Manager for dependency management
+	- Set up project directory structure matching module architecture from PRD
+	- Define protocol-based DI architecture (NetworkPathProviding, WLANInterface, ShellExecuting, etc.)
+	- Implement SettingsStore — UserDefaults-backed preferences, basic shell
+	- Implement LicenseManager stub — isPaid returns false, interface designed for offline/cached validation and grace periods
+	- Implement NetworkMonitor — wraps NWPathMonitor + CoreWLAN, publishes NetworkState
+	- Add Location Services permission request (CLLocationManager.requestWhenInUseAuthorization)
+	- Implement NSStatusItem menu bar icon (static Wi-Fi icon)
+	- Implement basic SwiftUI popover — opens/closes on menu bar click
+	- Popover displays: SSID, signal strength, connection status from NetworkMonitor
+	- Create Settings window shell with General tab (launch at login toggle)
+	- Write unit tests for NetworkMonitor (mock NWPathMonitor, CWInterface)
+	- Write unit tests for SettingsStore
+	- Add VoiceOver accessibility labels to all Phase 1 UI elements
+	- All user-facing strings use String(localized:)
+	- SMAppService spike — minimal throwaway helper to validate signing and installation flow
+	- Update .taskpaper with any discoveries or adjustments
+	- Manual test: menu bar icon appears, popover opens, real SSID and signal shown
+	- Regression test: n/a (first phase)
+
+Phase 2 — Wi-Fi Management:
+	Branch: phase/2-wifi-management
+	- Implement WiFiManager — CoreWLAN scanning, network list, sorting (known first, then by signal)
+	- Implement network list view in popover (signal strength indicators, security type badges)
+	- Implement known/saved network visual distinction and checkmark on current network
+	- Implement one-click join for known/saved networks
+	- Implement password input dialog for unknown networks
+	- Implement Wi-Fi on/off toggle with menu bar icon state change (disabled icon)
+	- Implement Ethernet detection and display via NetworkMonitor
+	- Implement multiple connection display (Wi-Fi + Ethernet) with primary route indicator
+	- Add Settings tab: network detail visibility configuration (SSID, signal %, band, channel, etc.)
+	- Write unit tests for WiFiManager (mock CoreWLAN interfaces)
+	- Add VoiceOver accessibility labels to all Phase 2 UI elements
+	- All user-facing strings use String(localized:)
+	- Update .taskpaper with any discoveries or adjustments
+	- Manual test against PRD user stories 21-28 (Wi-Fi network switching)
+	- Manual test against PRD user stories 4, 5, 13-15 (Ethernet, multiple connections)
+	- Regression test: PRD user stories 1-2, 8-9 (Phase 1 features still work)
+
+Phase 3 — IP + Ping:
+	Branch: phase/3-ip-ping
+	- Implement IPService — local IP from network interfaces (free tier)
+	- Implement IPService — external IP via DNS query (Cloudflare whoami.cloudflare primary, OpenDNS fallback)
+	- Gate external IP behind LicenseManager.isPaid
+	- Implement configurable refresh modes (timed interval, on-demand manual refresh)
+	- Implement 30-second cache for external IP
+	- Implement "Unavailable" state with retry button on fetch failure
+	- Implement click-to-copy IP to clipboard
+	- Implement PingService — TCP-based latency via NWConnection to configurable target (default 1.1.1.1:443)
+	- Gate PingService behind LicenseManager.isPaid
+	- Implement ping/latency display in popover (ms readout, toggle on/off)
+	- Add Settings tab: IP refresh mode and interval, ping target configuration
+	- Note: VPN state change auto-refresh wiring deferred to Phase 4
+	- Write unit tests for IPService (mock DNS responses, caching behavior, refresh modes, failure handling)
+	- Write unit tests for PingService (mock NWConnection, latency reporting, start/stop lifecycle)
+	- Add VoiceOver accessibility labels to all Phase 3 UI elements
+	- All user-facing strings use String(localized:)
+	- Update .taskpaper with any discoveries or adjustments
+	- Manual test against PRD user stories 29-32 (IP features)
+	- Manual test against PRD user stories 33-35 (Ping features)
+	- Manual test against PRD user story 31 (copy IP to clipboard)
+	- Regression test: all Phase 1-2 user stories
+
+Phase 4 — VPN:
+	Branch: phase/4-vpn
+	- Implement PrivilegedHelper — XPC service via SMAppService (building on Phase 1 spike)
+	- Implement XPC caller verification via audit token and designated requirement
+	- Implement command whitelist — hardcoded curated VPN binaries only
+	- Implement argv-based command execution (posix_spawn/NSTask, never shell strings)
+	- Implement helper installation flow with user authorization
+	- Implement helper verification and "Reinstall Helper" option
+	- Implement helper uninstall flow — "Uninstall Helper" button (SMAppService.unregister)
+	- Document manual helper removal steps for users
+	- Implement VPNManager — registry of VPNDefinition objects for curated VPNs
+	- Implement VPN auto-detection on first launch (check for wg-quick, tailscale, piactl binaries)
+	- Implement two-tier execution: non-elevated commands (tailscale, piactl) from main app, elevated (wg-quick) through helper
+	- Implement VPN status monitoring and observable per-VPN connection state
+	- Implement VPN connect/disconnect toggling via CLI commands
+	- Gate VPN features behind LicenseManager.isPaid
+	- Implement VPN section in popover — name, status indicator (connected/disconnected/error), toggle switch per VPN
+	- Implement grayed-out state with warning icon for missing VPN CLIs
+	- Implement multiple VPN warning (dismissable, can be disabled in settings)
+	- Implement "Request a VPN" button — opens pre-filled GitHub issue template in browser
+	- Wire IPService auto-refresh to VPN state changes
+	- Add Settings tab: VPN management (enable/disable monitored VPNs, multiple VPN warning toggle)
+	- Write unit tests for PrivilegedHelper (command whitelisting, XPC protocol, error handling)
+	- Write unit tests for VPNManager (auto-detection, status parsing, connect/disconnect, registry management)
+	- Add VoiceOver accessibility labels to all Phase 4 UI elements
+	- All user-facing strings use String(localized:)
+	- Update .taskpaper with any discoveries or adjustments
+	- Manual test against PRD user stories 16-20 (VPN management)
+	- Manual test against PRD user stories 45, 48 (VPN configuration)
+	- Manual test: VPN state change triggers external IP refresh
+	- Scott tests with real WireGuard, Tailscale, PIA setup (Scott) @tags(scott)
+	- Regression test: all Phase 1-3 user stories
+
+Phase 5a — Notifications + Hotkeys:
+	Branch: phase/5a-notifications-hotkeys
+	- Implement NotificationService — observes NetworkMonitor, VPNManager, IPService state changes
+	- Implement notification dispatch via UNUserNotificationCenter
+	- Implement notification types: VPN drop, IP change, Wi-Fi disconnect, network change
+	- Implement per-type notification toggles
+	- Gate notifications behind LicenseManager.isPaid
+	- Implement HotkeyManager — global keyboard shortcut registration and dispatch
+	- Implement configurable hotkeys: open/close popover, toggle each VPN, toggle Wi-Fi, copy local/external IP, refresh external IP
+	- Implement conflict detection for hotkey assignments
+	- Gate hotkeys behind LicenseManager.isPaid
+	- Add Settings tab: notification toggles per event type
+	- Add Settings tab: hotkey configuration with conflict warnings
+	- Write unit tests for NotificationService (correct notifications fire, per-type toggles suppress, mock UNUserNotificationCenter)
+	- Write unit tests for HotkeyManager (registration, unregistration, conflict detection, action dispatch)
+	- Add VoiceOver accessibility labels to all Phase 5a UI elements
+	- All user-facing strings use String(localized:)
+	- Update .taskpaper with any discoveries or adjustments
+	- Manual test against PRD user stories 36-39 (Notifications)
+	- Manual test against PRD user stories 40-44 (Keyboard shortcuts)
+	- Regression test: all Phase 1-4 user stories
+
+Phase 5b — UI Polish:
+	Branch: phase/5b-ui-polish
+	- Implement collapsible popover sections (gate behind LicenseManager.isPaid)
+	- Implement configurable menu bar display (choose: Wi-Fi icon, network name, VPN indicators, IP address)
+	- Implement menu bar overflow/truncation behavior for notched MacBooks (priority order, truncation rules)
+	- Gate configurable menu bar behind LicenseManager.isPaid
+	- Implement copy/export all network info to clipboard (one-click, formatted for tech support)
+	- Implement popover max height with scrolling and dynamic resize
+	- Implement popover close on click outside
+	- Polish Wi-Fi off state UI (minimal popover with re-enable toggle, VPN section still visible)
+	- Add VoiceOver accessibility labels to all Phase 5b UI elements
+	- All user-facing strings use String(localized:)
+	- Update .taskpaper with any discoveries or adjustments
+	- Manual test against PRD user stories 3, 6-7 (configurable menu bar)
+	- Manual test against PRD user stories 50-52 (settings, collapsible sections, dark/light mode)
+	- Manual test against PRD user story 64 (copy/export network info)
+	- Manual test: menu bar overflow on notched display
+	- Regression test: all Phase 1-5a user stories
+
+Phase 6 — Licensing + Updates:
+	Branch: phase/6-licensing-updates
+	- Verify LemonSqueezy Swift SDK exists and supports offline/grace-period validation
+	- Swap LicenseManager stub for real LemonSqueezy SDK integration
+	- Implement license key validation and activation
+	- Implement offline license caching with grace period (network utility must work when network is down)
+	- Implement purchase-to-activation flow (URL scheme deep link or manual key entry — decide and implement)
+	- Implement device transfer flow (deactivate on old device, reactivate on new)
+	- Implement in-app upgrade prompt (link to LemonSqueezy checkout)
+	- Implement free/paid feature gating across all paid features (verify all isPaid checks work)
+	- Generate Sparkle EdDSA key pair (Scott runs generate_keys, backs up private key to offline storage) (Scott) @tags(scott, blocking)
+	- Back up Developer ID cert and Sparkle private key to offline/secure storage (Scott) @tags(scott, critical)
+	- Integrate Sparkle framework via SPM
+	- Implement minimal Sparkle — automatic check-on-launch with standard update dialog
+	- Configure Sparkle with EdDSA public key
+	- Add Settings: license info display, update check preferences
+	- Decision documented: updates are public, license gates features not updates
+	- Write unit tests for LicenseManager (gate logic, offline caching, grace period)
+	- Add VoiceOver accessibility labels to all Phase 6 UI elements
+	- All user-facing strings use String(localized:)
+	- Update .taskpaper with any discoveries or adjustments
+	- Manual test against PRD user stories 59-63 (licensing and updates)
+	- Manual test: purchase flow with LemonSqueezy test mode (Scott) @tags(scott)
+	- Manual test: offline license validation (disconnect network, verify paid features remain)
+	- Manual test: device transfer flow
+	- Regression test: all Phase 1-5b user stories
+
+Phase 7 — Onboarding + Accessibility Audit:
+	Branch: phase/7-onboarding-accessibility
+	- Implement first-run detection (check for first launch flag in UserDefaults)
+	- Implement OnboardingView — welcome screen introducing SignalDrop
+	- Implement setup wizard step: Location Services explanation and permission request
+	- Implement setup wizard step: privileged helper installation with user authorization
+	- Implement setup wizard step: auto-detect installed VPNs, present for user confirmation
+	- Implement setup wizard step: configure menu bar display preferences
+	- Implement setup wizard completion — app is ready
+	- Full accessibility audit — VoiceOver labels on every element (catch gaps from Phases 1-6)
+	- Accessibility audit — keyboard navigation via Tab through all interactive elements
+	- Accessibility audit — VoiceOver value announcements for all toggles
+	- Accessibility audit — respect reduced motion system setting
+	- Accessibility audit — respect high contrast / increased contrast system settings
+	- Edge case polish: Wi-Fi off state
+	- Edge case polish: missing VPN CLI (grayed out with warning icon and tooltip)
+	- Edge case polish: external IP fetch failure ("Unavailable" with retry)
+	- Edge case polish: privileged helper not installed or failed
+	- Edge case polish: no networks available
+	- Edge case polish: very long network names (truncation)
+	- Edge case polish: empty VPN list
+	- Full Settings window review — all tabs consistent, all options functional
+	- Update .taskpaper with any discoveries or adjustments
+	- Manual test against PRD user stories 55-58 (first-run experience)
+	- Manual test against PRD user stories 65-67 (accessibility)
+	- Manual test against PRD user stories 49, 53-54 (settings, crash reporting opt-in)
+	- Manual test: delete preferences and launch as new user — full onboarding flow
+	- Regression test: ALL prior user stories (full regression)
+
+Phase 8 — Release Prep:
+	Branch: phase/8-release-prep
+	Pre-Release Documentation:
+		- Update SPEC.md, PRD.md, DESIGN_DECISIONS.md to reflect all changes from development
+		- Write user documentation with screenshots and annotated images
+		- Write developer documentation with architecture diagrams and module relationship maps
+		- Create README.md for GitHub (landing page until website exists)
+		- Finalize privacy policy
+		- Finalize EULA
+		- Create BSL LICENSE file with 3-year conversion date
+	Release Infrastructure:
+		- Write release script: xcodebuild → codesign → notarize → staple → create .dmg
+		- Set up Sparkle appcast generation (generate_appcast from .dmg releases)
+		- Configure GitHub Releases for hosting .dmg and appcast XML
+		- Test full release pipeline end-to-end (build, sign, notarize, staple, .dmg, appcast)
+	LemonSqueezy Setup:
+		- Create product listing on LemonSqueezy ($12.99, description, screenshots) (Scott) @tags(scott)
+		- Configure license key settings in LemonSqueezy dashboard (Scott) @tags(scott)
+		- Test purchase flow end-to-end with test mode (Scott) @tags(scott)
+	Pre-Release Cleanup:
+		- Clean up git history (squash/rebase early commits) before making release-ready
+		- Remove any TODO/FIXME comments or resolve them
+		- Final code review pass
+		- Verify all user-facing strings use String(localized:)
+		- Verify no secrets or credentials in repo
+	Name & Branding:
+		- Final name decision (if "SignalDrop" had conflicts, apply chosen name everywhere)
+		- Register domain name (Scott) @tags(scott)
+		- Update bundle display name, app icon, and all branding assets
+	Competitive Research:
+		- Competitive research pass 2 — refine marketing angle and positioning @tags(research)
+	Beta Testing:
+		- Recruit 3-5 beta testers from friends (Scott) @tags(scott)
+		- Request at least one tester on older macOS (Sequoia or earlier) @tags(scott)
+		- Distribute .dmg directly to beta testers (Scott) @tags(scott)
+		- Collect feedback (group chat or simple form) (Scott) @tags(scott)
+		- 2-week beta window
+		- Exit criteria: no crashes and no broken user stories for 3 consecutive days
+		- Fix all critical issues found during beta
+		- Collect DiagnosticReports from beta testers for crash visibility
+	Launch:
+		- Build final release .dmg
+		- Run full release pipeline (sign, notarize, staple)
+		- Create GitHub Release with .dmg and appcast
+		- Publish product on LemonSqueezy (Scott) @tags(scott)
+		- Update README / landing page with download link
+		- Scott's go/no-go decision (Scott) @tags(scott)
+
+Post-Launch — V1.x Roadmap:
+	V1.1 — Crash Reporting:
+		- Create Sentry account and project (Scott) @tags(scott)
+		- Integrate Sentry SDK via SPM
+		- Implement opt-in crash reporting toggle in Settings (off by default)
+		- Implement per-crash consent dialog for non-opted-in users ("SignalDrop quit unexpectedly. Send a crash report?")
+		- Sentry SDK only initializes after user opts in — never before
+		- Keep Sentry DSN out of public repo (environment variable or build setting)
+	V1.x — Custom VPN Support:
+		- Implement non-elevated custom VPN support (user provides name + CLI commands)
+		- Custom VPN commands run at user-level permissions only (no privileged helper)
+		- Settings UI for adding/editing/removing custom VPNs
+	V1.x — VPN Library Expansion:
+		- Add pre-configured CLI commands for popular VPNs: Mullvad, NordVPN, ExpressVPN, ProtonVPN, Surfshark, CyberGhost, OpenVPN, Cisco AnyConnect, GlobalProtect
+	Future Improvements:
+		- Move release pipeline to GitHub Actions CI
+		- Landing page / marketing website (when domain is secured)
+		- Consider user feedback platforms (Canny-style voting) if user base grows
+		- Consider subreddit or community if user base grows
+		- Setapp integration
+		- App Store version (reduced feature set)
+
+Archive:
+	- @done Set up Git repo and push to GitHub @done(2026-06-22)

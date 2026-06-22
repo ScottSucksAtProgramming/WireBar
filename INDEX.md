@@ -22,6 +22,10 @@ Quick-reference for finding content in this directory. For conventions, see `con
 | `conventions.md` | Swift/SwiftUI coding conventions, naming rules, project structure standards |
 | `lessons.md` | Running log of lessons learned during development |
 
+## handoffs/ (local only, .gitignored)
+
+Session handoff documents created by `/mattpocock-handoff` at the end of each development session. Used to resume work in the next session.
+
 ## Task Tracking
 
-`.taskpaper` — Next actions for this project. Run `na next` to see pending tasks.
+`.taskpaper` — Comprehensive development plan organized by phase. Single source of truth for all task tracking. Run `na next` to see pending tasks.

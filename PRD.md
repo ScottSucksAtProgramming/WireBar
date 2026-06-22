@@ -73,7 +73,8 @@ SignalDrop is a lightweight macOS menu bar utility that consolidates Wi-Fi manag
 ### VPN Configuration
 45. As a paid user, I want the app to auto-detect installed VPNs on first launch, so that setup is effortless.
 46. As a paid user, I want to add VPNs from a curated list of popular providers, so that I don't have to figure out CLI commands myself.
-47. As a paid user, I want to add custom VPNs by specifying CLI commands for status/connect/disconnect, so that I can use any VPN tool.
+47. As a paid user, I want to add custom VPNs by specifying CLI commands for status/connect/disconnect, so that I can use any VPN tool. *(Deferred to V1.x — V1 ships with curated VPNs only: WireGuard, Tailscale, PIA.)*
+47a. As a user who needs a VPN not on the curated list, I want to request support via a GitHub issue template, so that popular VPNs get added in a future update.
 48. As a paid user, I want to enable and disable which VPNs are monitored, so that I can hide ones I don't use.
 
 ### Settings
@@ -94,8 +95,8 @@ SignalDrop is a lightweight macOS menu bar utility that consolidates Wi-Fi manag
 59. As a free user, I want full Wi-Fi management features without paying, so that the app is useful even before upgrading.
 60. As a user, I want to purchase a license from within the app, so that upgrading is frictionless.
 61. As a paid user, I want the app to auto-check for updates, so that I always have the latest version.
-62. As a paid user, I want updates to verify my license, so that only licensed users receive updates.
-63. As a user whose license renewal has lapsed, I want the app to keep working at its last version, so that I don't lose functionality I already paid for.
+62. As a user, I want updates to be publicly available to anyone, so that I can stay current without any license gate on the download. *(V1 is a one-time purchase — the license gates features, not updates.)*
+63. As a paid user, I want the app to keep working at its last version indefinitely, so that I don't lose functionality I already paid for. *(V1 is a one-time purchase with no renewal. If a V2 upgrade model is introduced, this story covers the V1→V2 transition: V1 licensees stay on the last V1 release.)*
 
 ### Utility
 64. As a user, I want to copy all network info to clipboard with one click, so that I can share it for tech support.
@@ -115,15 +116,15 @@ The app is structured around deep, independently testable modules with clean int
 
 2. **WiFiManager** — Handles Wi-Fi scanning and network switching via `CoreWLAN`. Scans for available networks, sorts them (known first, then by signal strength), joins known networks with one click, prompts for passwords on unknown networks, toggles Wi-Fi power on/off.
 
-3. **VPNManager** — Manages VPN detection, status monitoring, and toggling. Contains a registry of `VPNDefinition` objects (curated list with pre-configured CLI commands + user-defined custom entries). Executes CLI commands via the PrivilegedHelper. Publishes observable per-VPN connection state. Handles auto-detection of installed VPNs on first run.
+3. **VPNManager** — Manages VPN detection, status monitoring, and toggling. Contains a registry of `VPNDefinition` objects (curated list with pre-configured CLI commands; custom entries deferred to V1.x). Uses a two-tier execution model: non-elevated commands (status checks) run directly from the main app process, while elevated commands (connect/disconnect) are dispatched through the PrivilegedHelper. Publishes observable per-VPN connection state. Handles auto-detection of installed VPNs on first run.
 
-4. **PrivilegedHelper** — An XPC service installed via `SMAppService`. Executes elevated shell commands on behalf of the main app, restricted to whitelisted VPN CLI commands. Provides installation, verification, and reinstallation flows.
+4. **PrivilegedHelper** — An XPC service installed via `SMAppService`. Executes elevated shell commands on behalf of the main app, restricted to a hardcoded whitelist of approved VPN CLI commands. Verifies the caller's code signature via audit token before executing any command. Commands are passed as argv arrays — never interpolated shell strings — to prevent injection. Provides installation, verification, reinstallation, and uninstall flows (uninstall removes the helper and cleans up `SMAppService` registration).
 
-5. **IPService** — Resolves local IP from network interfaces and fetches external IP via HTTPS API. Supports two user-configurable refresh modes (timed interval, on-demand). Auto-refreshes when VPN state changes. Caches external IP for 30 seconds. Handles fetch failures gracefully.
+5. **IPService** — Resolves local IP from network interfaces and fetches external IP via DNS-based lookup (Cloudflare DNS as primary, OpenDNS as fallback — no HTTPS API dependency). Supports two user-configurable refresh modes (timed interval, on-demand). Auto-refreshes when VPN state changes. Caches external IP for 30 seconds. Handles fetch failures gracefully.
 
-6. **PingService** — Lightweight ICMP ping to a user-configurable target (default `1.1.1.1`). Publishes latency in milliseconds. Can be started/stopped independently.
+6. **PingService** — Measures TCP-based latency via `NWConnection` to a user-configurable target (default `1.1.1.1`). Publishes latency in milliseconds. Can be started/stopped independently. (TCP-based rather than ICMP avoids the need for raw socket entitlements.)
 
-7. **LicenseManager** — Integrates LemonSqueezy SDK for license key validation, activation, and expiration checks. Gates paid features with a simple `isPaid` check. Integrates with Sparkle to verify update entitlement before downloading.
+7. **LicenseManager** — Integrates LemonSqueezy SDK for license key validation, activation, and expiration checks. Gates paid features with a simple `isPaid` check. Supports offline/cached license validation with a grace period so brief network outages don't lock users out. Handles the purchase-to-activation flow via URL scheme (deep link from LemonSqueezy receipt) or manual license key entry. V1 is a one-time purchase — no renewal model, no update entitlement gate.
 
 8. **HotkeyManager** — Global keyboard shortcut registration and dispatch. Registers user-configured key combinations, maps them to app actions, and persists configuration. Handles conflicts and provides a configuration UI.
 
@@ -145,7 +146,7 @@ The app is structured around deep, independently testable modules with clean int
 - **`SMAppService` for privileged helper** — Apple's blessed approach for installing helper tools. User authorizes once.
 - **Sparkle for auto-updates** — standard macOS update framework. Update feed hosted as XML on GitHub Releases.
 - **LemonSqueezy for licensing** — merchant of record handles payment processing and global sales tax. Swift SDK for license validation.
-- **Sentry for crash reporting** — opt-in only, initialized only after user enables it in settings.
+- **Sentry for crash reporting** — deferred to V1.1. When introduced, it will be opt-in only with a per-crash consent dialog; Sentry never initializes unless the user explicitly approves.
 - **`String(localized:)` for all user-facing strings** — localization-ready from day one without shipping translations.
 - **macOS 13 (Ventura) deployment target** — enables modern SwiftUI features while supporting the vast majority of active Macs through Golden Gate.
 - **BSL license** — source visible for trust and auditability, commercial rights protected, converts to Apache 2.0 after 3-4 years.
@@ -170,9 +171,9 @@ Tests should verify external behavior through each module's public interface, no
 
 4. **PrivilegedHelper** — Separate test target. Test command whitelisting (only approved VPN commands execute), proper XPC communication protocol, and error handling for missing CLIs.
 
-5. **IPService** — Test local IP resolution, external IP fetch with mock HTTP responses, caching behavior (30-second TTL), refresh mode switching, auto-refresh on VPN state change, and failure/retry handling.
+5. **IPService** — Test local IP resolution, external IP fetch with mock DNS responses (Cloudflare primary, OpenDNS fallback), caching behavior (30-second TTL), refresh mode switching, auto-refresh on VPN state change, and failure/retry handling.
 
-6. **PingService** — Test latency reporting with mock ICMP responses, configurable target changes, and start/stop lifecycle.
+6. **PingService** — Test latency reporting with mock `NWConnection` responses (TCP-based), configurable target changes, and start/stop lifecycle.
 
 7. **HotkeyManager** — Test shortcut registration, unregistration, conflict detection, and action dispatch. Mock the global hotkey system API.
 
@@ -187,6 +188,8 @@ Tests should verify external behavior through each module's public interface, no
 ## Out of Scope
 
 The following are explicitly deferred to future versions (see ROADMAP.md):
+
+- Custom VPN support (user-defined CLI commands) — deferred to V1.x; V1 ships with curated VPNs only (WireGuard, Tailscale, PIA)
 
 - Speed test (upload/download bandwidth measurement)
 - Network connection history / logging
@@ -205,7 +208,7 @@ The following are explicitly deferred to future versions (see ROADMAP.md):
 
 ## Further Notes
 
-- **Privacy is a core value.** No data is logged to disk. No telemetry unless the user opts in. External IP is fetched over HTTPS only from a privacy-respecting API. This must be maintained in all future development.
+- **Privacy is a core value.** No data is logged to disk. No telemetry unless the user opts in. External IP is resolved via DNS lookup (Cloudflare/OpenDNS) — no third-party HTTPS API involved. This must be maintained in all future development.
 - **The free tier must be genuinely useful**, not crippled. It should be a good Wi-Fi utility on its own that people recommend, driving organic adoption and paid conversions.
 - **VPN curated list is a living document.** New VPN providers should be added over time based on user requests and popularity. Community contributions are welcome under the BSL license.
 - **First-time app seller.** Build and release processes should be well-documented and straightforward. LemonSqueezy was chosen for simplicity of onboarding.

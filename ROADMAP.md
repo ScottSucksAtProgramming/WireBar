@@ -2,29 +2,53 @@
 
 ## v1.0 - Initial Release
 
-Everything defined in [SPEC.md](SPEC.md). Core features:
+Everything defined in [SPEC.md](SPEC.md). Development tracked in [.taskpaper](.taskpaper).
+
+### Development Phases
+
+1. **Walking Skeleton** — Xcode project, menu bar icon, popover, NetworkMonitor, SettingsStore, protocol-based DI, first tests
+2. **Wi-Fi Management** — WiFiManager, network list, switching, Wi-Fi toggle, Ethernet detection
+3. **IP + Ping** — IPService (DNS-based lookup), PingService (TCP-based latency), configurable refresh
+4. **VPN** — PrivilegedHelper (SMAppService), VPNManager, curated VPN support (WireGuard, Tailscale, PIA)
+5. **Notifications + Hotkeys + Polish** — NotificationService, HotkeyManager, collapsible sections, configurable menu bar
+6. **Licensing + Updates** — LemonSqueezy SDK, Sparkle auto-updates, free/paid feature gating
+7. **Onboarding + Accessibility** — First-run wizard, accessibility audit, edge case polish
+8. **Release Prep** — Release script, notarization, .dmg, docs, privacy policy, beta testing, launch
+
+### Core Features
 
 - Menu bar icon with configurable display
 - SwiftUI popover with connection info, VPN toggles, network list
 - Wi-Fi network switching (known networks prioritized)
-- VPN monitoring and toggling (WireGuard, Tailscale, PIA + curated list + custom)
-- Local and external IP display with configurable refresh
+- VPN monitoring and toggling (curated: WireGuard, Tailscale, PIA)
+- Local and external IP display (DNS-based lookup) with configurable refresh
 - Ethernet detection and display
-- Ping/latency indicator
+- Ping/latency indicator (TCP-based)
 - Configurable notifications
 - Extensive configurable hotkeys
-- Freemium licensing via LemonSqueezy
+- Freemium licensing via LemonSqueezy ($12.99 one-time purchase)
 - Auto-updates via Sparkle + GitHub Releases
 - First-run setup wizard
 - Full accessibility support
 - Localization-ready (English only)
-- Privileged helper for elevated VPN commands
+- Privileged helper for elevated VPN commands (with caller verification and uninstall flow)
 - Copy/export network info to clipboard
-- Opt-in crash reporting via Sentry
+
+---
+
+## v1.1 - Crash Reporting
+
+- Sentry SDK integration (opt-in only, off by default)
+- Per-crash consent dialog for non-opted-in users
+- Sentry only initializes after explicit user opt-in
 
 ---
 
 ## v1.x - Post-Launch Improvements
+
+### Custom VPN Support
+- Non-elevated custom VPN commands (user provides name + CLI commands)
+- Custom commands run at user-level permissions only (no privileged helper)
 
 ### VPN Library Expansion
 - Add pre-configured CLI commands for popular VPN apps:
@@ -37,16 +61,19 @@ Everything defined in [SPEC.md](SPEC.md). Core features:
   - OpenVPN (generic)
   - Cisco AnyConnect
   - GlobalProtect
-- Community contributions welcome (open source curated list)
+- Community contributions welcome
 
 ### Polish
 - Bug fixes and performance improvements based on user feedback
 - Refine first-run experience based on user friction points
 - Expand notification options based on user requests
+- Move release pipeline to GitHub Actions CI
 
 ---
 
 ## v2.0 - Future Features
+
+Sold as a separate product with loyalty discount for V1 buyers.
 
 ### Popover Enhancements
 - **Section reordering** - drag and drop to rearrange popover sections
