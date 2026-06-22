@@ -1,8 +1,8 @@
 SignalDrop Development Plan:
 
 Pre-Development — Environment & Account Setup:
-	- Verify Developer ID Application certificate exists in Apple Developer account (Scott) @tags(scott, blocking)
-	- Create Developer ID Application certificate if missing (Scott) @tags(scott, blocking)
+	- @done Verify Developer ID Application certificate exists in Apple Developer account (Scott) @tags(scott, blocking) @done(2026-06-22)
+	- Create Developer ID Application certificate if missing (Scott) @tags(scott, blocking) — NOT NEEDED, cert exists
 	- Create app-specific password for notarytool via Apple ID → Security (Scott) @tags(scott)
 	- Research and validate app name "SignalDrop" — check Mac App Store, USPTO (TESS), domain availability @tags(research)
 	- Brainstorm alternative names if "SignalDrop" is taken @tags(research)
@@ -18,32 +18,39 @@ Parallel Business Tasks — Start During Early Phases:
 
 Phase 1 — Walking Skeleton:
 	Branch: phase/1-walking-skeleton
-	- Initialize Xcode project with SwiftUI menu bar app template
-	- Configure deployment target macOS 13 (Ventura)
-	- Configure app signing with Developer ID Application certificate
-	- Set LSUIElement = YES in Info.plist (no Dock icon)
-	- Enable hardened runtime entitlement (required for notarization)
-	- Add com.apple.security.network.client entitlement
-	- Add NSLocationWhenInUseUsageDescription to Info.plist
-	- Set up Swift Package Manager for dependency management
-	- Set up project directory structure matching module architecture from PRD
-	- Define protocol-based DI architecture (NetworkPathProviding, WLANInterface, ShellExecuting, etc.)
-	- Implement SettingsStore — UserDefaults-backed preferences, basic shell
-	- Implement LicenseManager stub — isPaid returns false, interface designed for offline/cached validation and grace periods
-	- Implement NetworkMonitor — wraps NWPathMonitor + CoreWLAN, publishes NetworkState
-	- Add Location Services permission request (CLLocationManager.requestWhenInUseAuthorization)
-	- Implement NSStatusItem menu bar icon (static Wi-Fi icon)
-	- Implement basic SwiftUI popover — opens/closes on menu bar click
-	- Popover displays: SSID, signal strength, connection status from NetworkMonitor
-	- Create Settings window shell with General tab (launch at login toggle)
-	- Write unit tests for NetworkMonitor (mock NWPathMonitor, CWInterface)
-	- Write unit tests for SettingsStore
-	- Add VoiceOver accessibility labels to all Phase 1 UI elements
-	- All user-facing strings use String(localized:)
-	- SMAppService spike — minimal throwaway helper to validate signing and installation flow
-	- Update .taskpaper with any discoveries or adjustments
+	- @done Initialize Xcode project with SwiftUI menu bar app template @done(2026-06-22)
+	- @done Configure deployment target macOS 13 (Ventura) @done(2026-06-22)
+	- @done Configure app signing with Developer ID Application certificate @done(2026-06-22)
+	- @done Set LSUIElement = YES in Info.plist (no Dock icon) @done(2026-06-22)
+	- @done Enable hardened runtime entitlement (required for notarization) @done(2026-06-22)
+	- @done Add com.apple.security.network.client entitlement @done(2026-06-22)
+	- @done Add NSLocationWhenInUseUsageDescription to Info.plist @done(2026-06-22)
+	- @done Set up Swift Package Manager for dependency management @done(2026-06-22)
+	- @done Set up project directory structure matching module architecture from PRD @done(2026-06-22)
+	- @done Define protocol-based DI architecture (NetworkPathProviding, WLANInterface, ShellExecuting, etc.) @done(2026-06-22)
+	- @done Implement SettingsStore — UserDefaults-backed preferences, basic shell @done(2026-06-22)
+	- @done Implement LicenseManager stub — isPaid returns false, interface designed for offline/cached validation and grace periods @done(2026-06-22)
+	- @done Implement NetworkMonitor — wraps NWPathMonitor + CoreWLAN, publishes NetworkState @done(2026-06-22)
+	- @done Add Location Services permission request (CLLocationManager.requestWhenInUseAuthorization) @done(2026-06-22)
+	- @done Implement NSStatusItem menu bar icon (static Wi-Fi icon) @done(2026-06-22)
+	- @done Implement basic SwiftUI popover — opens/closes on menu bar click @done(2026-06-22)
+	- @done Popover displays: SSID, signal strength, connection status from NetworkMonitor @done(2026-06-22)
+	- @done Create Settings window shell with General tab (launch at login toggle) @done(2026-06-22)
+	- @done Write unit tests for NetworkMonitor (mock NWPathMonitor, CWInterface) @done(2026-06-22)
+	- @done Write unit tests for SettingsStore @done(2026-06-22)
+	- @done Add VoiceOver accessibility labels to all Phase 1 UI elements @done(2026-06-22)
+	- @done All user-facing strings use String(localized:) @done(2026-06-22)
+	- @done SMAppService spike — minimal throwaway helper to validate signing and installation flow @done(2026-06-22)
+	- @done Update .taskpaper with any discoveries or adjustments @done(2026-06-22)
 	- Manual test: menu bar icon appears, popover opens, real SSID and signal shown
 	- Regression test: n/a (first phase)
+	Discoveries:
+		- @Observable requires macOS 14+; using ObservableObject/@Published for macOS 13 compat
+		- Swift 6 strict concurrency: NetworkMonitor needs @unchecked Sendable for NWPathMonitor callbacks
+		- AppDelegate needs @MainActor for Swift 6 concurrency with NSPopover/NSStatusItem
+		- XcodeGen overwrites entitlements — use entitlements.properties in project.yml to define them
+		- xcode-select pointing to CommandLine Tools — use DEVELOPER_DIR env var to target Xcode-beta
+		- CWInterface uses rssiValue() not rssi()
 
 Phase 2 — Wi-Fi Management:
 	Branch: phase/2-wifi-management

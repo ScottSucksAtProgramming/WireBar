@@ -16,3 +16,8 @@ updated: 2026-06-22
 - 2026-06-22: Location Services authorization is required in Phase 1, not just onboarding — CWInterface.ssid() returns nil without it.
 - 2026-06-22: Most VPN CLIs (tailscale, piactl, mullvad) don't need sudo — only wg-quick does. Two-tier execution avoids unnecessary privileged helper usage.
 - 2026-06-22: Sparkle EdDSA private key loss is catastrophic — existing installs will never accept updates again. Back up immediately upon generation.
+- 2026-06-22: @Observable macro requires macOS 14+ — use ObservableObject/@Published for macOS 13 (Ventura) compatibility.
+- 2026-06-22: Swift 6 strict concurrency requires @unchecked Sendable on classes captured in @Sendable closures (e.g. NWPathMonitor.pathUpdateHandler). AppDelegate needs @MainActor annotation.
+- 2026-06-22: When xcode-select points to CommandLine Tools, use DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer to target full Xcode without sudo.
+- 2026-06-22: XcodeGen regenerates entitlements files — define entitlements via project.yml entitlements.properties to keep them in sync.
+- 2026-06-22: CWInterface signal method is rssiValue() not rssi(). Returns dBm as Int.
