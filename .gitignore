@@ -41,9 +41,39 @@ Pods/
 
 # Secrets and credentials
 .env
+.env.*
 *.key
 *.pem
+*.p8
+*.cer
+*.der
 Secrets/
+secrets/
+Config/Secrets/
+**/API_Keys.*
+**/api_keys.*
+
+# LemonSqueezy
+lemonsqueezy*.json
+**/LemonSqueezyConfig.swift
+
+# Sparkle signing keys
+*.sparkle_eddsa_key
+sparkle_private_key*
+dsa_priv.pem
+
+# Sentry
+**/SentryConfig.swift
+sentry.properties
+
+# Keychain
+*.keychain
+*.keychain-db
+
+# Xcode personal settings
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
 
 # Claude Code
 .claude/settings.local.json
