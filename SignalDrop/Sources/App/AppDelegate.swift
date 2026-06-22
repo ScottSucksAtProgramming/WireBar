@@ -20,7 +20,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
         if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: "wifi", accessibilityDescription: String(localized: "Wi-Fi status"))
+            button.image = NSImage(systemSymbolName: "antenna.radiowaves.left.and.right", accessibilityDescription: String(localized: "SignalDrop network status"))
             button.action = #selector(togglePopover)
             button.target = self
         }
