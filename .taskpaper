@@ -1,4 +1,4 @@
 SignalDrop:
+	- @na Create a milestone-based development roadmap with phased implementation plan @added(2026-06-22)
 	- @na Initialize Xcode project with SwiftUI menu bar app template @added(2026-06-22)
-	- @na Set up Git repo and push to GitHub @added(2026-06-22)
-	- @na Create implementation plan from PRD @added(2026-06-22)
+	- @done Set up Git repo and push to GitHub @added(2026-06-22) @done(2026-06-22)
