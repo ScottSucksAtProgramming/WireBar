@@ -7,7 +7,7 @@ struct SettingsView: View {
 
     var body: some View {
         TabView {
-            GeneralSettingsView(settingsStore: settingsStore)
+            GeneralSettingsView(settingsStore: settingsStore, licenseManager: licenseManager)
                 .tabItem {
                     Label(String(localized: "General"), systemImage: "gear")
                 }
@@ -23,6 +23,14 @@ struct SettingsView: View {
                 .tabItem {
                     Label(String(localized: "VPN"), systemImage: "shield.lefthalf.filled")
                 }
+            NotificationSettingsView(settingsStore: settingsStore, licenseManager: licenseManager)
+                .tabItem {
+                    Label(String(localized: "Notifications"), systemImage: "bell")
+                }
+            KeyboardShortcutsSettingsView(settingsStore: settingsStore, licenseManager: licenseManager)
+                .tabItem {
+                    Label(String(localized: "Shortcuts"), systemImage: "keyboard")
+                }
         }
         .frame(width: 450, height: 300)
     }
@@ -30,11 +38,28 @@ struct SettingsView: View {
 
 struct GeneralSettingsView: View {
     @ObservedObject var settingsStore: SettingsStore
+    @ObservedObject var licenseManager: LicenseManager
 
     var body: some View {
         Form {
             Toggle(String(localized: "Launch at login"), isOn: $settingsStore.launchAtLogin)
                 .accessibilityLabel(String(localized: "Launch SignalDrop when you log in"))
+
+            Section(String(localized: "Menu Bar Display")) {
+                if licenseManager.isPaid {
+                    Toggle(String(localized: "Show network name"), isOn: $settingsStore.menuBarShowNetworkName)
+                        .accessibilityLabel(String(localized: "Show Wi-Fi network name in menu bar"))
+                    Toggle(String(localized: "Show VPN indicator"), isOn: $settingsStore.menuBarShowVPNIndicator)
+                        .accessibilityLabel(String(localized: "Show VPN connection indicator in menu bar"))
+                    Toggle(String(localized: "Show IP address"), isOn: $settingsStore.menuBarShowIP)
+                        .accessibilityLabel(String(localized: "Show local IP address in menu bar"))
+                } else {
+                    Text(String(localized: "Menu bar customization is a paid feature"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .accessibilityLabel(String(localized: "Menu bar customization requires a paid license"))
+                }
+            }
         }
         .padding()
     }

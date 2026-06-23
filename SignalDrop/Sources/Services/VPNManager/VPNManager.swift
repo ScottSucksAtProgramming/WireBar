@@ -7,7 +7,7 @@ final class VPNManager: ObservableObject, @unchecked Sendable {
     var hasMultipleConnected: Bool { connectedCount >= 2 }
     var connectedCount: Int { vpnStates.filter { $0.status == .connected }.count }
 
-    private let provider: VPNConfigurationProviding
+    var provider: VPNConfigurationProviding
     private let licenseManager: LicenseManager
 
     init(

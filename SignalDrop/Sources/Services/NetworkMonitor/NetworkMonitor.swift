@@ -58,6 +58,10 @@ final class NetworkMonitor: ObservableObject, @unchecked Sendable {
         }()
 
         let localIP = IPService.getIPAddress()
+        let ifaceName = iface.interfaceName ?? "en0"
+        let subnet = Self.getSubnetMask(forInterface: ifaceName)
+        let gateway = Self.getDefaultGateway()
+        let dns = Self.getDNSServers()
 
         DispatchQueue.main.async { [weak self] in
             self?.state.ssid = ssid
@@ -69,7 +73,89 @@ final class NetworkMonitor: ObservableObject, @unchecked Sendable {
             self?.state.channelNumber = channelNum
             self?.state.channelBand = band
             self?.state.localIPAddress = localIP
+            self?.state.subnetMask = subnet
+            self?.state.gatewayAddress = gateway
+            self?.state.dnsServers = dns
         }
+    }
+
+    private static func getSubnetMask(forInterface targetName: String) -> String? {
+        var ifaddr: UnsafeMutablePointer<ifaddrs>?
+        guard getifaddrs(&ifaddr) == 0, let firstAddr = ifaddr else { return nil }
+        defer { freeifaddrs(ifaddr) }
+
+        for ptr in sequence(first: firstAddr, next: { $0.pointee.ifa_next }) {
+            let iface = ptr.pointee
+            guard iface.ifa_addr.pointee.sa_family == UInt8(AF_INET) else { continue }
+            guard String(cString: iface.ifa_name) == targetName else { continue }
+            guard let netmask = iface.ifa_netmask else { continue }
+
+            var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+            if getnameinfo(
+                netmask, socklen_t(netmask.pointee.sa_len),
+                &hostname, socklen_t(hostname.count),
+                nil, 0, NI_NUMERICHOST
+            ) == 0 {
+                return String(cString: hostname)
+            }
+        }
+        return nil
+    }
+
+    private static func getDefaultGateway() -> String? {
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/usr/sbin/netstat")
+        task.arguments = ["-rn", "-f", "inet"]
+        let pipe = Pipe()
+        task.standardOutput = pipe
+        task.standardError = FileHandle.nullDevice
+        do {
+            try task.run()
+            task.waitUntilExit()
+        } catch { return nil }
+
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        guard let output = String(data: data, encoding: .utf8) else { return nil }
+
+        for line in output.components(separatedBy: "\n") {
+            let cols = line.split(separator: " ", omittingEmptySubsequences: true)
+            guard cols.count >= 2 else { continue }
+            if cols[0] == "default" {
+                return String(cols[1])
+            }
+        }
+        return nil
+    }
+
+    private static func getDNSServers() -> [String] {
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/usr/sbin/scutil")
+        task.arguments = ["--dns"]
+        let pipe = Pipe()
+        task.standardOutput = pipe
+        task.standardError = FileHandle.nullDevice
+        do {
+            try task.run()
+            task.waitUntilExit()
+        } catch { return [] }
+
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        guard let output = String(data: data, encoding: .utf8) else { return [] }
+
+        var servers: [String] = []
+        for line in output.components(separatedBy: "\n") {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            if trimmed.hasPrefix("nameserver[") {
+                let parts = trimmed.split(separator: ":")
+                if parts.count >= 2 {
+                    let ip = parts[1].trimmingCharacters(in: .whitespaces)
+                    if !servers.contains(ip) {
+                        servers.append(ip)
+                    }
+                }
+            }
+        }
+        return servers
     }
 
     private func handlePathUpdate(_ path: NWPath) {

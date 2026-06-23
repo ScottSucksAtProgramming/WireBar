@@ -14,6 +14,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var ipService = IPService(licenseManager: licenseManager)
     private lazy var pingService = PingService(licenseManager: licenseManager)
     lazy var vpnManager = VPNManager(licenseManager: licenseManager)
+    private lazy var notificationService = NotificationService(licenseManager: licenseManager, settingsStore: settingsStore)
+    private lazy var hotkeyManager = HotkeyManager(licenseManager: licenseManager, settingsStore: settingsStore)
     private var cancellables = Set<AnyCancellable>()
     private var settingsWindow: NSWindow?
 
@@ -29,6 +31,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         observePingSettings()
         vpnManager.refresh()
         observeVPNStateChanges()
+        setupNotificationService()
+        setupHotkeyManager()
     }
 
     private func setupStatusItem() {
@@ -64,14 +68,37 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func observeNetworkState() {
         networkMonitor.$state
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] state in
-                self?.updateMenuBarIcon(for: state)
+            .sink { [weak self] _ in
+                self?.updateMenuBar()
+            }
+            .store(in: &cancellables)
+
+        settingsStore.$menuBarShowNetworkName
+            .combineLatest(settingsStore.$menuBarShowVPNIndicator, settingsStore.$menuBarShowIP)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _, _, _ in
+                self?.updateMenuBar()
+            }
+            .store(in: &cancellables)
+
+        vpnManager.$vpnStates
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateMenuBar()
+            }
+            .store(in: &cancellables)
+
+        ipService.$localIP
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateMenuBar()
             }
             .store(in: &cancellables)
     }
 
-    private func updateMenuBarIcon(for state: NetworkState) {
+    private func updateMenuBar() {
         guard let button = statusItem.button else { return }
+        let state = networkMonitor.state
 
         let symbolName: String
         if !state.isWiFiPoweredOn && state.connectionType != .ethernet && state.connectionType != .wifiAndEthernet {
@@ -89,6 +116,34 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             systemSymbolName: symbolName,
             accessibilityDescription: String(localized: "SignalDrop network status")
         )
+
+        var textParts: [String] = []
+        let isPaid = licenseManager.isPaid
+
+        if settingsStore.menuBarShowNetworkName, isPaid, let ssid = state.ssid {
+            let maxLen = 15
+            textParts.append(ssid.count > maxLen ? String(ssid.prefix(maxLen)) + "…" : ssid)
+        }
+
+        if settingsStore.menuBarShowVPNIndicator, isPaid {
+            let connectedCount = vpnManager.connectedCount
+            if connectedCount > 0 {
+                textParts.append("🔒\(connectedCount)")
+            }
+        }
+
+        if settingsStore.menuBarShowIP, isPaid, let ip = ipService.localIP {
+            textParts.append(ip)
+        }
+
+        button.title = textParts.isEmpty ? "" : " " + textParts.joined(separator: " · ")
+        button.imagePosition = textParts.isEmpty ? .imageOnly : .imageLeading
+
+        var accessibilityParts = [String(localized: "SignalDrop")]
+        if let ssid = state.ssid { accessibilityParts.append(ssid) }
+        let vpnCount = vpnManager.connectedCount
+        if vpnCount > 0 { accessibilityParts.append(String(localized: "\(vpnCount) VPN connected")) }
+        button.setAccessibilityLabel(accessibilityParts.joined(separator: ", "))
     }
 
     private func openSettings() {
@@ -160,6 +215,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             .store(in: &cancellables)
     }
 
+    private func setupHotkeyManager() {
+        hotkeyManager.actionHandler = self
+        hotkeyManager.start()
+    }
+
+    private func setupNotificationService() {
+        notificationService.observeVPN(vpnManager)
+        notificationService.observeNetwork(networkMonitor)
+        notificationService.observeIP(ipService)
+    }
+
     @objc private func togglePopover() {
         guard let button = statusItem.button else { return }
 
@@ -172,6 +238,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             vpnManager.refresh()
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
             NSApp.activate(ignoringOtherApps: true)
+        }
+    }
+}
+
+extension AppDelegate: HotkeyActionHandler {
+    func performHotkeyAction(_ action: HotkeyAction) {
+        switch action {
+        case .togglePopover:
+            togglePopover()
+        case .toggleWiFi:
+            wifiManager.togglePower()
+        case .refreshIP:
+            ipService.clearCache()
+            ipService.refreshExternalIP()
+        case .copyLocalIP:
+            if let ip = ipService.localIP {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(ip, forType: .string)
+            }
+        case .copyExternalIP:
+            if let ip = ipService.externalIP {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(ip, forType: .string)
+            }
         }
     }
 }
