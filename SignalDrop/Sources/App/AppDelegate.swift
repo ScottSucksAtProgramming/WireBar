@@ -26,7 +26,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
         if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: "wifi", accessibilityDescription: String(localized: "SignalDrop network status"))
+            button.image = NSImage(systemSymbolName: "antenna.radiowaves.left.and.right", accessibilityDescription: String(localized: "SignalDrop network status"))
             button.action = #selector(togglePopover)
             button.target = self
         }
@@ -59,13 +59,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         let symbolName: String
         if !state.isWiFiPoweredOn && state.connectionType != .ethernet && state.connectionType != .wifiAndEthernet {
-            symbolName = "wifi.slash"
+            symbolName = "antenna.radiowaves.left.and.right.slash"
         } else {
             symbolName = switch state.connectionType {
-            case .none: "wifi.slash"
-            case .wifi: "wifi"
+            case .none: "antenna.radiowaves.left.and.right.slash"
+            case .wifi: "antenna.radiowaves.left.and.right"
             case .ethernet: "cable.connector.horizontal"
-            case .wifiAndEthernet: "wifi"
+            case .wifiAndEthernet: "antenna.radiowaves.left.and.right"
             }
         }
 
