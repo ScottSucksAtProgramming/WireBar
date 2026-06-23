@@ -12,10 +12,42 @@ wifi-menubar/
   CLAUDE.md
   INDEX.md
   .taskpaper
+  project.yml
   SPEC.md
   PRD.md
   ROADMAP.md
   DESIGN_DECISIONS.md
+  SignalDrop/
+    Sources/
+      App/
+        SignalDropApp.swift
+        AppDelegate.swift
+      Models/
+        NetworkState.swift
+      Protocols/
+        NetworkPathProviding.swift
+        WLANInterface.swift
+        ShellExecuting.swift
+      Services/
+        NetworkMonitor/
+          NetworkMonitor.swift
+        SettingsStore/
+          SettingsStore.swift
+        LicenseManager/
+          LicenseManager.swift
+      UI/
+        MenuBar/
+        Popover/
+          PopoverView.swift
+        Settings/
+          SettingsView.swift
+        Onboarding/
+    Resources/
+      Info.plist
+      SignalDrop.entitlements
+  SignalDropTests/
+    NetworkMonitorTests.swift
+    SettingsStoreTests.swift
   handoffs/          (local only, .gitignored — session handoff docs)
   context/
     conventions.md

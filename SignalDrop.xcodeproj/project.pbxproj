@@ -1,0 +1,621 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		137FAE03AB4956BF90BC00C3 /* LocationPermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB430701DF37FB571158952 /* LocationPermissionManager.swift */; };
+		36DCB16E7D025FC041734194 /* LicenseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C067A1C029FBC1459E4D160A /* LicenseManager.swift */; };
+		3E15A7570E10E4144299BA03 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B91E39A1005C4C56DBD0F7B /* NetworkMonitor.swift */; };
+		47DB8C01BC75BD4BA2E85B4A /* SettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA44347302FD6DAABA32D449 /* SettingsStoreTests.swift */; };
+		61845C02EBD831D7EFBBDD7F /* NetworkPathProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23903D2A2D5EE8014659E68B /* NetworkPathProviding.swift */; };
+		670FF31DFC473E183CF949E5 /* WLANInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277E39C5D69B4D195D2CDE8C /* WLANInterface.swift */; };
+		6F6E70B9C2C778A8AE46F21D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C09F3A5E1018C8316A63E9 /* AppDelegate.swift */; };
+		93D254E0E4D0B70CC99E1765 /* NetworkMonitorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28951E9F4BA37BA2712A179 /* NetworkMonitorTests.swift */; };
+		97BF89AF493A3F4A0AD86B0A /* SMAppServiceSpike.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82529D2CF31477B9C31B35C7 /* SMAppServiceSpike.swift */; };
+		9CAA0FA3DE1249CB0F5C87F7 /* NetworkState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2450E05B07FCE949C9125428 /* NetworkState.swift */; };
+		A166767B4CEB9BB6C6B7BA62 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0A8566906378BA738AC945 /* SettingsStore.swift */; };
+		A699F5142ED7AF9132EFDE81 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB2531AC618135BFB914CE8F /* SettingsView.swift */; };
+		C53E0CF4030D83094901E688 /* PopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEFA464FE203480A56518CEA /* PopoverView.swift */; };
+		D673BCB5B9D0D78FC14A42F2 /* SignalDropApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39B10D221CDFE333470910A /* SignalDropApp.swift */; };
+		EB1657C25EF10FE460F98CA2 /* ShellExecuting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72016D3562503BBE1B4F2DBF /* ShellExecuting.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AC06FB32C7B6BE63D8B635A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 15F5F2AEE5D1A5A562BC2234 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1154E845C9655FD011D489E0;
+			remoteInfo = SignalDrop;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0397BB45E4121A74672B89DD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		1A0A8566906378BA738AC945 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		23903D2A2D5EE8014659E68B /* NetworkPathProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkPathProviding.swift; sourceTree = "<group>"; };
+		2450E05B07FCE949C9125428 /* NetworkState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkState.swift; sourceTree = "<group>"; };
+		277E39C5D69B4D195D2CDE8C /* WLANInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WLANInterface.swift; sourceTree = "<group>"; };
+		49AD2F02DFC5832A81882A9B /* SignalDropTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SignalDropTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		58C09F3A5E1018C8316A63E9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		6B91E39A1005C4C56DBD0F7B /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		72016D3562503BBE1B4F2DBF /* ShellExecuting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShellExecuting.swift; sourceTree = "<group>"; };
+		82529D2CF31477B9C31B35C7 /* SMAppServiceSpike.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMAppServiceSpike.swift; sourceTree = "<group>"; };
+		8FB430701DF37FB571158952 /* LocationPermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPermissionManager.swift; sourceTree = "<group>"; };
+		AB2531AC618135BFB914CE8F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		BEFA464FE203480A56518CEA /* PopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverView.swift; sourceTree = "<group>"; };
+		C067A1C029FBC1459E4D160A /* LicenseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseManager.swift; sourceTree = "<group>"; };
+		D28951E9F4BA37BA2712A179 /* NetworkMonitorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitorTests.swift; sourceTree = "<group>"; };
+		D39B10D221CDFE333470910A /* SignalDropApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalDropApp.swift; sourceTree = "<group>"; };
+		DA44347302FD6DAABA32D449 /* SettingsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStoreTests.swift; sourceTree = "<group>"; };
+		EE2407815D335A4048A87B6C /* SignalDrop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SignalDrop.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F9341701D537A4687035128E /* SignalDrop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SignalDrop.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0E8839D57C04F98AC760B624 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				8095C716C9B0C4B220CAB713 /* App */,
+				205636516E23221E785BD4F1 /* Models */,
+				DC32D953702BEA783FEBBCB0 /* Protocols */,
+				7F0BFF4759EB154579870749 /* Services */,
+				8A865F35B6B9DDD243347CA6 /* Spikes */,
+				6CC000ABC4B434B616C96301 /* UI */,
+			);
+			name = Sources;
+			path = SignalDrop/Sources;
+			sourceTree = "<group>";
+		};
+		205636516E23221E785BD4F1 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				2450E05B07FCE949C9125428 /* NetworkState.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		27BBE3CC89284065A71A32C5 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				AB2531AC618135BFB914CE8F /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		33745B8FCA93F9CE3A9776FC /* HotkeyManager */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = HotkeyManager;
+			sourceTree = "<group>";
+		};
+		4809AADA2BD18C27396C2A6E /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		4F7FF070CEC077166B4B657B /* Popover */ = {
+			isa = PBXGroup;
+			children = (
+				BEFA464FE203480A56518CEA /* PopoverView.swift */,
+			);
+			path = Popover;
+			sourceTree = "<group>";
+		};
+		6CC000ABC4B434B616C96301 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				7FF0B8B03C92726A190CB86B /* MenuBar */,
+				4809AADA2BD18C27396C2A6E /* Onboarding */,
+				4F7FF070CEC077166B4B657B /* Popover */,
+				27BBE3CC89284065A71A32C5 /* Settings */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		7F0BFF4759EB154579870749 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				33745B8FCA93F9CE3A9776FC /* HotkeyManager */,
+				F18E2A517F8FE689C87C47FB /* IPService */,
+				8C9A728C8761612E4C1AF201 /* LicenseManager */,
+				B82B2F5E182603782494D0A0 /* NetworkMonitor */,
+				D8CE0195E683270A7E1D7158 /* NotificationService */,
+				916DF6E61452DD16AC07D30E /* PingService */,
+				F8E050E888DE072E762B52CB /* SettingsStore */,
+				9D73A0AAF35EEFC65A051D70 /* VPNManager */,
+				C219F3320E313A3D76E9C68A /* WiFiManager */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		7FF0B8B03C92726A190CB86B /* MenuBar */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = MenuBar;
+			sourceTree = "<group>";
+		};
+		8095C716C9B0C4B220CAB713 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				58C09F3A5E1018C8316A63E9 /* AppDelegate.swift */,
+				D39B10D221CDFE333470910A /* SignalDropApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		8A865F35B6B9DDD243347CA6 /* Spikes */ = {
+			isa = PBXGroup;
+			children = (
+				82529D2CF31477B9C31B35C7 /* SMAppServiceSpike.swift */,
+			);
+			path = Spikes;
+			sourceTree = "<group>";
+		};
+		8AD22EA2542CE63557D7CA02 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EE2407815D335A4048A87B6C /* SignalDrop.app */,
+				49AD2F02DFC5832A81882A9B /* SignalDropTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8C9A728C8761612E4C1AF201 /* LicenseManager */ = {
+			isa = PBXGroup;
+			children = (
+				C067A1C029FBC1459E4D160A /* LicenseManager.swift */,
+			);
+			path = LicenseManager;
+			sourceTree = "<group>";
+		};
+		916DF6E61452DD16AC07D30E /* PingService */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = PingService;
+			sourceTree = "<group>";
+		};
+		9437FA9566C6135EDFB9B1A5 /* SignalDropTests */ = {
+			isa = PBXGroup;
+			children = (
+				D28951E9F4BA37BA2712A179 /* NetworkMonitorTests.swift */,
+				DA44347302FD6DAABA32D449 /* SettingsStoreTests.swift */,
+			);
+			path = SignalDropTests;
+			sourceTree = "<group>";
+		};
+		9D73A0AAF35EEFC65A051D70 /* VPNManager */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = VPNManager;
+			sourceTree = "<group>";
+		};
+		B82B2F5E182603782494D0A0 /* NetworkMonitor */ = {
+			isa = PBXGroup;
+			children = (
+				8FB430701DF37FB571158952 /* LocationPermissionManager.swift */,
+				6B91E39A1005C4C56DBD0F7B /* NetworkMonitor.swift */,
+			);
+			path = NetworkMonitor;
+			sourceTree = "<group>";
+		};
+		C0A2CE71FC263E4B7E1B759A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				0397BB45E4121A74672B89DD /* Info.plist */,
+				F9341701D537A4687035128E /* SignalDrop.entitlements */,
+			);
+			name = Resources;
+			path = SignalDrop/Resources;
+			sourceTree = "<group>";
+		};
+		C219F3320E313A3D76E9C68A /* WiFiManager */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = WiFiManager;
+			sourceTree = "<group>";
+		};
+		D8CE0195E683270A7E1D7158 /* NotificationService */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = NotificationService;
+			sourceTree = "<group>";
+		};
+		DC32D953702BEA783FEBBCB0 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				23903D2A2D5EE8014659E68B /* NetworkPathProviding.swift */,
+				72016D3562503BBE1B4F2DBF /* ShellExecuting.swift */,
+				277E39C5D69B4D195D2CDE8C /* WLANInterface.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
+		F18E2A517F8FE689C87C47FB /* IPService */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = IPService;
+			sourceTree = "<group>";
+		};
+		F8E050E888DE072E762B52CB /* SettingsStore */ = {
+			isa = PBXGroup;
+			children = (
+				1A0A8566906378BA738AC945 /* SettingsStore.swift */,
+			);
+			path = SettingsStore;
+			sourceTree = "<group>";
+		};
+		FF5F1DA2F3D2EFA3EC4077FD = {
+			isa = PBXGroup;
+			children = (
+				C0A2CE71FC263E4B7E1B759A /* Resources */,
+				9437FA9566C6135EDFB9B1A5 /* SignalDropTests */,
+				0E8839D57C04F98AC760B624 /* Sources */,
+				8AD22EA2542CE63557D7CA02 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1154E845C9655FD011D489E0 /* SignalDrop */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9B0E219C9E30D932665ED15E /* Build configuration list for PBXNativeTarget "SignalDrop" */;
+			buildPhases = (
+				F125278072ED90747BB2355E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SignalDrop;
+			packageProductDependencies = (
+			);
+			productName = SignalDrop;
+			productReference = EE2407815D335A4048A87B6C /* SignalDrop.app */;
+			productType = "com.apple.product-type.application";
+		};
+		861418B6FD267C4E8CCED8BC /* SignalDropTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3CCDC34755D8F7177B0C6CDC /* Build configuration list for PBXNativeTarget "SignalDropTests" */;
+			buildPhases = (
+				4380F60FAEE7FC322B2E4AAB /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F8FA4D7586A00ED0747D99E2 /* PBXTargetDependency */,
+			);
+			name = SignalDropTests;
+			packageProductDependencies = (
+			);
+			productName = SignalDropTests;
+			productReference = 49AD2F02DFC5832A81882A9B /* SignalDropTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		15F5F2AEE5D1A5A562BC2234 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					1154E845C9655FD011D489E0 = {
+						DevelopmentTeam = 5N69HV7X7S;
+						ProvisioningStyle = Automatic;
+					};
+					861418B6FD267C4E8CCED8BC = {
+						DevelopmentTeam = 5N69HV7X7S;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 2FD10BBD61F388FB75D74050 /* Build configuration list for PBXProject "SignalDrop" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = FF5F1DA2F3D2EFA3EC4077FD;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 8AD22EA2542CE63557D7CA02 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1154E845C9655FD011D489E0 /* SignalDrop */,
+				861418B6FD267C4E8CCED8BC /* SignalDropTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4380F60FAEE7FC322B2E4AAB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				93D254E0E4D0B70CC99E1765 /* NetworkMonitorTests.swift in Sources */,
+				47DB8C01BC75BD4BA2E85B4A /* SettingsStoreTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F125278072ED90747BB2355E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6F6E70B9C2C778A8AE46F21D /* AppDelegate.swift in Sources */,
+				36DCB16E7D025FC041734194 /* LicenseManager.swift in Sources */,
+				137FAE03AB4956BF90BC00C3 /* LocationPermissionManager.swift in Sources */,
+				3E15A7570E10E4144299BA03 /* NetworkMonitor.swift in Sources */,
+				61845C02EBD831D7EFBBDD7F /* NetworkPathProviding.swift in Sources */,
+				9CAA0FA3DE1249CB0F5C87F7 /* NetworkState.swift in Sources */,
+				C53E0CF4030D83094901E688 /* PopoverView.swift in Sources */,
+				97BF89AF493A3F4A0AD86B0A /* SMAppServiceSpike.swift in Sources */,
+				A166767B4CEB9BB6C6B7BA62 /* SettingsStore.swift in Sources */,
+				A699F5142ED7AF9132EFDE81 /* SettingsView.swift in Sources */,
+				EB1657C25EF10FE460F98CA2 /* ShellExecuting.swift in Sources */,
+				D673BCB5B9D0D78FC14A42F2 /* SignalDropApp.swift in Sources */,
+				670FF31DFC473E183CF949E5 /* WLANInterface.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F8FA4D7586A00ED0747D99E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1154E845C9655FD011D489E0 /* SignalDrop */;
+			targetProxy = AC06FB32C7B6BE63D8B635A6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		027A51D76B2CEA4C8D49D443 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = SignalDrop/Resources/SignalDrop.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = SignalDrop/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.scottkostolni.SignalDrop;
+				PRODUCT_NAME = SignalDrop;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		0A172F930C90C0D682F25045 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = SignalDrop/Resources/SignalDrop.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = SignalDrop/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.scottkostolni.SignalDrop;
+				PRODUCT_NAME = SignalDrop;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		1FCB60DE7F67BF4F8CBE20B6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 5N69HV7X7S;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		811B6F2186B40A4DC5C71F5B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 5N69HV7X7S;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		EB2B94CB61E95E0446E5DE23 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.scottkostolni.SignalDropTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SignalDrop.app/Contents/MacOS/SignalDrop";
+			};
+			name = Debug;
+		};
+		F0012D673B85DF95B0042022 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.scottkostolni.SignalDropTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SignalDrop.app/Contents/MacOS/SignalDrop";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2FD10BBD61F388FB75D74050 /* Build configuration list for PBXProject "SignalDrop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				811B6F2186B40A4DC5C71F5B /* Debug */,
+				1FCB60DE7F67BF4F8CBE20B6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		3CCDC34755D8F7177B0C6CDC /* Build configuration list for PBXNativeTarget "SignalDropTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB2B94CB61E95E0446E5DE23 /* Debug */,
+				F0012D673B85DF95B0042022 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9B0E219C9E30D932665ED15E /* Build configuration list for PBXNativeTarget "SignalDrop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A172F930C90C0D682F25045 /* Debug */,
+				027A51D76B2CEA4C8D49D443 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 15F5F2AEE5D1A5A562BC2234 /* Project object */;
+}

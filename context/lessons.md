@@ -16,3 +16,13 @@ updated: 2026-06-22
 - 2026-06-22: Location Services authorization is required in Phase 1, not just onboarding — CWInterface.ssid() returns nil without it.
 - 2026-06-22: Most VPN CLIs (tailscale, piactl, mullvad) don't need sudo — only wg-quick does. Two-tier execution avoids unnecessary privileged helper usage.
 - 2026-06-22: Sparkle EdDSA private key loss is catastrophic — existing installs will never accept updates again. Back up immediately upon generation.
+- 2026-06-22: @Observable macro requires macOS 14+ — use ObservableObject/@Published for macOS 13 (Ventura) compatibility.
+- 2026-06-22: Swift 6 strict concurrency requires @unchecked Sendable on classes captured in @Sendable closures (e.g. NWPathMonitor.pathUpdateHandler). AppDelegate needs @MainActor annotation.
+- 2026-06-22: When xcode-select points to CommandLine Tools, use DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer to target full Xcode without sudo.
+- 2026-06-22: XcodeGen regenerates entitlements files — define entitlements via project.yml entitlements.properties to keep them in sync.
+- 2026-06-22: CWInterface signal method is rssiValue() not rssi(). Returns dBm as Int.
+- 2026-06-22: NWPathMonitor.pathUpdateHandler fires asynchronously — read currentPath on start() to avoid stale initial UI state.
+- 2026-06-22: CLLocationManager.requestWhenInUseAuthorization() silently does nothing for debug builds outside /Applications. Users must grant Location Services manually in System Settings during development. Onboarding wizard will handle this for release builds.
+- 2026-06-22: CWInterface.ssid() returns nil without Location Services, but channel, signal, and transmitRate still work. Show "Wi-Fi Connected" as fallback instead of "Not Connected" to avoid misleading the user.
+- 2026-06-22: Computer-use screenshot filtering hides menu bar status items from apps not in the installed app registry. Debug builds from DerivedData and even copies in /Applications are not recognized by the computer-use tool's app detection. Manual testing of SignalDrop's menu bar UI requires user confirmation until the app is properly distributed.
+- 2026-06-22: SignalDrop's menu bar icon IS visible in screenshots even without allowlist access — it just can't be clicked. Use a distinctive icon (antenna.radiowaves.left.and.right) instead of "wifi" to avoid confusion with the system Wi-Fi icon. Bartender intercepts clicks on menu bar items, blocking computer-use interaction.
