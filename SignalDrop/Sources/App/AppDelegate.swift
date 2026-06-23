@@ -1,6 +1,7 @@
 import AppKit
 import SwiftUI
 import Combine
+import Sparkle
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -18,6 +19,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var hotkeyManager = HotkeyManager(licenseManager: licenseManager, settingsStore: settingsStore)
     private var cancellables = Set<AnyCancellable>()
     private var settingsWindow: NSWindow?
+    let updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         locationManager.requestPermissionIfNeeded()
@@ -158,14 +160,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let settingsView = SettingsView(
             settingsStore: settingsStore,
             licenseManager: licenseManager,
-            vpnManager: vpnManager
+            vpnManager: vpnManager,
+            updaterController: updaterController
         )
         let hostingController = NSHostingController(rootView: settingsView)
 
         let window = NSWindow(contentViewController: hostingController)
         window.title = String(localized: "SignalDrop Settings")
         window.styleMask = [.titled, .closable]
-        window.setContentSize(NSSize(width: 450, height: 300))
+        window.setContentSize(NSSize(width: 580, height: 300))
         window.center()
         window.isReleasedWhenClosed = false
         window.makeKeyAndOrderFront(nil)

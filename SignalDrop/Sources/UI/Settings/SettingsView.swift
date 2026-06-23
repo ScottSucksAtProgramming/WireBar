@@ -1,9 +1,11 @@
 import SwiftUI
+import Sparkle
 
 struct SettingsView: View {
     @ObservedObject var settingsStore: SettingsStore
     @ObservedObject var licenseManager: LicenseManager
     @ObservedObject var vpnManager: VPNManager
+    let updaterController: SPUStandardUpdaterController
 
     var body: some View {
         TabView {
@@ -31,8 +33,12 @@ struct SettingsView: View {
                 .tabItem {
                     Label(String(localized: "Shortcuts"), systemImage: "keyboard")
                 }
+            UpdateSettingsView(updaterController: updaterController)
+                .tabItem {
+                    Label(String(localized: "Updates"), systemImage: "arrow.triangle.2.circlepath")
+                }
         }
-        .frame(width: 450, height: 300)
+        .frame(width: 580, height: 300)
     }
 }
 

@@ -9,7 +9,8 @@ struct SignalDropApp: App {
             SettingsView(
                 settingsStore: appDelegate.settingsStore,
                 licenseManager: appDelegate.licenseManager,
-                vpnManager: appDelegate.vpnManager
+                vpnManager: appDelegate.vpnManager,
+                updaterController: appDelegate.updaterController
             )
         }
     }

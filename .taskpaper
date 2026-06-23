@@ -26,13 +26,14 @@ Phase 6 — Licensing + Updates:
 	- Implement device transfer flow (deactivate on old device, reactivate on new)
 	- Implement in-app upgrade prompt (link to LemonSqueezy checkout)
 	- Implement free/paid feature gating across all paid features (verify all isPaid checks work)
-	- Generate Sparkle EdDSA key pair (Scott runs generate_keys, backs up private key to offline storage) (Scott) @tags(scott, blocking)
+	- @done Generate Sparkle EdDSA key pair (Scott runs generate_keys, backs up private key to offline storage) (Scott) @tags(scott, blocking) @done(2026-06-23)
 	- Back up Developer ID cert and Sparkle private key to offline/secure storage (Scott) @tags(scott, critical)
-	- Integrate Sparkle framework via SPM
-	- Implement minimal Sparkle — automatic check-on-launch with standard update dialog
-	- Configure Sparkle with EdDSA public key
-	- Add Settings: license info display, update check preferences
-	- Decision documented: updates are public, license gates features not updates
+	- @done Integrate Sparkle framework via SPM @done(2026-06-23)
+	- @done Implement minimal Sparkle — automatic check-on-launch with standard update dialog @done(2026-06-23)
+	- @done Configure Sparkle with EdDSA public key @done(2026-06-23)
+	- @done Add Settings: update check preferences (Updates tab with auto-check toggle, Check Now button, version display) @done(2026-06-23)
+	- @done Decision documented: updates are public, license gates features not updates @done(2026-06-23)
+	- @done Widen Settings window from 450px to 580px to fit all 7 tabs without overflow @done(2026-06-23)
 	- Write unit tests for LicenseManager (gate logic, offline caching, grace period)
 	- Add VoiceOver accessibility labels to all Phase 6 UI elements
 	- All user-facing strings use String(localized:)

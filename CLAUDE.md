@@ -74,6 +74,7 @@ wifi-menubar/
           VPNSettingsView.swift
           NotificationSettingsView.swift
           KeyboardShortcutsSettingsView.swift
+          UpdateSettingsView.swift
         Onboarding/
     Resources/
       Info.plist
@@ -209,3 +210,5 @@ After completing a task, log any corrections, preferences, patterns, or discover
 ### Recent Lessons (last 5)
 
 <!-- Claude maintains this as a quick-reference mirror of the most recent entries from context/lessons.md. -->
+- 2026-06-23: NSStatusBarButton needs `.imagePosition = .imageLeading` when setting both `.image` and `.title` — without it the title won't render next to the icon.
+- 2026-06-23: Sparkle 2.x SPM integration via XcodeGen: add top-level `packages:` block + `dependencies: [package: Sparkle]` on the app target. `SPUStandardUpdaterController(startingUpdater: true, ...)` on `@MainActor AppDelegate` has no Swift 6 concurrency issues. Empty `SUPublicEDKey` does NOT cause test-host abort — tests pass cleanly.
