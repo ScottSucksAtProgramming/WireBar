@@ -25,11 +25,12 @@ wifi-menubar/
       Models/
         NetworkState.swift
         ScannedNetwork.swift
+        VPNState.swift
       Protocols/
         NetworkPathProviding.swift
         WLANInterface.swift
-        ShellExecuting.swift
         WiFiScanning.swift
+        VPNConfigurationProviding.swift
       Services/
         NetworkMonitor/
           NetworkMonitor.swift
@@ -41,6 +42,9 @@ wifi-menubar/
           DNSExternalIPResolver.swift
         PingService/
           PingService.swift
+        VPNManager/
+          VPNManager.swift
+          SystemVPNProvider.swift
         SettingsStore/
           SettingsStore.swift
         LicenseManager/
@@ -54,10 +58,12 @@ wifi-menubar/
           NetworkListView.swift
           PasswordInputView.swift
           IPPingView.swift
+          VPNSectionView.swift
         Settings/
           SettingsView.swift
           NetworkDetailsSettingsView.swift
           IPPingSettingsView.swift
+          VPNSettingsView.swift
         Onboarding/
     Resources/
       Info.plist
@@ -68,23 +74,29 @@ wifi-menubar/
     WiFiManagerTests.swift
     IPServiceTests.swift
     PingServiceTests.swift
+    VPNManagerTests.swift
     Mocks/
       MockWiFiScanner.swift
+      MockVPNConfigurationProvider.swift
+
   archive/
     completed-phases.taskpaper
   handoffs/          (local only, .gitignored — session handoff docs)
   context/
     conventions.md
+    session-workflow.md
     lessons.md
+  plans/
 ```
 
 ## Rules
 
 1. On session start within `wifi-menubar/`, read this file, then `INDEX.md`.
-2. Read `SPEC.md` and `PRD.md` before implementing any feature — they are the source of truth for product decisions.
-3. When creating, renaming, or deleting files, update the Tree section above.
-4. Follow the Note-Taking protocol: log lessons to `context/lessons.md` after completing tasks.
-5. Use `na next` to see pending tasks. Add tasks with `na add "Task text"`.
+2. Read `context/session-workflow.md` when starting a new phase — it defines the plan/execute/review/finish workflow.
+3. Read `SPEC.md` and `PRD.md` before implementing any feature — they are the source of truth for product decisions.
+4. When creating, renaming, or deleting files, update the Tree section above.
+5. Follow the Note-Taking protocol: log lessons to `context/lessons.md` after completing tasks.
+6. Use `na next` to see pending tasks. Add tasks with `na add "Task text"`.
 
 ## Git Workflow
 
@@ -143,7 +155,7 @@ wifi-menubar/
 1. **No data logging to disk.** All network info stays in-memory only. This is a core trust promise.
 2. **Crash reporting (Sentry) must never initialize unless the user has explicitly opted in.** No silent telemetry.
 3. **All external network calls must use HTTPS only.**
-4. **VPN CLI commands must only execute through the PrivilegedHelper** — never shell out directly from the main app process.
+4. **VPN status is read-only via SystemConfiguration** (`scutil --nc list`). SignalDrop cannot toggle other apps' VPN tunnels — macOS sandboxes Network Extension configs per-app. Clicking a VPN row deep-links to the owning app (or System Settings). No CLI-based control, no shell toggling, no privileged helper.
 5. **Paid features must be gated through LicenseManager** — never hardcode tier checks or scatter `if paid` logic through the codebase.
 6. **Follow the module boundaries in PRD.md.** Modules communicate through their public interfaces. Don't reach into another module's internals.
 
@@ -152,9 +164,9 @@ wifi-menubar/
 ### Unit / Integration Tests
 
 1. Test external behavior through each module's public interface, not implementation details.
-2. Use protocol-based dependency injection to mock system APIs (CoreWLAN, NWPathMonitor, shell execution).
+2. Use protocol-based dependency injection to mock system APIs (CoreWLAN, NWPathMonitor, NetworkExtension).
 3. No real network calls or VPN toggling in tests. All tests must be deterministic.
-4. Modules under test: NetworkMonitor, WiFiManager, VPNManager, PrivilegedHelper, IPService, PingService, HotkeyManager, NotificationService.
+4. Modules under test: NetworkMonitor, WiFiManager, VPNManager, IPService, PingService, HotkeyManager, NotificationService.
 
 ### Manual Testing (AI Agent)
 

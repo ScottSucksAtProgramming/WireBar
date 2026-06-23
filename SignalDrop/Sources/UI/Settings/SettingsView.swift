@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @ObservedObject var settingsStore: SettingsStore
     @ObservedObject var licenseManager: LicenseManager
+    @ObservedObject var vpnManager: VPNManager
 
     var body: some View {
         TabView {
@@ -17,6 +18,10 @@ struct SettingsView: View {
             IPPingSettingsView(settingsStore: settingsStore, licenseManager: licenseManager)
                 .tabItem {
                     Label(String(localized: "IP & Latency"), systemImage: "globe")
+                }
+            VPNSettingsView(vpnManager: vpnManager, settingsStore: settingsStore, licenseManager: licenseManager)
+                .tabItem {
+                    Label(String(localized: "VPN"), systemImage: "shield.lefthalf.filled")
                 }
         }
         .frame(width: 450, height: 300)
