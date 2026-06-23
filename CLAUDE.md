@@ -24,13 +24,18 @@ wifi-menubar/
         AppDelegate.swift
       Models/
         NetworkState.swift
+        ScannedNetwork.swift
       Protocols/
         NetworkPathProviding.swift
         WLANInterface.swift
         ShellExecuting.swift
+        WiFiScanning.swift
       Services/
         NetworkMonitor/
           NetworkMonitor.swift
+        WiFiManager/
+          WiFiManager.swift
+          CoreWLANScanner.swift
         SettingsStore/
           SettingsStore.swift
         LicenseManager/
@@ -39,8 +44,13 @@ wifi-menubar/
         MenuBar/
         Popover/
           PopoverView.swift
+          ConnectionInfoView.swift
+          EthernetInfoView.swift
+          NetworkListView.swift
+          PasswordInputView.swift
         Settings/
           SettingsView.swift
+          NetworkDetailsSettingsView.swift
         Onboarding/
     Resources/
       Info.plist
@@ -48,6 +58,9 @@ wifi-menubar/
   SignalDropTests/
     NetworkMonitorTests.swift
     SettingsStoreTests.swift
+    WiFiManagerTests.swift
+    Mocks/
+      MockWiFiScanner.swift
   handoffs/          (local only, .gitignored — session handoff docs)
   context/
     conventions.md

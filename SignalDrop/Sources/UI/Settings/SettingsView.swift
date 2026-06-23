@@ -1,23 +1,30 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @ObservedObject var settingsStore: SettingsStore
+    @ObservedObject var licenseManager: LicenseManager
+
     var body: some View {
         TabView {
-            GeneralSettingsView()
+            GeneralSettingsView(settingsStore: settingsStore)
                 .tabItem {
                     Label(String(localized: "General"), systemImage: "gear")
                 }
+            NetworkDetailsSettingsView(settingsStore: settingsStore, licenseManager: licenseManager)
+                .tabItem {
+                    Label(String(localized: "Network Details"), systemImage: "network")
+                }
         }
-        .frame(width: 400, height: 250)
+        .frame(width: 450, height: 300)
     }
 }
 
 struct GeneralSettingsView: View {
-    @State private var launchAtLogin = true
+    @ObservedObject var settingsStore: SettingsStore
 
     var body: some View {
         Form {
-            Toggle(String(localized: "Launch at login"), isOn: $launchAtLogin)
+            Toggle(String(localized: "Launch at login"), isOn: $settingsStore.launchAtLogin)
                 .accessibilityLabel(String(localized: "Launch SignalDrop when you log in"))
         }
         .padding()
