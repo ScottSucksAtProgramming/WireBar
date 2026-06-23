@@ -20,6 +20,7 @@
 		38913A6C7A37F69E2B0DB11C /* ConnectionInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3891D7E312D1D80B1AF9C4FF /* ConnectionInfoView.swift */; };
 		3C90EBBBDF241510A23EAE7A /* CoreWLANScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62A5C3D8B9507CD61754770F /* CoreWLANScanner.swift */; };
 		3E15A7570E10E4144299BA03 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B91E39A1005C4C56DBD0F7B /* NetworkMonitor.swift */; };
+		413DBB7929B67A14A462966E /* UpdateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D543DF60D563DAD87C4ECE /* UpdateSettingsView.swift */; };
 		47DB8C01BC75BD4BA2E85B4A /* SettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA44347302FD6DAABA32D449 /* SettingsStoreTests.swift */; };
 		496018E0AA53D17DC23C82DB /* PingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 132B2396A4777E10135FD5A4 /* PingService.swift */; };
 		56292FDA063D573504C8CA6A /* HotkeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20DCA4F3BB1C20DACCDBFFF4 /* HotkeyManagerTests.swift */; };
@@ -46,6 +47,7 @@
 		A699F5142ED7AF9132EFDE81 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB2531AC618135BFB914CE8F /* SettingsView.swift */; };
 		AAB6E4A9644ECA4A17C5CCDC /* IPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 486DF2FBC755E5A3643D9950 /* IPService.swift */; };
 		B2EAADA1F3F21E529205B41A /* NotificationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F681C0DBBA7F94163B3ADD3C /* NotificationSettingsView.swift */; };
+		B4AC85A0FB39B54052FA987A /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 5E25156CBFCE0DD755A2747D /* Sparkle */; };
 		BBEA99FD5575D56C1754FA96 /* IPPingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A71A58932ED843AE45D31093 /* IPPingView.swift */; };
 		C21ACFB62E8C62A2134DE484 /* SystemVPNProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 465B5AAD4DC64962BE028DD8 /* SystemVPNProvider.swift */; };
 		C53E0CF4030D83094901E688 /* PopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEFA464FE203480A56518CEA /* PopoverView.swift */; };
@@ -122,11 +124,23 @@
 		DA44347302FD6DAABA32D449 /* SettingsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStoreTests.swift; sourceTree = "<group>"; };
 		EE2407815D335A4048A87B6C /* SignalDrop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SignalDrop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3D673D3F3547A4F3775EF17 /* VPNSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNSectionView.swift; sourceTree = "<group>"; };
+		F4D543DF60D563DAD87C4ECE /* UpdateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateSettingsView.swift; sourceTree = "<group>"; };
 		F681C0DBBA7F94163B3ADD3C /* NotificationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsView.swift; sourceTree = "<group>"; };
 		F9341701D537A4687035128E /* SignalDrop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SignalDrop.entitlements; sourceTree = "<group>"; };
 		FD1F0791BDD8A3F2C990C453 /* VPNState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNState.swift; sourceTree = "<group>"; };
 		FF0FDBC3A3E419025ED5CE45 /* NotificationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		66DAE16A4F45249E2214E3B0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B4AC85A0FB39B54052FA987A /* Sparkle in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		0E8839D57C04F98AC760B624 /* Sources */ = {
@@ -162,6 +176,7 @@
 				0F963198BE0886574DE339EE /* NetworkDetailsSettingsView.swift */,
 				F681C0DBBA7F94163B3ADD3C /* NotificationSettingsView.swift */,
 				AB2531AC618135BFB914CE8F /* SettingsView.swift */,
+				F4D543DF60D563DAD87C4ECE /* UpdateSettingsView.swift */,
 				904E243D8F7229DF82AF442A /* VPNSettingsView.swift */,
 			);
 			path = Settings;
@@ -392,6 +407,7 @@
 			buildConfigurationList = 9B0E219C9E30D932665ED15E /* Build configuration list for PBXNativeTarget "SignalDrop" */;
 			buildPhases = (
 				F125278072ED90747BB2355E /* Sources */,
+				66DAE16A4F45249E2214E3B0 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -399,6 +415,7 @@
 			);
 			name = SignalDrop;
 			packageProductDependencies = (
+				5E25156CBFCE0DD755A2747D /* Sparkle */,
 			);
 			productName = SignalDrop;
 			productReference = EE2407815D335A4048A87B6C /* SignalDrop.app */;
@@ -450,6 +467,9 @@
 			);
 			mainGroup = FF5F1DA2F3D2EFA3EC4077FD;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				59B05D2A704BE7D333E7BAF0 /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8AD22EA2542CE63557D7CA02 /* Products */;
 			projectDirPath = "";
@@ -516,6 +536,7 @@
 				D673BCB5B9D0D78FC14A42F2 /* SignalDropApp.swift in Sources */,
 				C21ACFB62E8C62A2134DE484 /* SystemVPNProvider.swift in Sources */,
 				175496AEE4E04EE1A4A3437A /* UNNotificationDispatcher.swift in Sources */,
+				413DBB7929B67A14A462966E /* UpdateSettingsView.swift in Sources */,
 				9C2ACAF24523A2626D50BB46 /* VPNConfigurationProviding.swift in Sources */,
 				D504BC1438C742AEC06435A2 /* VPNManager.swift in Sources */,
 				9F607FF3C242D34297241795 /* VPNSectionView.swift in Sources */,
@@ -768,6 +789,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		59B05D2A704BE7D333E7BAF0 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5E25156CBFCE0DD755A2747D /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 59B05D2A704BE7D333E7BAF0 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 15F5F2AEE5D1A5A562BC2234 /* Project object */;
 }

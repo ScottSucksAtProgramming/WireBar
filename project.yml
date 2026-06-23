@@ -14,6 +14,11 @@ settings:
     SWIFT_VERSION: "6.0"
     MACOSX_DEPLOYMENT_TARGET: "13.0"
 
+packages:
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: "2.0.0"
+
 targets:
   SignalDrop:
     type: application
@@ -21,6 +26,8 @@ targets:
     sources:
       - path: SignalDrop/Sources
       - path: SignalDrop/Resources
+    dependencies:
+      - package: Sparkle
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.scottkostolni.SignalDrop

@@ -9,6 +9,9 @@ updated: 2026-06-22
 
 <!-- Append dated one-liners below. When 3+ related lessons accumulate on a topic, extract into a dedicated context file. -->
 
+- 2026-06-23: `SPUStandardUpdaterController` is a plain reference type (not ObservableObject); bind its `automaticallyChecksForUpdates` property via an explicit `Binding(get:set:)` rather than `@ObservedObject` — no Sparkle state mirroring needed in SettingsStore.
+- 2026-06-23: When adding a required parameter to a SwiftUI view, search all call sites — `SettingsView` was instantiated in both `AppDelegate.openSettings()` and `SignalDropApp.body`; both needed updating.
+
 - 2026-06-22: DNS-based IP lookup (Cloudflare/OpenDNS) is faster, more private, and more reliable than HTTPS APIs for external IP detection.
 - 2026-06-22: ICMP ping requires raw sockets and special entitlements on macOS — use TCP-based latency via NWConnection instead.
 - 2026-06-22: SMAppService privileged helpers must verify caller code signatures via audit token, or any local process can invoke them.
@@ -54,3 +57,4 @@ updated: 2026-06-22
 - 2026-06-23: NotificationService must track previous state keyed by VPN id (not just connected count) to detect which specific VPN dropped. Use pairwise/skip-initial for IP change detection.
 - 2026-06-23: Hotkey bindings stored in UserDefaults must be seeded with defaults on first run, not left empty — otherwise hotkeys ship dead until the user manually records each one. "Reset to Defaults" must restore to the seeded defaults, not clear to empty.
 - 2026-06-23: NSStatusBarButton needs `.imagePosition = .imageLeading` when setting both `.image` and `.title` — without it the title won't render next to the icon.
+- 2026-06-23: Sparkle 2.x SPM integration via XcodeGen: add top-level `packages:` block + `dependencies: [package: Sparkle]` on the app target. `SPUStandardUpdaterController(startingUpdater: true, ...)` on `@MainActor AppDelegate` has no Swift 6 concurrency issues. Empty `SUPublicEDKey` does NOT cause test-host abort — tests pass cleanly.
