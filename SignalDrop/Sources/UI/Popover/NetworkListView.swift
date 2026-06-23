@@ -36,10 +36,15 @@ struct NetworkListView: View {
             }
 
             if wifiManager.networks.isEmpty && !wifiManager.isScanning {
-                Text(String(localized: "No networks found"))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .padding(.vertical, 4)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(String(localized: "No networks found"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text(String(localized: "Location Services may be required to scan."))
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
+                .padding(.vertical, 4)
             }
 
             ScrollView {

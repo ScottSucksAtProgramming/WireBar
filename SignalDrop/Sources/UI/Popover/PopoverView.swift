@@ -39,7 +39,14 @@ struct PopoverView: View {
             Spacer()
 
             Button {
-                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                if #available(macOS 14, *) {
+                    NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                } else {
+                    NSApp.sendAction(Selector(("showPreferencesWindow:")), to: nil, from: nil)
+                }
+                DispatchQueue.main.async {
+                    NSApp.activate(ignoringOtherApps: true)
+                }
             } label: {
                 Image(systemName: "gear")
                 Text(String(localized: "Settings"))
