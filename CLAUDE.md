@@ -26,11 +26,13 @@ wifi-menubar/
         NetworkState.swift
         ScannedNetwork.swift
         VPNState.swift
+        HotkeyBinding.swift
       Protocols/
         NetworkPathProviding.swift
         WLANInterface.swift
         WiFiScanning.swift
         VPNConfigurationProviding.swift
+        NotificationDispatching.swift
       Services/
         NetworkMonitor/
           NetworkMonitor.swift
@@ -49,10 +51,16 @@ wifi-menubar/
           SettingsStore.swift
         LicenseManager/
           LicenseManager.swift
+        NotificationService/
+          NotificationService.swift
+          UNNotificationDispatcher.swift
+        HotkeyManager/
+          HotkeyManager.swift
       UI/
         MenuBar/
         Popover/
           PopoverView.swift
+          CollapsibleSectionView.swift
           ConnectionInfoView.swift
           EthernetInfoView.swift
           NetworkListView.swift
@@ -64,6 +72,8 @@ wifi-menubar/
           NetworkDetailsSettingsView.swift
           IPPingSettingsView.swift
           VPNSettingsView.swift
+          NotificationSettingsView.swift
+          KeyboardShortcutsSettingsView.swift
         Onboarding/
     Resources/
       Info.plist
@@ -75,9 +85,12 @@ wifi-menubar/
     IPServiceTests.swift
     PingServiceTests.swift
     VPNManagerTests.swift
+    NotificationServiceTests.swift
+    HotkeyManagerTests.swift
     Mocks/
       MockWiFiScanner.swift
       MockVPNConfigurationProvider.swift
+      MockNotificationDispatcher.swift
 
   archive/
     completed-phases.taskpaper

@@ -49,3 +49,6 @@ updated: 2026-06-22
 - 2026-06-23: NETunnelProviderManager.loadAllFromPreferences() only returns VPN configs the calling app created — macOS sandboxes NE per-app. A third-party menu bar app cannot discover or toggle other apps' VPNs via Network Extension. Use `scutil --nc list` (SystemConfiguration) for read-only cross-app VPN discovery.
 - 2026-06-23: macOS System Settings deep-link for VPN & Filters page: `x-apple.systempreferences:com.apple.NetworkExtensionSettingsUI.NESettingsUIExtension`. The generic Network page is `com.apple.Network-Settings.extension`.
 - 2026-06-23: When filtering items by user preferences (e.g. hidden VPNs), distinguish "none exist" from "all hidden" in the empty state — users need different guidance for each case.
+- 2026-06-23: Carbon RegisterEventHotKey requires no Accessibility permission (unlike CGEvent tap and NSEvent.addGlobalMonitorForEvents). Best choice for global hotkeys when consuming keystrokes isn't needed.
+- 2026-06-23: Swift 6 strict concurrency: a protocol with @MainActor methods must be marked @MainActor itself, not just the conforming class. Otherwise conformance across actor boundaries causes a build error.
+- 2026-06-23: NotificationService must track previous state keyed by VPN id (not just connected count) to detect which specific VPN dropped. Use pairwise/skip-initial for IP change detection.

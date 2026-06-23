@@ -83,6 +83,54 @@ final class SettingsStore: ObservableObject {
         didSet { defaults.set(showMultiVPNWarning, forKey: Keys.showMultiVPNWarning) }
     }
 
+    @Published var notifyVPNDrop: Bool = true {
+        didSet { defaults.set(notifyVPNDrop, forKey: Keys.notifyVPNDrop) }
+    }
+
+    @Published var notifyWiFiDisconnect: Bool = true {
+        didSet { defaults.set(notifyWiFiDisconnect, forKey: Keys.notifyWiFiDisconnect) }
+    }
+
+    @Published var notifyIPChange: Bool = true {
+        didSet { defaults.set(notifyIPChange, forKey: Keys.notifyIPChange) }
+    }
+
+    @Published var connectionInfoCollapsed: Bool = false {
+        didSet { defaults.set(connectionInfoCollapsed, forKey: Keys.connectionInfoCollapsed) }
+    }
+
+    @Published var ipPingCollapsed: Bool = false {
+        didSet { defaults.set(ipPingCollapsed, forKey: Keys.ipPingCollapsed) }
+    }
+
+    @Published var vpnCollapsed: Bool = false {
+        didSet { defaults.set(vpnCollapsed, forKey: Keys.vpnCollapsed) }
+    }
+
+    @Published var networkListCollapsed: Bool = false {
+        didSet { defaults.set(networkListCollapsed, forKey: Keys.networkListCollapsed) }
+    }
+
+    @Published var menuBarShowNetworkName: Bool = false {
+        didSet { defaults.set(menuBarShowNetworkName, forKey: Keys.menuBarShowNetworkName) }
+    }
+
+    @Published var menuBarShowVPNIndicator: Bool = false {
+        didSet { defaults.set(menuBarShowVPNIndicator, forKey: Keys.menuBarShowVPNIndicator) }
+    }
+
+    @Published var menuBarShowIP: Bool = false {
+        didSet { defaults.set(menuBarShowIP, forKey: Keys.menuBarShowIP) }
+    }
+
+    @Published var hotkeyBindings: [String: HotkeyBinding] = [:] {
+        didSet {
+            if let data = try? JSONEncoder().encode(hotkeyBindings) {
+                defaults.set(data, forKey: Keys.hotkeyBindings)
+            }
+        }
+    }
+
     private func loadSettings() {
         if defaults.object(forKey: Keys.launchAtLogin) != nil {
             launchAtLogin = defaults.bool(forKey: Keys.launchAtLogin)
@@ -138,6 +186,40 @@ final class SettingsStore: ObservableObject {
         if defaults.object(forKey: Keys.showMultiVPNWarning) != nil {
             showMultiVPNWarning = defaults.bool(forKey: Keys.showMultiVPNWarning)
         }
+        if defaults.object(forKey: Keys.notifyVPNDrop) != nil {
+            notifyVPNDrop = defaults.bool(forKey: Keys.notifyVPNDrop)
+        }
+        if defaults.object(forKey: Keys.notifyWiFiDisconnect) != nil {
+            notifyWiFiDisconnect = defaults.bool(forKey: Keys.notifyWiFiDisconnect)
+        }
+        if defaults.object(forKey: Keys.notifyIPChange) != nil {
+            notifyIPChange = defaults.bool(forKey: Keys.notifyIPChange)
+        }
+        if defaults.object(forKey: Keys.connectionInfoCollapsed) != nil {
+            connectionInfoCollapsed = defaults.bool(forKey: Keys.connectionInfoCollapsed)
+        }
+        if defaults.object(forKey: Keys.ipPingCollapsed) != nil {
+            ipPingCollapsed = defaults.bool(forKey: Keys.ipPingCollapsed)
+        }
+        if defaults.object(forKey: Keys.vpnCollapsed) != nil {
+            vpnCollapsed = defaults.bool(forKey: Keys.vpnCollapsed)
+        }
+        if defaults.object(forKey: Keys.networkListCollapsed) != nil {
+            networkListCollapsed = defaults.bool(forKey: Keys.networkListCollapsed)
+        }
+        if defaults.object(forKey: Keys.menuBarShowNetworkName) != nil {
+            menuBarShowNetworkName = defaults.bool(forKey: Keys.menuBarShowNetworkName)
+        }
+        if defaults.object(forKey: Keys.menuBarShowVPNIndicator) != nil {
+            menuBarShowVPNIndicator = defaults.bool(forKey: Keys.menuBarShowVPNIndicator)
+        }
+        if defaults.object(forKey: Keys.menuBarShowIP) != nil {
+            menuBarShowIP = defaults.bool(forKey: Keys.menuBarShowIP)
+        }
+        if let data = defaults.data(forKey: Keys.hotkeyBindings),
+           let bindings = try? JSONDecoder().decode([String: HotkeyBinding].self, from: data) {
+            hotkeyBindings = bindings
+        }
     }
 
     private enum Keys {
@@ -159,6 +241,17 @@ final class SettingsStore: ObservableObject {
         static let hiddenVPNs = "hiddenVPNs"
         static let vpnTapAction = "vpnTapAction"
         static let showMultiVPNWarning = "showMultiVPNWarning"
+        static let notifyVPNDrop = "notifyVPNDrop"
+        static let notifyWiFiDisconnect = "notifyWiFiDisconnect"
+        static let notifyIPChange = "notifyIPChange"
+        static let hotkeyBindings = "hotkeyBindings"
+        static let connectionInfoCollapsed = "connectionInfoCollapsed"
+        static let ipPingCollapsed = "ipPingCollapsed"
+        static let vpnCollapsed = "vpnCollapsed"
+        static let networkListCollapsed = "networkListCollapsed"
+        static let menuBarShowNetworkName = "menuBarShowNetworkName"
+        static let menuBarShowVPNIndicator = "menuBarShowVPNIndicator"
+        static let menuBarShowIP = "menuBarShowIP"
     }
 }
 
