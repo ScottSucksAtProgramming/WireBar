@@ -25,6 +25,7 @@ wifi-menubar/
       Models/
         NetworkState.swift
         ScannedNetwork.swift
+        VPNDefinition.swift
       Protocols/
         NetworkPathProviding.swift
         WLANInterface.swift
@@ -75,16 +76,19 @@ wifi-menubar/
   handoffs/          (local only, .gitignored — session handoff docs)
   context/
     conventions.md
+    session-workflow.md
     lessons.md
+  plans/
 ```
 
 ## Rules
 
 1. On session start within `wifi-menubar/`, read this file, then `INDEX.md`.
-2. Read `SPEC.md` and `PRD.md` before implementing any feature — they are the source of truth for product decisions.
-3. When creating, renaming, or deleting files, update the Tree section above.
-4. Follow the Note-Taking protocol: log lessons to `context/lessons.md` after completing tasks.
-5. Use `na next` to see pending tasks. Add tasks with `na add "Task text"`.
+2. Read `context/session-workflow.md` when starting a new phase — it defines the plan/execute/review/finish workflow.
+3. Read `SPEC.md` and `PRD.md` before implementing any feature — they are the source of truth for product decisions.
+4. When creating, renaming, or deleting files, update the Tree section above.
+5. Follow the Note-Taking protocol: log lessons to `context/lessons.md` after completing tasks.
+6. Use `na next` to see pending tasks. Add tasks with `na add "Task text"`.
 
 ## Git Workflow
 

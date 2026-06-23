@@ -33,6 +33,7 @@ Quick-reference for finding content in this directory. For conventions, see `con
 | File | Purpose |
 |------|---------|
 | `conventions.md` | Swift/SwiftUI coding conventions, naming rules, project structure standards |
+| `session-workflow.md` | Phase workflow — how to plan, execute, review, and finish a development phase |
 | `lessons.md` | Running log of lessons learned during development |
 
 ## handoffs/ (local only, .gitignored)
