@@ -41,4 +41,6 @@ Session handoff documents created by `/mattpocock-handoff` at the end of each de
 
 ## Task Tracking
 
-`.taskpaper` — Comprehensive development plan organized by phase. Single source of truth for all task tracking. Run `na next` to see pending tasks.
+`.taskpaper` — Development plan for active and future phases. Run `na next` to see pending tasks.
+
+`archive/completed-phases.taskpaper` — Completed phases moved here after merging to `main`. Contains tasks and Discoveries from Phases 1-3. Reference if you need context on what was built or lessons from earlier phases.

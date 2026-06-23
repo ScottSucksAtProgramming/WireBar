@@ -70,6 +70,8 @@ wifi-menubar/
     PingServiceTests.swift
     Mocks/
       MockWiFiScanner.swift
+  archive/
+    completed-phases.taskpaper
   handoffs/          (local only, .gitignored — session handoff docs)
   context/
     conventions.md
@@ -89,6 +91,7 @@ wifi-menubar/
 - Development uses **feature branches per phase**: `phase/1-walking-skeleton`, `phase/2-wifi-management`, etc.
 - Always create the phase branch before starting work. Never commit directly to `main` during development.
 - Merge to `main` only after the phase is complete and all manual testing passes.
+- **After merging a completed phase to `main`:** move that phase's entire block (tasks + Discoveries) from `.taskpaper` to `archive/completed-phases.taskpaper`. This keeps the active taskpaper small.
 - Check `.taskpaper` for the current phase and branch name.
 - At the end of each session, run `/mattpocock-handoff` and save the handoff doc to `handoffs/` in the repo.
 
