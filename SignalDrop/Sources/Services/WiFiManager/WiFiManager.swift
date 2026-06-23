@@ -11,7 +11,7 @@ final class WiFiManager: ObservableObject {
 
     private let scanner: WiFiScanning
 
-    init(scanner: WiFiScanning) {
+    init(scanner: WiFiScanning = CoreWLANScanner()) {
         self.scanner = scanner
         self.isWiFiPoweredOn = scanner.isPoweredOn()
     }
