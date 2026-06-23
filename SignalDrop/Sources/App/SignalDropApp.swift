@@ -6,7 +6,10 @@ struct SignalDropApp: App {
 
     var body: some Scene {
         Settings {
-            SettingsView()
+            SettingsView(
+                settingsStore: appDelegate.settingsStore,
+                licenseManager: appDelegate.licenseManager
+            )
         }
     }
 }

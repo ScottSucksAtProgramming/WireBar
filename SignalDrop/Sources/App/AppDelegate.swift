@@ -5,7 +5,8 @@ import SwiftUI
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem!
     private var popover: NSPopover!
-    private let settingsStore = SettingsStore()
+    let settingsStore = SettingsStore()
+    let licenseManager = LicenseManager()
     private let networkMonitor = NetworkMonitor()
     private let locationManager = LocationPermissionManager()
 
