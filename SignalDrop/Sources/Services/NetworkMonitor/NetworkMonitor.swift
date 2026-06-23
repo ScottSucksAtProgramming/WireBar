@@ -55,7 +55,7 @@ final class NetworkMonitor: ObservableObject, @unchecked Sendable {
             }
         }()
 
-        let localIP = Self.getLocalIPAddress()
+        let localIP = Self.getIPAddress()
 
         DispatchQueue.main.async { [weak self] in
             self?.state.ssid = ssid
@@ -84,10 +84,21 @@ final class NetworkMonitor: ObservableObject, @unchecked Sendable {
             }
         }()
 
+        let primaryIface: String? = {
+            if let first = path.availableInterfaces.first {
+                return first.name
+            }
+            return nil
+        }()
+
+        let ethernetIP: String? = hasEthernet ? Self.getIPAddress(forInterface: "en0") ?? Self.getIPAddress(forInterface: "en1") : nil
+
         DispatchQueue.main.async { [weak self] in
             self?.state.isConnected = isConnected
             self?.state.connectionType = connectionType
             self?.state.isEthernetConnected = hasEthernet
+            self?.state.primaryInterface = primaryIface
+            self?.state.ethernetIPAddress = ethernetIP
         }
 
         if hasWifi {
@@ -95,7 +106,7 @@ final class NetworkMonitor: ObservableObject, @unchecked Sendable {
         }
     }
 
-    private static func getLocalIPAddress() -> String? {
+    static func getIPAddress(forInterface targetName: String? = nil) -> String? {
         var address: String?
         var ifaddr: UnsafeMutablePointer<ifaddrs>?
 
@@ -108,7 +119,11 @@ final class NetworkMonitor: ObservableObject, @unchecked Sendable {
             guard addrFamily == UInt8(AF_INET) else { continue }
 
             let name = String(cString: iface.ifa_name)
-            guard name == "en0" || name == "en1" else { continue }
+            if let target = targetName {
+                guard name == target else { continue }
+            } else {
+                guard name == "en0" || name == "en1" else { continue }
+            }
 
             var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
             if getnameinfo(

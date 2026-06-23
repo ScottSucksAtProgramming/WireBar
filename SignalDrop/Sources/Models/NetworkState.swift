@@ -16,6 +16,13 @@ struct NetworkState: Sendable {
     var isEthernetConnected: Bool = false
     var isWiFiPoweredOn: Bool = true
 
+    var ethernetIPAddress: String?
+    var gatewayAddress: String?
+    var subnetMask: String?
+    var dnsServers: [String] = []
+    var primaryInterface: String?
+    var linkSpeed: Double = 0
+
     var signalQuality: SignalQuality {
         switch signalStrength {
         case -50...0: return .excellent

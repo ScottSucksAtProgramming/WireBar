@@ -45,4 +45,13 @@ final class NetworkMonitorTests: XCTestCase {
         XCTAssertNil(sut.state.ssid)
         XCTAssertEqual(sut.state.connectionType, .none)
     }
+
+    func testInitialEthernetFieldsAreNil() {
+        let sut = NetworkMonitor(pathMonitor: MockPathMonitor())
+        XCTAssertNil(sut.state.ethernetIPAddress)
+        XCTAssertNil(sut.state.gatewayAddress)
+        XCTAssertNil(sut.state.subnetMask)
+        XCTAssertTrue(sut.state.dnsServers.isEmpty)
+        XCTAssertNil(sut.state.primaryInterface)
+    }
 }
