@@ -66,54 +66,56 @@ private struct HotkeyRow: View {
     @State private var conflictWarning: HotkeyAction?
 
     var body: some View {
-        HStack {
-            Text(action.displayName)
-                .frame(width: 150, alignment: .leading)
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(action.displayName)
+                    .frame(width: 150, alignment: .leading)
 
-            if isRecording {
-                Text(String(localized: "Press keys…"))
-                    .foregroundStyle(.secondary)
-                    .frame(width: 120)
-                    .background(
-                        KeyCaptureView { keyCode, modifiers in
-                            let newBinding = HotkeyBinding(keyCode: keyCode, modifierFlags: modifiers)
-                            if let conflict = conflictCheck(newBinding) {
-                                conflictWarning = conflict
-                            } else {
-                                onSet(newBinding)
-                                conflictWarning = nil
+                if isRecording {
+                    Text(String(localized: "Press keys…"))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 120)
+                        .background(
+                            KeyCaptureView { keyCode, modifiers in
+                                let newBinding = HotkeyBinding(keyCode: keyCode, modifierFlags: modifiers)
+                                if let conflict = conflictCheck(newBinding) {
+                                    conflictWarning = conflict
+                                } else {
+                                    onSet(newBinding)
+                                    conflictWarning = nil
+                                }
+                                isRecording = false
                             }
-                            isRecording = false
-                        }
-                    )
-            } else {
-                Text(binding?.displayString ?? String(localized: "Not set"))
-                    .foregroundStyle(binding == nil ? .secondary : .primary)
-                    .frame(width: 120)
-            }
-
-            Button(isRecording ? String(localized: "Cancel") : String(localized: "Record")) {
-                isRecording.toggle()
-                if !isRecording { conflictWarning = nil }
-            }
-            .accessibilityLabel(isRecording
-                ? String(localized: "Cancel recording shortcut for \(action.displayName)")
-                : String(localized: "Record shortcut for \(action.displayName)"))
-
-            if binding != nil && !isRecording {
-                Button(String(localized: "Clear")) {
-                    onClear()
+                        )
+                } else {
+                    Text(binding?.displayString ?? String(localized: "Not set"))
+                        .foregroundStyle(binding == nil ? .secondary : .primary)
+                        .frame(width: 120)
                 }
-                .accessibilityLabel(String(localized: "Clear shortcut for \(action.displayName)"))
-            }
-        }
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel(String(localized: "\(action.displayName) shortcut"))
 
-        if let conflict = conflictWarning {
-            Text(String(localized: "Conflicts with \(conflict.displayName)"))
-                .font(.caption)
-                .foregroundStyle(.red)
+                Button(isRecording ? String(localized: "Cancel") : String(localized: "Record")) {
+                    isRecording.toggle()
+                    if !isRecording { conflictWarning = nil }
+                }
+                .accessibilityLabel(isRecording
+                    ? String(localized: "Cancel recording shortcut for \(action.displayName)")
+                    : String(localized: "Record shortcut for \(action.displayName)"))
+
+                if binding != nil && !isRecording {
+                    Button(String(localized: "Clear")) {
+                        onClear()
+                    }
+                    .accessibilityLabel(String(localized: "Clear shortcut for \(action.displayName)"))
+                }
+            }
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel(String(localized: "\(action.displayName) shortcut"))
+
+            if let conflict = conflictWarning {
+                Text(String(localized: "Conflicts with \(conflict.displayName)"))
+                    .font(.caption)
+                    .foregroundStyle(.red)
+            }
         }
     }
 }

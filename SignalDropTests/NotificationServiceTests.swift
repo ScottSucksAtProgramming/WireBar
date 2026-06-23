@@ -157,7 +157,7 @@ final class NotificationServiceTests: XCTestCase {
 
         sut.handleWiFiUpdateForTesting(false)
 
-        try? await Task.sleep(for: .milliseconds(100))
+        try? await Task.sleep(for: .milliseconds(2200))
 
         XCTAssertEqual(dispatcher.dispatched.count, 1)
         XCTAssertEqual(dispatcher.dispatched[0].identifier, "wifi-disconnect")
@@ -274,14 +274,14 @@ final class NotificationServiceTests: XCTestCase {
         sut.handleWiFiUpdateForTesting(true)
         try? await Task.sleep(for: .milliseconds(50))
         sut.handleWiFiUpdateForTesting(false)
-        try? await Task.sleep(for: .milliseconds(100))
+        try? await Task.sleep(for: .milliseconds(2200))
 
         XCTAssertEqual(dispatcher.authorizationCallCount, 1)
 
         sut.handleWiFiUpdateForTesting(true)
         try? await Task.sleep(for: .milliseconds(50))
         sut.handleWiFiUpdateForTesting(false)
-        try? await Task.sleep(for: .milliseconds(100))
+        try? await Task.sleep(for: .milliseconds(2200))
 
         XCTAssertEqual(dispatcher.authorizationCallCount, 1)
     }

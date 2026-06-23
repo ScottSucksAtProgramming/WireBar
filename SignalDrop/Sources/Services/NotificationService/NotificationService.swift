@@ -8,9 +8,11 @@ final class NotificationService: @unchecked Sendable {
     private var cancellables = Set<AnyCancellable>()
     private var previousVPNStates: [String: VPNConnectionStatus] = [:]
     private var previousWiFiConnected: Bool?
+    private var previousSSID: String?
     private var previousExternalIP: String?
     private var hasReceivedInitialIP = false
     private var hasAuthorized = false
+    private var wifiDisconnectWorkItem: DispatchWorkItem?
 
     init(
         dispatcher: NotificationDispatching = UNNotificationDispatcher(),
@@ -33,12 +35,10 @@ final class NotificationService: @unchecked Sendable {
 
     func observeNetwork(_ networkMonitor: NetworkMonitor) {
         networkMonitor.$state
-            .map { state -> Bool in
-                state.connectionType == .wifi || state.connectionType == .wifiAndEthernet
-            }
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] isWiFiConnected in
-                self?.handleWiFiUpdate(isWiFiConnected)
+            .sink { [weak self] state in
+                let isWiFiConnected = state.connectionType == .wifi || state.connectionType == .wifiAndEthernet
+                self?.handleWiFiUpdate(isWiFiConnected, ssid: state.ssid)
             }
             .store(in: &cancellables)
     }
@@ -71,19 +71,38 @@ final class NotificationService: @unchecked Sendable {
         previousVPNStates = Dictionary(uniqueKeysWithValues: states.map { ($0.id, $0.status) })
     }
 
-    private func handleWiFiUpdate(_ isWiFiConnected: Bool) {
-        guard licenseManager.isPaid, settingsStore.notifyWiFiDisconnect else {
+    private func handleWiFiUpdate(_ isWiFiConnected: Bool, ssid: String? = nil) {
+        guard licenseManager.isPaid else {
             previousWiFiConnected = isWiFiConnected
+            previousSSID = ssid
             return
         }
 
-        if let wasConnected = previousWiFiConnected, wasConnected, !isWiFiConnected {
-            let title = String(localized: "Wi-Fi Disconnected")
-            let body = String(localized: "Your Wi-Fi connection has been lost")
-            ensureAuthorizedThenDispatch(title: title, body: body, identifier: "wifi-disconnect")
+        defer {
+            previousWiFiConnected = isWiFiConnected
+            previousSSID = ssid
         }
 
-        previousWiFiConnected = isWiFiConnected
+        if let wasConnected = previousWiFiConnected, wasConnected, !isWiFiConnected, settingsStore.notifyWiFiDisconnect {
+            let workItem = DispatchWorkItem { [weak self] in
+                let title = String(localized: "Wi-Fi Disconnected")
+                let body = String(localized: "Your Wi-Fi connection has been lost")
+                self?.ensureAuthorizedThenDispatch(title: title, body: body, identifier: "wifi-disconnect")
+            }
+            wifiDisconnectWorkItem = workItem
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: workItem)
+        }
+
+        if isWiFiConnected, let currentSSID = ssid {
+            wifiDisconnectWorkItem?.cancel()
+            wifiDisconnectWorkItem = nil
+
+            if let prevSSID = previousSSID, prevSSID != currentSSID, settingsStore.notifyNetworkChange {
+                let title = String(localized: "Network Changed")
+                let body = String(localized: "Switched from \(prevSSID) to \(currentSSID)")
+                ensureAuthorizedThenDispatch(title: title, body: body, identifier: "network-change")
+            }
+        }
     }
 
     private func handleIPUpdate(_ status: ExternalIPStatus) {
@@ -111,8 +130,8 @@ final class NotificationService: @unchecked Sendable {
         ensureAuthorizedThenDispatch(title: title, body: body, identifier: "ip-change")
     }
 
-    func handleWiFiUpdateForTesting(_ isWiFiConnected: Bool) {
-        handleWiFiUpdate(isWiFiConnected)
+    func handleWiFiUpdateForTesting(_ isWiFiConnected: Bool, ssid: String? = nil) {
+        handleWiFiUpdate(isWiFiConnected, ssid: ssid)
     }
 
     func handleIPUpdateForTesting(_ status: ExternalIPStatus) {

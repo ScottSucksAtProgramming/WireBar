@@ -95,6 +95,10 @@ final class SettingsStore: ObservableObject {
         didSet { defaults.set(notifyIPChange, forKey: Keys.notifyIPChange) }
     }
 
+    @Published var notifyNetworkChange: Bool = true {
+        didSet { defaults.set(notifyNetworkChange, forKey: Keys.notifyNetworkChange) }
+    }
+
     @Published var connectionInfoCollapsed: Bool = false {
         didSet { defaults.set(connectionInfoCollapsed, forKey: Keys.connectionInfoCollapsed) }
     }
@@ -195,6 +199,9 @@ final class SettingsStore: ObservableObject {
         if defaults.object(forKey: Keys.notifyIPChange) != nil {
             notifyIPChange = defaults.bool(forKey: Keys.notifyIPChange)
         }
+        if defaults.object(forKey: Keys.notifyNetworkChange) != nil {
+            notifyNetworkChange = defaults.bool(forKey: Keys.notifyNetworkChange)
+        }
         if defaults.object(forKey: Keys.connectionInfoCollapsed) != nil {
             connectionInfoCollapsed = defaults.bool(forKey: Keys.connectionInfoCollapsed)
         }
@@ -246,6 +253,7 @@ final class SettingsStore: ObservableObject {
         static let notifyVPNDrop = "notifyVPNDrop"
         static let notifyWiFiDisconnect = "notifyWiFiDisconnect"
         static let notifyIPChange = "notifyIPChange"
+        static let notifyNetworkChange = "notifyNetworkChange"
         static let hotkeyBindings = "hotkeyBindings"
         static let connectionInfoCollapsed = "connectionInfoCollapsed"
         static let ipPingCollapsed = "ipPingCollapsed"

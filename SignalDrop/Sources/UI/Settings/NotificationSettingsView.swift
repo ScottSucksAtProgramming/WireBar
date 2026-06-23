@@ -15,6 +15,9 @@ struct NotificationSettingsView: View {
 
                 Toggle(String(localized: "External IP change alerts"), isOn: $settingsStore.notifyIPChange)
                     .accessibilityLabel(String(localized: "Notify when your external IP address changes"))
+
+                Toggle(String(localized: "Network change alerts"), isOn: $settingsStore.notifyNetworkChange)
+                    .accessibilityLabel(String(localized: "Notify when you switch to a different Wi-Fi network"))
             } else {
                 VStack(spacing: 8) {
                     Image(systemName: "bell.badge")

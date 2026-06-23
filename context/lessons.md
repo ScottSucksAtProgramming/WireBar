@@ -52,3 +52,5 @@ updated: 2026-06-22
 - 2026-06-23: Carbon RegisterEventHotKey requires no Accessibility permission (unlike CGEvent tap and NSEvent.addGlobalMonitorForEvents). Best choice for global hotkeys when consuming keystrokes isn't needed.
 - 2026-06-23: Swift 6 strict concurrency: a protocol with @MainActor methods must be marked @MainActor itself, not just the conforming class. Otherwise conformance across actor boundaries causes a build error.
 - 2026-06-23: NotificationService must track previous state keyed by VPN id (not just connected count) to detect which specific VPN dropped. Use pairwise/skip-initial for IP change detection.
+- 2026-06-23: Hotkey bindings stored in UserDefaults must be seeded with defaults on first run, not left empty — otherwise hotkeys ship dead until the user manually records each one. "Reset to Defaults" must restore to the seeded defaults, not clear to empty.
+- 2026-06-23: NSStatusBarButton needs `.imagePosition = .imageLeading` when setting both `.image` and `.title` — without it the title won't render next to the icon.
