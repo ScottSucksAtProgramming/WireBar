@@ -1,4 +1,5 @@
 import XCTest
+import Combine
 @testable import SignalDrop
 
 final class WiFiManagerTests: XCTestCase {
@@ -20,6 +21,7 @@ final class WiFiManagerTests: XCTestCase {
 
         let sut = WiFiManager(scanner: mockScanner)
         sut.scan()
+        waitForScanToFinish(sut)
 
         XCTAssertEqual(sut.networks.count, 2)
         XCTAssertEqual(sut.networks[0].ssid, "HomeNetwork")
@@ -35,6 +37,7 @@ final class WiFiManagerTests: XCTestCase {
 
         let sut = WiFiManager(scanner: mockScanner)
         sut.scan()
+        waitForScanToFinish(sut)
 
         XCTAssertEqual(sut.networks.map(\.ssid), ["Strong", "Medium", "Weak"])
     }
@@ -48,6 +51,7 @@ final class WiFiManagerTests: XCTestCase {
 
         let sut = WiFiManager(scanner: mockScanner)
         sut.scan()
+        waitForScanToFinish(sut)
 
         XCTAssertTrue(sut.networks.first { $0.ssid == "HomeNetwork" }!.isCurrent)
         XCTAssertFalse(sut.networks.first { $0.ssid == "Other" }!.isCurrent)
@@ -60,6 +64,7 @@ final class WiFiManagerTests: XCTestCase {
 
         let sut = WiFiManager(scanner: mockScanner)
         sut.scan()
+        waitForScanToFinish(sut)
 
         XCTAssertEqual(sut.networks.count, 1)
         XCTAssertEqual(sut.networks[0].ssid, "Visible")
@@ -70,6 +75,7 @@ final class WiFiManagerTests: XCTestCase {
 
         let sut = WiFiManager(scanner: mockScanner)
         sut.scan()
+        waitForScanToFinish(sut)
 
         XCTAssertTrue(sut.networks.isEmpty)
         XCTAssertNotNil(sut.scanError)
@@ -130,6 +136,19 @@ final class WiFiManagerTests: XCTestCase {
     }
 
     // MARK: - Helpers
+
+    private func waitForScanToFinish(_ manager: WiFiManager, timeout: TimeInterval = 2) {
+        let expectation = XCTestExpectation(description: "Scan completes")
+        var cancellable: AnyCancellable?
+        cancellable = manager.$isScanning
+            .dropFirst()
+            .filter { !$0 }
+            .sink { _ in
+                expectation.fulfill()
+                cancellable?.cancel()
+            }
+        wait(for: [expectation], timeout: timeout)
+    }
 
     private func makeNetwork(
         ssid: String,

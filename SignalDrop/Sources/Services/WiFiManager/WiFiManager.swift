@@ -2,14 +2,14 @@ import Foundation
 import CoreWLAN
 import Combine
 
-final class WiFiManager: ObservableObject {
+final class WiFiManager: ObservableObject, @unchecked Sendable {
     @Published private(set) var networks: [ScannedNetwork] = []
     @Published private(set) var isWiFiPoweredOn: Bool = true
     @Published private(set) var isScanning: Bool = false
     @Published private(set) var scanError: Error?
     @Published private(set) var joinError: Error?
 
-    private let scanner: WiFiScanning
+    private nonisolated(unsafe) let scanner: WiFiScanning
 
     init(scanner: WiFiScanning = CoreWLANScanner()) {
         self.scanner = scanner
@@ -17,9 +17,27 @@ final class WiFiManager: ObservableObject {
     }
 
     func scan() {
+        guard !isScanning else { return }
         isScanning = true
         scanError = nil
 
+        let scanner = self.scanner
+        DispatchQueue.global(qos: .userInitiated).async {
+            let result = Self.performScan(scanner: scanner)
+            DispatchQueue.main.async { [weak self] in
+                switch result {
+                case .success(let sorted):
+                    self?.networks = sorted
+                case .failure(let error):
+                    self?.scanError = error
+                    self?.networks = []
+                }
+                self?.isScanning = false
+            }
+        }
+    }
+
+    private static func performScan(scanner: WiFiScanning) -> Result<[ScannedNetwork], Error> {
         do {
             var scanned = try scanner.scanForNetworks()
             let currentSSID = scanner.currentSSID()
@@ -32,13 +50,10 @@ final class WiFiManager: ObservableObject {
 
             let known = scanned.filter(\.isKnown).sorted { $0.rssi > $1.rssi }
             let other = scanned.filter { !$0.isKnown }.sorted { $0.rssi > $1.rssi }
-            networks = known + other
+            return .success(known + other)
         } catch {
-            scanError = error
-            networks = []
+            return .failure(error)
         }
-
-        isScanning = false
     }
 
     func joinNetwork(_ network: ScannedNetwork, password: String?) {

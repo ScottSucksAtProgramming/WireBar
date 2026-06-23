@@ -1,7 +1,7 @@
 import Foundation
 @testable import SignalDrop
 
-final class MockWiFiScanner: WiFiScanning {
+final class MockWiFiScanner: WiFiScanning, @unchecked Sendable {
     var networksToReturn: [ScannedNetwork] = []
     var knownSSIDs: Set<String> = []
     var isPowered: Bool = true

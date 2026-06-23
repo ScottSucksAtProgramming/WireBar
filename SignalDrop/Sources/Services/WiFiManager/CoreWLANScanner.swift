@@ -1,7 +1,7 @@
 import Foundation
 import CoreWLAN
 
-final class CoreWLANScanner: WiFiScanning {
+final class CoreWLANScanner: WiFiScanning, @unchecked Sendable {
     private let client: CWWiFiClient
     private var interface: CWInterface? { client.interface() }
 

@@ -40,7 +40,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             rootView: PopoverView(
                 networkMonitor: networkMonitor,
                 wifiManager: wifiManager,
-                settingsStore: settingsStore
+                settingsStore: settingsStore,
+                onOpenSettings: { [weak self] in
+                    self?.popover.performClose(nil)
+                    DispatchQueue.main.async {
+                        NSApp.activate(ignoringOtherApps: true)
+                        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                    }
+                }
             )
         )
     }

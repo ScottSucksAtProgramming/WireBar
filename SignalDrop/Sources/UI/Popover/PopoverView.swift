@@ -4,6 +4,7 @@ struct PopoverView: View {
     @ObservedObject var networkMonitor: NetworkMonitor
     @ObservedObject var wifiManager: WiFiManager
     @ObservedObject var settingsStore: SettingsStore
+    var onOpenSettings: () -> Void = {}
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -39,14 +40,7 @@ struct PopoverView: View {
             Spacer()
 
             Button {
-                if #available(macOS 14, *) {
-                    NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
-                } else {
-                    NSApp.sendAction(Selector(("showPreferencesWindow:")), to: nil, from: nil)
-                }
-                DispatchQueue.main.async {
-                    NSApp.activate(ignoringOtherApps: true)
-                }
+                onOpenSettings()
             } label: {
                 Image(systemName: "gear")
                 Text(String(localized: "Settings"))

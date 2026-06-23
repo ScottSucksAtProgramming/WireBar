@@ -1,6 +1,6 @@
 import Foundation
 
-protocol WiFiScanning {
+protocol WiFiScanning: Sendable {
     func scanForNetworks() throws -> [ScannedNetwork]
     func knownNetworkSSIDs() -> Set<String>
     func associateToNetwork(bssid: String, password: String?) throws
