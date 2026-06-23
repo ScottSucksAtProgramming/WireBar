@@ -16,17 +16,20 @@ Quick-reference for finding content in this directory. For conventions, see `con
 | Path | Purpose |
 |------|---------|
 | `SignalDrop/Sources/App/` | App entry point, AppDelegate (menu bar setup, popover, settings window) |
-| `SignalDrop/Sources/Models/` | Data models — NetworkState, ScannedNetwork |
-| `SignalDrop/Sources/Protocols/` | Abstraction protocols — NetworkPathProviding, WLANInterface, ShellExecuting, WiFiScanning |
+| `SignalDrop/Sources/Models/` | Data models — NetworkState, ScannedNetwork, VPNDefinition (VPN registry, status, execution tier) |
+| `SignalDrop/Sources/Protocols/` | Abstraction protocols — NetworkPathProviding, WLANInterface, ShellExecuting, WiFiScanning, VPNCommandExecuting |
 | `SignalDrop/Sources/Services/NetworkMonitor/` | NWPathMonitor wrapper — connection state, IP address, Ethernet detection |
 | `SignalDrop/Sources/Services/WiFiManager/` | Wi-Fi management — scanning, joining, power toggle (WiFiManager + CoreWLANScanner) |
 | `SignalDrop/Sources/Services/IPService/` | IP address resolution — local IP from interfaces, external IP via DNS (Cloudflare/OpenDNS), 30s cache, refresh modes |
 | `SignalDrop/Sources/Services/PingService/` | TCP-based latency measurement via NWConnection, configurable target/port |
-| `SignalDrop/Sources/Services/SettingsStore/` | UserDefaults persistence for all settings (launch at login, detail visibility, IP refresh, ping) |
+| `SignalDrop/Sources/Services/VPNManager/` | VPN management — auto-detection, status polling, connect/disconnect, two-tier execution (VPNManager + ProcessCommandExecutor) |
+| `SignalDrop/Sources/Services/PrivilegedHelper/` | Privileged helper management — SMAppService install/uninstall, XPC connection, command whitelist (HelperConstants + PrivilegedHelperManager) |
+| `SignalDrop/Sources/Services/SettingsStore/` | UserDefaults persistence for all settings (launch at login, detail visibility, IP refresh, ping, VPN) |
 | `SignalDrop/Sources/Services/LicenseManager/` | License/paid-tier gating (stub — returns false) |
-| `SignalDrop/Sources/UI/Popover/` | Popover views — PopoverView, ConnectionInfoView, EthernetInfoView, NetworkListView, PasswordInputView, IPPingView |
-| `SignalDrop/Sources/UI/Settings/` | Settings window — SettingsView (tabbed), NetworkDetailsSettingsView, IPPingSettingsView |
-| `SignalDropTests/` | Unit tests — NetworkMonitor, WiFiManager, SettingsStore, IPService, PingService + mocks |
+| `SignalDrop/Sources/UI/Popover/` | Popover views — PopoverView, ConnectionInfoView, EthernetInfoView, NetworkListView, PasswordInputView, IPPingView, VPNSectionView |
+| `SignalDrop/Sources/UI/Settings/` | Settings window — SettingsView (tabbed), NetworkDetailsSettingsView, IPPingSettingsView, VPNSettingsView |
+| `PrivilegedHelper/` | Privileged helper daemon binary — XPC listener, audit token verification, whitelisted command execution via Process |
+| `SignalDropTests/` | Unit tests — NetworkMonitor, WiFiManager, SettingsStore, IPService, PingService, VPNManager + mocks |
 
 ## context/
 

@@ -31,6 +31,7 @@ wifi-menubar/
         WLANInterface.swift
         ShellExecuting.swift
         WiFiScanning.swift
+        VPNCommandExecuting.swift
       Services/
         NetworkMonitor/
           NetworkMonitor.swift
@@ -42,6 +43,12 @@ wifi-menubar/
           DNSExternalIPResolver.swift
         PingService/
           PingService.swift
+        VPNManager/
+          VPNManager.swift
+          ProcessCommandExecutor.swift
+        PrivilegedHelper/
+          HelperConstants.swift
+          PrivilegedHelperManager.swift
         SettingsStore/
           SettingsStore.swift
         LicenseManager/
@@ -55,10 +62,12 @@ wifi-menubar/
           NetworkListView.swift
           PasswordInputView.swift
           IPPingView.swift
+tttttVPNSectionView.swift
         Settings/
           SettingsView.swift
           NetworkDetailsSettingsView.swift
           IPPingSettingsView.swift
+          VPNSettingsView.swift
         Onboarding/
     Resources/
       Info.plist
@@ -69,8 +78,14 @@ wifi-menubar/
     WiFiManagerTests.swift
     IPServiceTests.swift
     PingServiceTests.swift
+ttVPNManagerTests.swift
     Mocks/
       MockWiFiScanner.swift
+tttMockVPNCommandExecutor.swift
+tPrivilegedHelper/
+ttmain.swift
+ttInfo.plist
+ttlaunchd.plist
   archive/
     completed-phases.taskpaper
   handoffs/          (local only, .gitignored — session handoff docs)
