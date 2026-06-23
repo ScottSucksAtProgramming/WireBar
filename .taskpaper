@@ -57,22 +57,29 @@ Phase 1 — Walking Skeleton:
 
 Phase 2 — Wi-Fi Management:
 	Branch: phase/2-wifi-management
-	- Implement WiFiManager — CoreWLAN scanning, network list, sorting (known first, then by signal)
-	- Implement network list view in popover (signal strength indicators, security type badges)
-	- Implement known/saved network visual distinction and checkmark on current network
-	- Implement one-click join for known/saved networks
-	- Implement password input dialog for unknown networks
-	- Implement Wi-Fi on/off toggle with menu bar icon state change (disabled icon)
-	- Implement Ethernet detection and display via NetworkMonitor
-	- Implement multiple connection display (Wi-Fi + Ethernet) with primary route indicator
-	- Add Settings tab: network detail visibility configuration (SSID, signal %, band, channel, etc.)
-	- Write unit tests for WiFiManager (mock CoreWLAN interfaces)
-	- Add VoiceOver accessibility labels to all Phase 2 UI elements
-	- All user-facing strings use String(localized:)
-	- Update .taskpaper with any discoveries or adjustments
+	- @done Implement WiFiManager — CoreWLAN scanning, network list, sorting (known first, then by signal) @done(2026-06-22)
+	- @done Implement network list view in popover (signal strength indicators, security type badges) @done(2026-06-22)
+	- @done Implement known/saved network visual distinction and checkmark on current network @done(2026-06-22)
+	- @done Implement one-click join for known/saved networks @done(2026-06-22)
+	- @done Implement password input dialog for unknown networks @done(2026-06-22)
+	- @done Implement Wi-Fi on/off toggle with menu bar icon state change (disabled icon) @done(2026-06-22)
+	- @done Implement Ethernet detection and display via NetworkMonitor @done(2026-06-22)
+	- @done Implement multiple connection display (Wi-Fi + Ethernet) with primary route indicator @done(2026-06-22)
+	- @done Add Settings tab: network detail visibility configuration (SSID, signal %, band, channel, etc.) @done(2026-06-22)
+	- @done Write unit tests for WiFiManager (mock CoreWLAN interfaces) @done(2026-06-22)
+	- @done Add VoiceOver accessibility labels to all Phase 2 UI elements @done(2026-06-22)
+	- @done All user-facing strings use String(localized:) @done(2026-06-22)
+	- @done Update .taskpaper with any discoveries or adjustments @done(2026-06-22)
 	- Manual test against PRD user stories 21-28 (Wi-Fi network switching)
 	- Manual test against PRD user stories 4, 5, 13-15 (Ethernet, multiple connections)
 	- Regression test: PRD user stories 1-2, 8-9 (Phase 1 features still work)
+	Discoveries:
+		- CWSecurity in Swift 6: no .wep case (use .dynamicWEP), case names are lowercase (.dynamicWEP not .DynamicWEP)
+		- CWConfiguration.networkProfiles returns non-optional NSOrderedSet — cast elements to CWNetworkProfile
+		- CWInterface.associate(to:password:) accepts nil password for open/known networks
+		- scanForNetworks(withName: nil) blocks for 1-3 seconds — always call off main thread
+		- Advanced network detail toggles gated behind LicenseManager.isPaid (stub returns false); basic details (SSID, signal) always free
+		- Menu bar icon changed from distinctive antenna to standard wifi/wifi.slash/cable.connector.horizontal to match connection state per PRD stories 4-5
 
 Phase 3 — IP + Ping:
 	Branch: phase/3-ip-ping
