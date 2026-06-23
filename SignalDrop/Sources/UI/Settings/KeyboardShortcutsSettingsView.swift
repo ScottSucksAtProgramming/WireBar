@@ -29,7 +29,7 @@ struct KeyboardShortcutsSettingsView: View {
                 }
 
                 Button(String(localized: "Reset to Defaults")) {
-                    settingsStore.hotkeyBindings = [:]
+                    settingsStore.hotkeyBindings = HotkeyAction.defaultBindings
                 }
                 .accessibilityLabel(String(localized: "Reset all keyboard shortcuts to defaults"))
             } else {

@@ -70,4 +70,10 @@ enum HotkeyAction: String, Codable, CaseIterable, Sendable {
     case refreshIP
     case copyLocalIP
     case copyExternalIP
+
+    static let defaultBindings: [String: HotkeyBinding] = [
+        HotkeyAction.togglePopover.rawValue: HotkeyBinding(keyCode: 13, modifierFlags: UInt32(optionKey) | UInt32(shiftKey)),    // ⌥⇧W
+        HotkeyAction.toggleWiFi.rawValue: HotkeyBinding(keyCode: 13, modifierFlags: UInt32(optionKey) | UInt32(controlKey)),      // ⌃⌥W
+        HotkeyAction.refreshIP.rawValue: HotkeyBinding(keyCode: 15, modifierFlags: UInt32(optionKey) | UInt32(shiftKey)),         // ⌥⇧R
+    ]
 }

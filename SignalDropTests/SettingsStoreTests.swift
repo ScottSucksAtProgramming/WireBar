@@ -148,9 +148,10 @@ final class SettingsStoreTests: XCTestCase {
 
     // MARK: - Hotkey Bindings
 
-    func testDefaultHotkeyBindingsEmpty() {
+    func testDefaultHotkeyBindingsSeeded() {
         let store = SettingsStore(defaults: testDefaults)
-        XCTAssertTrue(store.hotkeyBindings.isEmpty)
+        XCTAssertEqual(store.hotkeyBindings.count, HotkeyAction.defaultBindings.count)
+        XCTAssertEqual(store.hotkeyBindings[HotkeyAction.togglePopover.rawValue], HotkeyAction.defaultBindings[HotkeyAction.togglePopover.rawValue])
     }
 
     func testHotkeyBindingsPersist() {

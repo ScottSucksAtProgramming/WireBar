@@ -137,6 +137,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         button.title = textParts.isEmpty ? "" : " " + textParts.joined(separator: " · ")
+        button.imagePosition = textParts.isEmpty ? .imageOnly : .imageLeading
 
         var accessibilityParts = [String(localized: "SignalDrop")]
         if let ssid = state.ssid { accessibilityParts.append(ssid) }

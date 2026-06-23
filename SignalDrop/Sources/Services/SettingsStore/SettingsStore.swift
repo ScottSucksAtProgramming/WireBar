@@ -219,6 +219,8 @@ final class SettingsStore: ObservableObject {
         if let data = defaults.data(forKey: Keys.hotkeyBindings),
            let bindings = try? JSONDecoder().decode([String: HotkeyBinding].self, from: data) {
             hotkeyBindings = bindings
+        } else {
+            hotkeyBindings = HotkeyAction.defaultBindings
         }
     }
 
