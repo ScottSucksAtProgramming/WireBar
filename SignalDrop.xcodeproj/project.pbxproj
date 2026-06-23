@@ -11,6 +11,10 @@
 		36DCB16E7D025FC041734194 /* LicenseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C067A1C029FBC1459E4D160A /* LicenseManager.swift */; };
 		3E15A7570E10E4144299BA03 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B91E39A1005C4C56DBD0F7B /* NetworkMonitor.swift */; };
 		47DB8C01BC75BD4BA2E85B4A /* SettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA44347302FD6DAABA32D449 /* SettingsStoreTests.swift */; };
+		A1B2C3D4E5F6A1B2C3D4E5F6 /* WiFiManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5A6B1C2D3E4F5A6 /* WiFiManagerTests.swift */; };
+		C3D4E5F6A7B8C3D4E5F6A7B8 /* MockWiFiScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E5F6A7B8C9D4E5F6A7B8C9 /* MockWiFiScanner.swift */; };
+		F1A2B3C4D5E6F1A2B3C4D5E6 /* ScannedNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F7A2B3C4D5E6F7 /* ScannedNetwork.swift */; };
+		B3C4D5E6F7A8B3C4D5E6F7A8 /* WiFiScanning.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D5E6F7A8B9C4D5E6F7A8B9 /* WiFiScanning.swift */; };
 		61845C02EBD831D7EFBBDD7F /* NetworkPathProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23903D2A2D5EE8014659E68B /* NetworkPathProviding.swift */; };
 		670FF31DFC473E183CF949E5 /* WLANInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277E39C5D69B4D195D2CDE8C /* WLANInterface.swift */; };
 		6F6E70B9C2C778A8AE46F21D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C09F3A5E1018C8316A63E9 /* AppDelegate.swift */; };
@@ -52,6 +56,10 @@
 		D28951E9F4BA37BA2712A179 /* NetworkMonitorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitorTests.swift; sourceTree = "<group>"; };
 		D39B10D221CDFE333470910A /* SignalDropApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalDropApp.swift; sourceTree = "<group>"; };
 		DA44347302FD6DAABA32D449 /* SettingsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStoreTests.swift; sourceTree = "<group>"; };
+		B1C2D3E4F5A6B1C2D3E4F5A6 /* WiFiManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WiFiManagerTests.swift; sourceTree = "<group>"; };
+		D4E5F6A7B8C9D4E5F6A7B8C9 /* MockWiFiScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockWiFiScanner.swift; sourceTree = "<group>"; };
+		A2B3C4D5E6F7A2B3C4D5E6F7 /* ScannedNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannedNetwork.swift; sourceTree = "<group>"; };
+		C4D5E6F7A8B9C4D5E6F7A8B9 /* WiFiScanning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WiFiScanning.swift; sourceTree = "<group>"; };
 		EE2407815D335A4048A87B6C /* SignalDrop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SignalDrop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F9341701D537A4687035128E /* SignalDrop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SignalDrop.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -75,6 +83,7 @@
 			isa = PBXGroup;
 			children = (
 				2450E05B07FCE949C9125428 /* NetworkState.swift */,
+				A2B3C4D5E6F7A2B3C4D5E6F7 /* ScannedNetwork.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -189,8 +198,18 @@
 			children = (
 				D28951E9F4BA37BA2712A179 /* NetworkMonitorTests.swift */,
 				DA44347302FD6DAABA32D449 /* SettingsStoreTests.swift */,
+				B1C2D3E4F5A6B1C2D3E4F5A6 /* WiFiManagerTests.swift */,
+				E5F6A7B8C9D0E5F6A7B8C9D0 /* Mocks */,
 			);
 			path = SignalDropTests;
+			sourceTree = "<group>";
+		};
+		E5F6A7B8C9D0E5F6A7B8C9D0 /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				D4E5F6A7B8C9D4E5F6A7B8C9 /* MockWiFiScanner.swift */,
+			);
+			path = Mocks;
 			sourceTree = "<group>";
 		};
 		9D73A0AAF35EEFC65A051D70 /* VPNManager */ = {
@@ -239,6 +258,7 @@
 				23903D2A2D5EE8014659E68B /* NetworkPathProviding.swift */,
 				72016D3562503BBE1B4F2DBF /* ShellExecuting.swift */,
 				277E39C5D69B4D195D2CDE8C /* WLANInterface.swift */,
+				C4D5E6F7A8B9C4D5E6F7A8B9 /* WiFiScanning.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -352,6 +372,8 @@
 			files = (
 				93D254E0E4D0B70CC99E1765 /* NetworkMonitorTests.swift in Sources */,
 				47DB8C01BC75BD4BA2E85B4A /* SettingsStoreTests.swift in Sources */,
+				A1B2C3D4E5F6A1B2C3D4E5F6 /* WiFiManagerTests.swift in Sources */,
+				C3D4E5F6A7B8C3D4E5F6A7B8 /* MockWiFiScanner.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -365,6 +387,8 @@
 				3E15A7570E10E4144299BA03 /* NetworkMonitor.swift in Sources */,
 				61845C02EBD831D7EFBBDD7F /* NetworkPathProviding.swift in Sources */,
 				9CAA0FA3DE1249CB0F5C87F7 /* NetworkState.swift in Sources */,
+				F1A2B3C4D5E6F1A2B3C4D5E6 /* ScannedNetwork.swift in Sources */,
+				B3C4D5E6F7A8B3C4D5E6F7A8 /* WiFiScanning.swift in Sources */,
 				C53E0CF4030D83094901E688 /* PopoverView.swift in Sources */,
 				97BF89AF493A3F4A0AD86B0A /* SMAppServiceSpike.swift in Sources */,
 				A166767B4CEB9BB6C6B7BA62 /* SettingsStore.swift in Sources */,
