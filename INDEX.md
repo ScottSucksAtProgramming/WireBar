@@ -13,7 +13,18 @@ Quick-reference for finding content in this directory. For conventions, see `con
 
 ## Source Code
 
-*Not yet created. Will contain the Xcode project and Swift source files.*
+| Path | Purpose |
+|------|---------|
+| `SignalDrop/Sources/App/` | App entry point, AppDelegate (menu bar setup, popover, settings window) |
+| `SignalDrop/Sources/Models/` | Data models — NetworkState, ScannedNetwork |
+| `SignalDrop/Sources/Protocols/` | Abstraction protocols — NetworkPathProviding, WLANInterface, ShellExecuting, WiFiScanning |
+| `SignalDrop/Sources/Services/NetworkMonitor/` | NWPathMonitor wrapper — connection state, IP address, Ethernet detection |
+| `SignalDrop/Sources/Services/WiFiManager/` | Wi-Fi management — scanning, joining, power toggle (WiFiManager + CoreWLANScanner) |
+| `SignalDrop/Sources/Services/SettingsStore/` | UserDefaults persistence for all settings (launch at login, detail visibility) |
+| `SignalDrop/Sources/Services/LicenseManager/` | License/paid-tier gating (stub — returns false) |
+| `SignalDrop/Sources/UI/Popover/` | Popover views — PopoverView, ConnectionInfoView, EthernetInfoView, NetworkListView, PasswordInputView |
+| `SignalDrop/Sources/UI/Settings/` | Settings window — SettingsView (tabbed), NetworkDetailsSettingsView |
+| `SignalDropTests/` | Unit tests — NetworkMonitor, WiFiManager, SettingsStore + MockWiFiScanner |
 
 ## context/
 

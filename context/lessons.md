@@ -31,3 +31,6 @@ updated: 2026-06-22
 - 2026-06-22: CWInterface.scanForNetworks(withName: nil) blocks for 1-3 seconds — always call off main thread in production.
 - 2026-06-22: Computer-use popover visibility — even with Bartender disabled, the popover window from a debug-built app is hidden by screenshot filtering. The icon is visible and clickable, but popover contents require user visual confirmation.
 - 2026-06-22: SourceKit false positives are persistent with XcodeGen projects — "Cannot find type X in scope" appears for every new file added, but builds always succeed. Do not treat these as real errors.
+- 2026-06-22: NSApp.sendAction(Selector(("showSettingsWindow:"))) does NOT work in menu bar-only apps — there's no app menu responder chain. Use a programmatic NSWindow with NSHostingController instead.
+- 2026-06-22: WiFiManager.scan() must run CoreWLAN's scanForNetworks off the main thread — it blocks for 1-3 seconds. Use DispatchQueue.global + main.async callback pattern.
+- 2026-06-22: Swift 6 strict concurrency: to send a non-Sendable protocol across isolation boundaries, mark the protocol Sendable and concrete types @unchecked Sendable. Use nonisolated(unsafe) for stored properties captured in async work.
