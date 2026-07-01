@@ -29,6 +29,7 @@ struct VPNSettingsView: View {
                             ForEach(vpnManager.vpnStates) { vpnState in
                                 Toggle(vpnState.displayName, isOn: .constant(false))
                                     .disabled(true)
+                                    .accessibilityLabel(String(localized: "\(vpnState.displayName), locked"))
                             }
                         }
                     }
@@ -41,6 +42,7 @@ struct VPNSettingsView: View {
                             Text(String(localized: "Open the VPN app"))
                                 .foregroundStyle(.secondary)
                         }
+                        .accessibilityLabel(String(localized: "When a VPN is tapped, locked"))
                     }
                     .opacity(0.4)
                 }
@@ -49,6 +51,7 @@ struct VPNSettingsView: View {
                     Group {
                         Toggle(String(localized: "Show multi-VPN warning"), isOn: .constant(false))
                             .disabled(true)
+                            .accessibilityLabel(String(localized: "Show multi-VPN warning, locked"))
                     }
                     .opacity(0.4)
                 }

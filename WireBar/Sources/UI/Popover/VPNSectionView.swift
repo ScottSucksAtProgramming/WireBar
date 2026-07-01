@@ -8,12 +8,6 @@ struct VPNSectionView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(String(localized: "VPN"))
-                .font(.caption)
-                .fontWeight(.semibold)
-                .foregroundStyle(.secondary)
-                .accessibilityAddTraits(.isHeader)
-
             if !licenseManager.isPaid {
                 paidFeatureHint
             } else {
@@ -104,8 +98,13 @@ struct VPNSectionView: View {
             Text(String(localized: "VPN management requires a paid license"))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
+            Spacer()
+            Link(String(localized: "Upgrade"), destination: LicenseConfig.checkoutURL)
+                .font(.caption2)
+                .accessibilityLabel(String(localized: "Upgrade"))
+                .accessibilityHint(String(localized: "Opens the WireBar website to purchase a license"))
         }
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
         .accessibilityLabel(String(localized: "VPN management is a paid feature"))
     }
 

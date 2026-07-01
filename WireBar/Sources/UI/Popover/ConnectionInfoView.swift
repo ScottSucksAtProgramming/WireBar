@@ -3,6 +3,7 @@ import SwiftUI
 struct ConnectionInfoView: View {
     @ObservedObject var networkMonitor: NetworkMonitor
     @ObservedObject var settingsStore: SettingsStore
+    let isPaid: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -58,49 +59,49 @@ struct ConnectionInfoView: View {
                 )
             }
 
-            if settingsStore.showChannel, let channel = networkMonitor.state.channelNumber {
+            if isPaid && settingsStore.showChannel, let channel = networkMonitor.state.channelNumber {
                 DetailRow(
                     label: String(localized: "Channel"),
                     value: "\(channel)"
                 )
             }
 
-            if settingsStore.showBand, let band = networkMonitor.state.channelBand, band != .unknown {
+            if isPaid && settingsStore.showBand, let band = networkMonitor.state.channelBand, band != .unknown {
                 DetailRow(
                     label: String(localized: "Band"),
                     value: bandDisplayName(band)
                 )
             }
 
-            if settingsStore.showLinkSpeed && networkMonitor.state.transmitRate > 0 {
+            if isPaid && settingsStore.showLinkSpeed && networkMonitor.state.transmitRate > 0 {
                 DetailRow(
                     label: String(localized: "Link Speed"),
                     value: String(localized: "\(Int(networkMonitor.state.transmitRate)) Mbps")
                 )
             }
 
-            if settingsStore.showBSSID, let bssid = networkMonitor.state.bssid {
+            if isPaid && settingsStore.showBSSID, let bssid = networkMonitor.state.bssid {
                 DetailRow(
                     label: String(localized: "BSSID"),
                     value: bssid
                 )
             }
 
-            if settingsStore.showGateway, let gateway = networkMonitor.state.gatewayAddress {
+            if isPaid && settingsStore.showGateway, let gateway = networkMonitor.state.gatewayAddress {
                 DetailRow(
                     label: String(localized: "Gateway"),
                     value: gateway
                 )
             }
 
-            if settingsStore.showSubnet, let subnet = networkMonitor.state.subnetMask {
+            if isPaid && settingsStore.showSubnet, let subnet = networkMonitor.state.subnetMask {
                 DetailRow(
                     label: String(localized: "Subnet"),
                     value: subnet
                 )
             }
 
-            if settingsStore.showDNS && !networkMonitor.state.dnsServers.isEmpty {
+            if isPaid && settingsStore.showDNS && !networkMonitor.state.dnsServers.isEmpty {
                 DetailRow(
                     label: String(localized: "DNS"),
                     value: networkMonitor.state.dnsServers.joined(separator: ", ")

@@ -1,10 +1,13 @@
 import SwiftUI
+import AppKit
 
 struct LicenseSettingsView: View {
     @ObservedObject var licenseManager: LicenseManager
     @State private var licenseKeyInput: String = ""
     @State private var isActivating: Bool = false
     @State private var activationFailed: Bool = false
+    @State private var isDeactivating: Bool = false
+    @State private var showDeactivateConfirmation: Bool = false
 
     private func activateLicense() {
         nonisolated(unsafe) let manager = licenseManager
@@ -19,6 +22,29 @@ struct LicenseSettingsView: View {
                 }
                 isActivating = false
             }
+        }
+    }
+
+    private func deactivateLicense() {
+        nonisolated(unsafe) let manager = licenseManager
+        isDeactivating = true
+        Task {
+            await manager.deactivateLicense()
+            await MainActor.run {
+                isDeactivating = false
+            }
+        }
+    }
+
+    private var deactivationErrorMessage: String? {
+        guard let error = licenseManager.lastError else { return nil }
+        switch error {
+        case .networkError:
+            return String(localized: "Could not reach the license server. Please check your connection and try again.")
+        case .deactivationFailed:
+            return String(localized: "Deactivation failed. Please try again or contact support.")
+        default:
+            return nil
         }
     }
 
@@ -42,6 +68,42 @@ struct LicenseSettingsView: View {
                         Text("\(key.prefix(4))••••••••")
                             .accessibilityLabel(String(localized: "License key starting with \(key.prefix(4))"))
                     }
+                }
+            }
+
+            if !licenseManager.isPaid {
+                Section {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text(String(localized: "Upgrade to WireBar Pro"))
+                            .font(.headline)
+                            .accessibilityAddTraits(.isHeader)
+                        Text(String(localized: "One-time purchase of $12.99. Unlock all features:"))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            featureRow("network.badge.shield.half.filled", String(localized: "VPN monitoring and quick toggles"))
+                            featureRow("globe", String(localized: "External/public IP address"))
+                            featureRow("gauge.with.dots.needle.33percent", String(localized: "Ping/latency indicator"))
+                            featureRow("bell.badge", String(localized: "VPN drop and IP change notifications"))
+                            featureRow("keyboard", String(localized: "Global keyboard shortcuts"))
+                            featureRow("slider.horizontal.3", String(localized: "Advanced network details and customization"))
+                        }
+                        .padding(.top, 2)
+
+                        Button {
+                            NSWorkspace.shared.open(LicenseConfig.checkoutURL)
+                        } label: {
+                            Text(String(localized: "Get a License — $12.99"))
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                        .accessibilityLabel(String(localized: "Get a license for twelve dollars and ninety-nine cents"))
+                        .accessibilityHint(String(localized: "Opens the WireBar website to purchase a license"))
+                        .padding(.top, 4)
+                    }
+                    .padding(.vertical, 4)
                 }
             }
 
@@ -72,20 +134,53 @@ struct LicenseSettingsView: View {
                         .foregroundStyle(.green)
                         .accessibilityLabel(String(localized: "License is active"))
 
-                    Button(String(localized: "Deactivate License")) {
-                        licenseManager.deactivateLicense()
+                    Button(String(localized: isDeactivating ? "Deactivating…" : "Deactivate License"), role: .destructive) {
+                        showDeactivateConfirmation = true
                     }
+                    .disabled(isDeactivating)
                     .accessibilityLabel(String(localized: "Deactivate license"))
-                }
-            }
 
-            Section {
-                Link(destination: URL(string: "https://wirebar.app")!) {
-                    Label(String(localized: "Get a License"), systemImage: "arrow.up.forward")
+                    if let message = deactivationErrorMessage {
+                        Text(message)
+                            .foregroundStyle(.red)
+                            .accessibilityLabel(message)
+                    }
+
+                    Label {
+                        Text(String(localized: "To transfer your license to another device, deactivate it here first, then enter the same license key on your new device."))
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    } icon: {
+                        Image(systemName: "info.circle")
+                            .foregroundStyle(.secondary)
+                    }
+                    .accessibilityLabel(String(localized: "To transfer your license to another device, deactivate it here first, then enter the same license key on your new device."))
                 }
-                .accessibilityLabel(String(localized: "Get a license at wirebar.app"))
             }
         }
         .formStyle(.grouped)
+        .alert(
+            String(localized: "Deactivate License?"),
+            isPresented: $showDeactivateConfirmation
+        ) {
+            Button(String(localized: "Cancel"), role: .cancel) {}
+            Button(String(localized: "Deactivate"), role: .destructive) {
+                deactivateLicense()
+            }
+        } message: {
+            Text(String(localized: "This will deactivate your license on this device. You can reactivate it on this or another device using the same license key."))
+        }
+    }
+
+    private func featureRow(_ icon: String, _ text: String) -> some View {
+        Label {
+            Text(text)
+                .font(.subheadline)
+        } icon: {
+            Image(systemName: icon)
+                .foregroundStyle(Color.accentColor)
+                .frame(width: 18)
+        }
+        .accessibilityLabel(text)
     }
 }

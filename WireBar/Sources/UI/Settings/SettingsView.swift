@@ -138,21 +138,31 @@ struct PaidFeatureNotice: View {
 
     var body: some View {
         VStack(spacing: 10) {
-            Image(systemName: icon)
-                .font(.system(size: 28))
-                .foregroundStyle(color)
-                .accessibilityHidden(true)
-            Text(title)
-                .font(.headline)
-                .foregroundStyle(.primary)
-            Text(message)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
+            VStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 28))
+                    .foregroundStyle(color)
+                    .accessibilityHidden(true)
+                Text(title)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                Text(message)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .accessibilityElement(children: .combine)
+
+            Link(destination: LicenseConfig.checkoutURL) {
+                Text(String(localized: "Get a License"))
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+            }
+            .accessibilityLabel(String(localized: "Get a License"))
+            .accessibilityHint(String(localized: "Opens the WireBar website to purchase a license"))
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
-        .accessibilityElement(children: .combine)
     }
 }
 

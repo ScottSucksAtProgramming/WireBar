@@ -35,7 +35,7 @@ final class HotkeyManager: @unchecked Sendable {
 
     private func observeSettings() {
         settingsStore.$hotkeyBindings
-            .combineLatest(licenseManager.$isPaid)
+            .combineLatest(licenseManager.$licenseStatus.map { $0 == .activated || $0 == .gracePeriod })
             .receive(on: DispatchQueue.main)
             .sink { [weak self] bindings, isPaid in
                 self?.rebuildRegistrations(bindings: bindings, isPaid: isPaid)
