@@ -16,32 +16,11 @@ Parallel Business Tasks — Start During Early Phases:
 	- Draft privacy policy (human-readable, legally sound) @tags(docs, lead-time)
 	- Draft EULA / Terms of Sale (warranty disclaimer, liability limitation) @tags(docs, lead-time)
 	- Create BSL LICENSE file with 3-year conversion date to Apache 2.0 @tags(legal)
-	- Competitive research pass 1 — survey macOS network utilities, validate $12.99 pricing @tags(research)
+	- @done Competitive research pass 1 — survey macOS network utilities, validate $12.99 pricing @tags(research) @done(2026-07-01) — sticking with $12.99
 
-Phase 6 — Licensing + Updates:
-	Branch: phase/6-licensing-updates
-	- @done Verify LemonSqueezy Swift SDK exists and supports offline/grace-period validation @done(2026-07-01) — no official SDK; DIY thin URLSession wrapper (~50 lines) for 3 REST endpoints
-	- Build thin LemonSqueezy API wrapper (activate/validate/deactivate via URLSession, form-encoded POST)
-	- Implement license key activation UI (text field + Activate button in LicenseSettingsView — already stubbed)
-	- Implement offline license caching with 7-day grace period + clock-tampering detection
-	- @done Decide purchase-to-activation flow @done(2026-07-01) — manual key entry (user gets key via email receipt, enters in Settings)
-	- Implement device transfer flow (deactivate on old device, reactivate on new)
-	- Implement in-app upgrade prompt (link to LemonSqueezy checkout)
-	- Implement free/paid feature gating across all paid features (verify all isPaid checks work)
-	- @done Generate Sparkle EdDSA key pair (Scott runs generate_keys, backs up private key to offline storage) (Scott) @tags(scott, blocking) @done(2026-06-23)
+Phase 6 — Remaining (blocked on LemonSqueezy KYC):
 	- Back up Developer ID cert and Sparkle private key to offline/secure storage (Scott) @tags(scott, critical)
-	- @done Integrate Sparkle framework via SPM @done(2026-06-23)
-	- @done Implement minimal Sparkle — automatic check-on-launch with standard update dialog @done(2026-06-23)
-	- @done Configure Sparkle with EdDSA public key @done(2026-06-23)
-	- @done Add Settings: update check preferences (Updates tab with auto-check toggle, Check Now button, version display) @done(2026-06-23)
-	- @done Decision documented: updates are public, license gates features not updates @done(2026-06-23)
-	- @done Widen Settings window from 450px to 580px to fit all 7 tabs without overflow @done(2026-06-23)
-	- Write unit tests for LicenseManager (gate logic, offline caching, grace period)
-	- Add VoiceOver accessibility labels to all Phase 6 UI elements
-	- All user-facing strings use String(localized:)
-	- Update .taskpaper with any discoveries or adjustments
-	- Manual test against PRD user stories 59-63 (licensing and updates)
-	- Manual test: purchase flow with LemonSqueezy test mode (Scott) @tags(scott)
+	- Manual test: purchase flow with LemonSqueezy test mode (Scott) @tags(scott) — blocked on KYC approval
 	- Manual test: offline license validation (disconnect network, verify paid features remain)
 	- Manual test: device transfer flow
 	- Regression test: all Phase 1-5b user stories

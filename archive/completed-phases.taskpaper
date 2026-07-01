@@ -176,3 +176,41 @@ Phase 5b — UI Polish:
 		- All 5a + 5b work done on single branch (phase/5a-notifications-hotkeys) for simplicity
 		- Per-VPN hotkeys deferred — VPN is read-only so hotkey can only deep-link, questionable value
 		- Menu bar overflow on notched MacBooks handled by macOS menu bar hider, not custom truncation
+
+Phase 6 — Licensing + Updates:
+	Branch: phase/6-licensing (merged to main 2026-07-01)
+	Sparkle (auto-updates):
+		- @done Generate Sparkle EdDSA key pair (Scott runs generate_keys, backs up private key to offline storage) (Scott) @tags(scott, blocking) @done(2026-06-23)
+		- @done Integrate Sparkle framework via SPM @done(2026-06-23)
+		- @done Implement minimal Sparkle — automatic check-on-launch with standard update dialog @done(2026-06-23)
+		- @done Configure Sparkle with EdDSA public key @done(2026-06-23)
+		- @done Add Settings: update check preferences (Updates tab with auto-check toggle, Check Now button, version display) @done(2026-06-23)
+		- @done Decision documented: updates are public, license gates features not updates @done(2026-06-23)
+		- @done Widen Settings window from 450px to 580px to fit all 7 tabs without overflow @done(2026-06-23)
+	LemonSqueezy licensing:
+		- @done Verify LemonSqueezy Swift SDK exists and supports offline/grace-period validation @done(2026-07-01) — no official SDK; DIY thin URLSession wrapper (~50 lines) for 3 REST endpoints
+		- @done Decide purchase-to-activation flow @done(2026-07-01) — manual key entry (user gets key via email receipt, enters in Settings)
+		- @done Build thin LemonSqueezy API wrapper (activate/validate/deactivate via URLSession, form-encoded POST) @done(2026-07-01)
+		- @done Implement license key activation UI (text field + Activate button in LicenseSettingsView) @done(2026-07-01)
+		- @done Implement offline license caching with 7-day grace period + clock-tampering detection @done(2026-07-01)
+		- @done Implement device transfer flow (deactivate on old device, reactivate on new) @done(2026-07-01)
+		- @done Implement in-app upgrade prompt (link to LemonSqueezy checkout) @done(2026-07-01)
+		- @done Implement free/paid feature gating across all paid features (verify all isPaid checks work) @done(2026-07-01)
+		- @done Write unit tests for LicenseManager (25 tests: gate logic, offline caching, grace period, clock tampering, connectivity restoration) @done(2026-07-01)
+		- @done Add VoiceOver accessibility labels to all Phase 6 UI elements @done(2026-07-01)
+		- @done All user-facing strings use String(localized:) @done(2026-07-01)
+		- @done Update .taskpaper with any discoveries or adjustments @done(2026-07-01)
+		- @done Manual test against PRD user stories 59-63 (licensing and updates) @done(2026-07-01)
+	UI fixes (done during Phase 6):
+		- @done Wi-Fi toggle label no longer wraps @done(2026-07-01)
+		- @done Settings window defaults to 780x650 @done(2026-07-01)
+		- @done VPN double header removed @done(2026-07-01)
+		- @done About page website link points to wirebar.app @done(2026-07-01)
+		- @done Consistent checkout URLs via LicenseConfig @done(2026-07-01)
+		- @done BETA_UNLOCK_PAID build flag for Debug builds with test environment guard @done(2026-07-01)
+	Discoveries:
+		- No official LemonSqueezy Swift SDK — thin URLSession wrapper (~50 lines) for 3 REST endpoints (activate, validate, deactivate)
+		- LemonSqueezy license key activation uses form-encoded POST, not JSON
+		- Clock-tampering detection: compare stored validation timestamp against current date; if current date is before stored date, treat as tampered
+		- 7-day offline grace period: cache validation result + timestamp in Keychain; revalidate on connectivity restore
+		- BETA_UNLOCK_PAID flag in project.yml OTHER_SWIFT_FLAGS for Debug config; test environment guard prevents it from affecting unit tests
