@@ -131,6 +131,18 @@ final class SettingsStore: ObservableObject {
         didSet { defaults.set(locationAlertSuppressed, forKey: Keys.locationAlertSuppressed) }
     }
 
+    @Published var menuBarShowSignalStrength: Bool = false {
+        didSet { defaults.set(menuBarShowSignalStrength, forKey: Keys.menuBarShowSignalStrength) }
+    }
+
+    @Published var menuBarSignalFormat: Int = 0 {
+        didSet { defaults.set(menuBarSignalFormat, forKey: Keys.menuBarSignalFormat) }
+    }
+
+    @Published var menuBarShowHotspot: Bool = true {
+        didSet { defaults.set(menuBarShowHotspot, forKey: Keys.menuBarShowHotspot) }
+    }
+
     @Published var hotkeyBindings: [String: HotkeyBinding] = [:] {
         didSet {
             if let data = try? JSONEncoder().encode(hotkeyBindings) {
@@ -230,6 +242,15 @@ final class SettingsStore: ObservableObject {
         if defaults.object(forKey: Keys.locationAlertSuppressed) != nil {
             locationAlertSuppressed = defaults.bool(forKey: Keys.locationAlertSuppressed)
         }
+        if defaults.object(forKey: Keys.menuBarShowSignalStrength) != nil {
+            menuBarShowSignalStrength = defaults.bool(forKey: Keys.menuBarShowSignalStrength)
+        }
+        if defaults.object(forKey: Keys.menuBarSignalFormat) != nil {
+            menuBarSignalFormat = defaults.integer(forKey: Keys.menuBarSignalFormat)
+        }
+        if defaults.object(forKey: Keys.menuBarShowHotspot) != nil {
+            menuBarShowHotspot = defaults.bool(forKey: Keys.menuBarShowHotspot)
+        }
         if let data = defaults.data(forKey: Keys.hotkeyBindings),
            let bindings = try? JSONDecoder().decode([String: HotkeyBinding].self, from: data) {
             hotkeyBindings = bindings
@@ -270,6 +291,9 @@ final class SettingsStore: ObservableObject {
         static let menuBarShowVPNIndicator = "menuBarShowVPNIndicator"
         static let menuBarShowIP = "menuBarShowIP"
         static let locationAlertSuppressed = "locationAlertSuppressed"
+        static let menuBarShowSignalStrength = "menuBarShowSignalStrength"
+        static let menuBarSignalFormat = "menuBarSignalFormat"
+        static let menuBarShowHotspot = "menuBarShowHotspot"
     }
 }
 

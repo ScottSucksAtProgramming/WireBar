@@ -57,6 +57,8 @@ final class NetworkMonitor: ObservableObject, @unchecked Sendable {
             }
         }()
 
+        let isHotspot = Self.detectHotspot(ssid: ssid)
+
         let localIP = IPService.getIPAddress()
         let ifaceName = iface.interfaceName ?? "en0"
         let subnet = Self.getSubnetMask(forInterface: ifaceName)
@@ -70,6 +72,7 @@ final class NetworkMonitor: ObservableObject, @unchecked Sendable {
             self?.state.bssid = bssid
             self?.state.transmitRate = rate
             self?.state.isWiFiPoweredOn = powerOn
+            self?.state.isHotspot = isHotspot
             self?.state.channelNumber = channelNum
             self?.state.channelBand = band
             self?.state.localIPAddress = localIP
@@ -156,6 +159,15 @@ final class NetworkMonitor: ObservableObject, @unchecked Sendable {
             }
         }
         return servers
+    }
+
+    private static func detectHotspot(ssid: String?) -> Bool {
+        guard let ssid else { return false }
+        let lowered = ssid.lowercased()
+        if lowered == "iphone" || lowered == "ipad" { return true }
+        if lowered.hasSuffix("\u{2019}s iphone") || lowered.hasSuffix("'s iphone") { return true }
+        if lowered.hasSuffix("\u{2019}s ipad") || lowered.hasSuffix("'s ipad") { return true }
+        return false
     }
 
     private func handlePathUpdate(_ path: NWPath) {

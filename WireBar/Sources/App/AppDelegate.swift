@@ -85,6 +85,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
             .store(in: &cancellables)
 
+        settingsStore.$menuBarShowSignalStrength
+            .combineLatest(settingsStore.$menuBarSignalFormat, settingsStore.$menuBarShowHotspot)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _, _, _ in
+                self?.updateMenuBar()
+            }
+            .store(in: &cancellables)
+
         vpnManager.$vpnStates
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -103,26 +111,47 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func updateMenuBar() {
         guard let button = statusItem.button else { return }
         let state = networkMonitor.state
+        let isPaid = licenseManager.isPaid
 
-        let symbolName: String
-        if !state.isWiFiPoweredOn && state.connectionType != .ethernet && state.connectionType != .wifiAndEthernet {
-            symbolName = "antenna.radiowaves.left.and.right.slash"
+        let isDisconnected = (!state.isWiFiPoweredOn && state.connectionType != .ethernet && state.connectionType != .wifiAndEthernet)
+            || state.connectionType == .none
+        let isEthernetOnly = state.connectionType == .ethernet
+        let isWiFiActive = state.connectionType == .wifi || state.connectionType == .wifiAndEthernet
+        let showHotspot = isWiFiActive && state.isHotspot && settingsStore.menuBarShowHotspot && isPaid
+        let showSignal = isWiFiActive && settingsStore.menuBarShowSignalStrength
+
+        if isDisconnected {
+            button.image = NSImage(
+                systemSymbolName: "antenna.radiowaves.left.and.right.slash",
+                accessibilityDescription: String(localized: "WireBar: no connection")
+            )
+        } else if isEthernetOnly {
+            button.image = NSImage(
+                systemSymbolName: "cable.connector.horizontal",
+                accessibilityDescription: String(localized: "WireBar: Ethernet connected")
+            )
+        } else if showHotspot {
+            button.image = NSImage(
+                systemSymbolName: "personalhotspot",
+                accessibilityDescription: String(localized: "WireBar: connected to personal hotspot")
+            )
+        } else if showSignal {
+            let rssi = state.signalStrength
+            let variableValue = max(0, min(1, Double(rssi + 100) / 80.0))
+            let signalDescription = String(localized: "WireBar: Wi-Fi signal \(state.signalQuality.localizedDescription)")
+            button.image = NSImage(
+                systemSymbolName: "wifi",
+                variableValue: variableValue,
+                accessibilityDescription: signalDescription
+            )
         } else {
-            symbolName = switch state.connectionType {
-            case .none: "antenna.radiowaves.left.and.right.slash"
-            case .wifi: "antenna.radiowaves.left.and.right"
-            case .ethernet: "cable.connector.horizontal"
-            case .wifiAndEthernet: "antenna.radiowaves.left.and.right"
-            }
+            button.image = NSImage(
+                systemSymbolName: "antenna.radiowaves.left.and.right",
+                accessibilityDescription: String(localized: "WireBar network status")
+            )
         }
 
-        button.image = NSImage(
-            systemSymbolName: symbolName,
-            accessibilityDescription: String(localized: "WireBar network status")
-        )
-
         var textParts: [String] = []
-        let isPaid = licenseManager.isPaid
 
         if settingsStore.menuBarShowNetworkName, isPaid, let ssid = state.ssid {
             let maxLen = 15
@@ -140,11 +169,31 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             textParts.append(ip)
         }
 
+        if showSignal, isPaid {
+            let rssi = state.signalStrength
+            let format = SignalDisplayFormat(rawValue: settingsStore.menuBarSignalFormat) ?? .bars
+            switch format {
+            case .bars:
+                break
+            case .percentage:
+                let pct = max(0, min(100, (rssi + 100) * 100 / 80))
+                textParts.append("\(pct)%")
+            case .dBm:
+                textParts.append("\(rssi) dBm")
+            }
+        }
+
         button.title = textParts.isEmpty ? "" : " " + textParts.joined(separator: " · ")
         button.imagePosition = textParts.isEmpty ? .imageOnly : .imageLeading
 
         var accessibilityParts = [String(localized: "WireBar")]
         if let ssid = state.ssid { accessibilityParts.append(ssid) }
+        if showSignal {
+            accessibilityParts.append(String(localized: "Signal: \(state.signalQuality.localizedDescription)"))
+        }
+        if showHotspot {
+            accessibilityParts.append(String(localized: "Personal hotspot"))
+        }
         let vpnCount = vpnManager.connectedCount
         if vpnCount > 0 { accessibilityParts.append(String(localized: "\(vpnCount) VPN connected")) }
         button.setAccessibilityLabel(accessibilityParts.joined(separator: ", "))

@@ -178,6 +178,18 @@ struct GeneralSettingsView: View {
             }
 
             Section(String(localized: "Menu Bar Display")) {
+                Toggle(String(localized: "Show signal strength"), isOn: $settingsStore.menuBarShowSignalStrength)
+                    .accessibilityLabel(String(localized: "Show Wi-Fi signal strength icon in menu bar"))
+
+                if settingsStore.menuBarShowSignalStrength, licenseManager.isPaid {
+                    Picker(String(localized: "Signal format"), selection: $settingsStore.menuBarSignalFormat) {
+                        Text(String(localized: "Bars")).tag(0)
+                        Text(String(localized: "Percentage")).tag(1)
+                        Text(String(localized: "dBm")).tag(2)
+                    }
+                    .accessibilityLabel(String(localized: "Signal strength display format"))
+                }
+
                 if licenseManager.isPaid {
                     Toggle(String(localized: "Show network name"), isOn: $settingsStore.menuBarShowNetworkName)
                         .accessibilityLabel(String(localized: "Show Wi-Fi network name in menu bar"))
@@ -185,6 +197,8 @@ struct GeneralSettingsView: View {
                         .accessibilityLabel(String(localized: "Show VPN connection indicator in menu bar"))
                     Toggle(String(localized: "Show IP address"), isOn: $settingsStore.menuBarShowIP)
                         .accessibilityLabel(String(localized: "Show local IP address in menu bar"))
+                    Toggle(String(localized: "Show hotspot icon"), isOn: $settingsStore.menuBarShowHotspot)
+                        .accessibilityLabel(String(localized: "Show personal hotspot icon when connected to a hotspot"))
                 } else {
                     PaidFeatureNotice(
                         icon: "menubar.rectangle",
@@ -193,6 +207,10 @@ struct GeneralSettingsView: View {
                         color: .blue
                     )
                 }
+
+                Text(String(localized: "On smaller screens or notched MacBooks, some menu bar items may be hidden by macOS."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
         .formStyle(.grouped)
