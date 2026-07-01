@@ -127,6 +127,10 @@ final class SettingsStore: ObservableObject {
         didSet { defaults.set(menuBarShowIP, forKey: Keys.menuBarShowIP) }
     }
 
+    @Published var locationAlertSuppressed: Bool = false {
+        didSet { defaults.set(locationAlertSuppressed, forKey: Keys.locationAlertSuppressed) }
+    }
+
     @Published var hotkeyBindings: [String: HotkeyBinding] = [:] {
         didSet {
             if let data = try? JSONEncoder().encode(hotkeyBindings) {
@@ -223,6 +227,9 @@ final class SettingsStore: ObservableObject {
         if defaults.object(forKey: Keys.menuBarShowIP) != nil {
             menuBarShowIP = defaults.bool(forKey: Keys.menuBarShowIP)
         }
+        if defaults.object(forKey: Keys.locationAlertSuppressed) != nil {
+            locationAlertSuppressed = defaults.bool(forKey: Keys.locationAlertSuppressed)
+        }
         if let data = defaults.data(forKey: Keys.hotkeyBindings),
            let bindings = try? JSONDecoder().decode([String: HotkeyBinding].self, from: data) {
             hotkeyBindings = bindings
@@ -262,6 +269,7 @@ final class SettingsStore: ObservableObject {
         static let menuBarShowNetworkName = "menuBarShowNetworkName"
         static let menuBarShowVPNIndicator = "menuBarShowVPNIndicator"
         static let menuBarShowIP = "menuBarShowIP"
+        static let locationAlertSuppressed = "locationAlertSuppressed"
     }
 }
 

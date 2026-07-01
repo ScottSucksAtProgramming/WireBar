@@ -35,6 +35,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         observeVPNStateChanges()
         setupNotificationService()
         setupHotkeyManager()
+        showLocationAlertIfNeeded()
     }
 
     private func setupStatusItem() {
@@ -60,6 +61,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 pingService: pingService,
                 vpnManager: vpnManager,
                 licenseManager: licenseManager,
+                locationPermissionManager: locationManager,
                 onOpenSettings: { [weak self] in
                     self?.openSettings()
                 }
@@ -176,6 +178,35 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.activate(ignoringOtherApps: true)
 
         settingsWindow = window
+    }
+
+    private func showLocationAlertIfNeeded() {
+        guard !locationManager.isAuthorized, !settingsStore.locationAlertSuppressed else { return }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+            guard let self else { return }
+
+            let alert = NSAlert()
+            alert.messageText = String(localized: "Location Services Required")
+            alert.informativeText = String(localized: "WireBar needs Location Services permission to show your Wi-Fi network name. Without it, the network name will appear as unavailable.")
+            alert.alertStyle = .informational
+            alert.addButton(withTitle: String(localized: "Open Settings"))
+            alert.addButton(withTitle: String(localized: "Not Now"))
+            alert.showsSuppressionButton = true
+            alert.suppressionButton?.title = String(localized: "Don't remind me again")
+
+            let response = alert.runModal()
+
+            if let suppressionButton = alert.suppressionButton, suppressionButton.state == .on {
+                self.settingsStore.locationAlertSuppressed = true
+            }
+
+            if response == .alertFirstButtonReturn {
+                if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_LocationServices") {
+                    NSWorkspace.shared.open(url)
+                }
+            }
+        }
     }
 
     private func observePingSettings() {
