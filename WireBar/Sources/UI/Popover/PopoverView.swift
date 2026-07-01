@@ -27,6 +27,9 @@ struct PopoverView: View {
 
                 Divider()
                 quickActions
+
+                Divider()
+                quitButton
             }
             .padding()
         }
@@ -132,6 +135,23 @@ struct PopoverView: View {
                 Text(String(localized: "Settings"))
             }
             .accessibilityLabel(String(localized: "Open settings"))
+        }
+    }
+
+    @ViewBuilder
+    private var quitButton: some View {
+        HStack {
+            Spacer()
+            Button {
+                NSApplication.shared.terminate(nil)
+            } label: {
+                Image(systemName: "power")
+                Text(String(localized: "Quit WireBar"))
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .accessibilityLabel(String(localized: "Quit WireBar"))
+            Spacer()
         }
     }
 
