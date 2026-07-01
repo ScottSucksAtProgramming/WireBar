@@ -21,9 +21,13 @@ struct NotificationSettingsView: View {
                 if isLocked {
                     Group {
                         Toggle(String(localized: "VPN disconnection alerts"), isOn: .constant(false))
+                            .accessibilityLabel(String(localized: "VPN disconnection alerts, locked"))
                         Toggle(String(localized: "Wi-Fi disconnection alerts"), isOn: .constant(false))
+                            .accessibilityLabel(String(localized: "Wi-Fi disconnection alerts, locked"))
                         Toggle(String(localized: "External IP change alerts"), isOn: .constant(false))
+                            .accessibilityLabel(String(localized: "External IP change alerts, locked"))
                         Toggle(String(localized: "Network change alerts"), isOn: .constant(false))
+                            .accessibilityLabel(String(localized: "Network change alerts, locked"))
                     }
                     .disabled(true)
                     .opacity(0.4)

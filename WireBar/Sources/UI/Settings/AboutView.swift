@@ -46,8 +46,8 @@ struct AboutView: View {
                     icon: "globe",
                     iconColor: .blue,
                     label: String(localized: "Website"),
-                    detail: "github.com",
-                    url: "https://github.com/ScottSucksAtProgramming/WireBar"
+                    detail: "wirebar.app",
+                    url: "https://wirebar.app"
                 )
                 AboutLinkRow(
                     icon: "person",

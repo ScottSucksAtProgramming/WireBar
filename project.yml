@@ -38,6 +38,11 @@ targets:
         CURRENT_PROJECT_VERSION: "1"
         GENERATE_INFOPLIST_FILE: false
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      configs:
+        Debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: "DEBUG BETA_UNLOCK_PAID"
+        Release:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: ""
     entitlements:
       path: WireBar/Resources/WireBar.entitlements
       properties:

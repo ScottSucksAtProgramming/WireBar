@@ -28,10 +28,31 @@ struct IPPingView: View {
             if licenseManager.isPaid {
                 externalIPRow
                 pingRow
+            } else {
+                paidFeatureHint
             }
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(String(localized: "IP address and latency details"))
+    }
+
+    @ViewBuilder
+    private var paidFeatureHint: some View {
+        HStack {
+            Image(systemName: "lock.fill")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            Text(String(localized: "External IP and latency are paid features"))
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            Spacer()
+            Link(String(localized: "Upgrade"), destination: LicenseConfig.checkoutURL)
+                .font(.caption2)
+                .accessibilityLabel(String(localized: "Upgrade"))
+                .accessibilityHint(String(localized: "Opens the WireBar website to purchase a license"))
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(String(localized: "External IP and latency require a paid license"))
     }
 
     @ViewBuilder

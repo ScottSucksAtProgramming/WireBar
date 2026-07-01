@@ -168,7 +168,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let window = NSWindow(contentViewController: hostingController)
         window.title = String(localized: "WireBar Settings")
         window.styleMask = [.titled, .closable, .resizable]
-        window.setContentSize(NSSize(width: 700, height: 450))
+        window.setContentSize(NSSize(width: 780, height: 650))
         window.minSize = NSSize(width: 700, height: 450)
         window.center()
         window.isReleasedWhenClosed = false

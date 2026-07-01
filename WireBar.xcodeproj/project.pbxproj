@@ -8,18 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		05D82A958B9EE460C56E5E76 /* PingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03925D0F9768116A1CFF5FB1 /* PingService.swift */; };
+		064ECBA43A07C9767FC7D742 /* KeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BAA460B3A99A365B4D7CCC5 /* KeychainStorage.swift */; };
 		06A3465E06B00D14E22E3B99 /* EthernetInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0796CE7A281B93B8030F6DC2 /* EthernetInfoView.swift */; };
 		092315EF46FDDF22E7AC5F01 /* NetworkListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DACB7E50C63805236A703E46 /* NetworkListView.swift */; };
 		0A04607B7FF9B5E61EC0AA71 /* DNSExternalIPResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23EECBFEB946F6266BBFBCEB /* DNSExternalIPResolver.swift */; };
 		0F9D3E07051970B8EACF033D /* IPServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30848E620F947D3CDF20800C /* IPServiceTests.swift */; };
 		109B497FA007188AF4CAEEB5 /* IPPingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6ABC0E940AFCDC8A680D14E /* IPPingView.swift */; };
+		1195F01916122EC603F9ADE1 /* LicenseConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1819D3420A370F726E1AF77D /* LicenseConfig.swift */; };
 		1374C9279572FB9F427E0D9D /* ConnectionInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EE0E4CE68941B5608A94FC /* ConnectionInfoView.swift */; };
 		15B75A2271A4E1F67939BEFF /* PasswordInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7A3BCAA282F29459BA766E /* PasswordInputView.swift */; };
 		1DCEE932C3A1860BC1E01DEF /* VPNSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D86EF773344659435E27E9 /* VPNSectionView.swift */; };
 		2382BDBF16E326C59C347895 /* LicenseSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9CF0CC8E3B0D63EAB76F1C /* LicenseSettingsView.swift */; };
+		245F725AA8E44707E0E62420 /* LemonSqueezyClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27F9B09A85B584C94767530 /* LemonSqueezyClient.swift */; };
 		2C6733098FAAC3CF437D27F7 /* HotkeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5210B4ED7F306F164BB83D /* HotkeyManagerTests.swift */; };
 		2CCE3B5BD4B5DAD1883DCF40 /* IPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EA72C470DB3171788065318 /* IPService.swift */; };
 		2F3BABEBF7E7D4424E4000F9 /* LicenseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7C998CC73EB5397F242E1B /* LicenseManager.swift */; };
+		310F484231A9E55EF4327B43 /* LicenseManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66CA1BAFD284CBD30FC1183 /* LicenseManagerTests.swift */; };
 		3C3F7DC78A4D76C6B03C2FBF /* HotkeyBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66B8076A85F2A5EA70B2197 /* HotkeyBinding.swift */; };
 		3E0F507861561C5F67C89184 /* LocationPermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83175D42F4A612E32FFD95EF /* LocationPermissionManager.swift */; };
 		3EB83EBE576A1F6CF3DBD34E /* NotificationDispatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3079FFF58AE6C998D53CA27F /* NotificationDispatching.swift */; };
@@ -27,6 +31,7 @@
 		5095C57159E93423E9254586 /* SettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07900C54849F9439B9C107D /* SettingsStoreTests.swift */; };
 		5E8247DCA18156D5C4D48673 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 2D1A9339ECF5A97F7720F2C7 /* Sparkle */; };
 		601C459EB0AA1B75AB614BEC /* NetworkDetailsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C0DEFA4DE07234C7FD3C26 /* NetworkDetailsSettingsView.swift */; };
+		617FAC7CEC60FAD382E15C1E /* MockLicenseValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83D066371A11B1545134C1A /* MockLicenseValidator.swift */; };
 		6261EC74967A7B7964BF38A8 /* MockWiFiScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99708002CD7C58EA95EF6010 /* MockWiFiScanner.swift */; };
 		749EA24CA416A5B0EDFB0EF0 /* WLANInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28C2EE6B82E93F1AC575A43F /* WLANInterface.swift */; };
 		7CCD7ECFEAB1810F4EB1DB73 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E542BC1476F536E2AD7631C /* SettingsStore.swift */; };
@@ -36,6 +41,7 @@
 		9324AEF61B150ECEA6321F67 /* MockVPNConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BE17839D7976F2A836D42C /* MockVPNConfigurationProvider.swift */; };
 		94420D46EE50B67291CAB04F /* NetworkState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A20649A831D783E10595AF5 /* NetworkState.swift */; };
 		963F9012AB5538B20E460659 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEEF5244CB62C0E4E7A93E4 /* AboutView.swift */; };
+		97699FD2B459AB890F21D2B3 /* LicenseValidating.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA79C59B33B3944B205DC7EF /* LicenseValidating.swift */; };
 		9F8EA3E46417A767EB60B5FB /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4442F88F31548728E3A7818 /* NetworkMonitor.swift */; };
 		A2A3F78E09D5953865FFC728 /* ScannedNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = B685D03742E886D6FA3EA3B1 /* ScannedNetwork.swift */; };
 		A6CAC822A2C6053C3D2A0FC5 /* WiFiScanning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53EDEF331DC73CEEED5A918A /* WiFiScanning.swift */; };
@@ -78,8 +84,10 @@
 		0796CE7A281B93B8030F6DC2 /* EthernetInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthernetInfoView.swift; sourceTree = "<group>"; };
 		0E542BC1476F536E2AD7631C /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		168177E6A477B281F1F12AF6 /* VPNManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNManagerTests.swift; sourceTree = "<group>"; };
+		1819D3420A370F726E1AF77D /* LicenseConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseConfig.swift; sourceTree = "<group>"; };
 		1A2F3F5C14843996DFC8D481 /* WireBarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WireBarApp.swift; sourceTree = "<group>"; };
 		1B1E9E2C4CB4AFC74D12C4B0 /* MockNotificationDispatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNotificationDispatcher.swift; sourceTree = "<group>"; };
+		1BAA460B3A99A365B4D7CCC5 /* KeychainStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStorage.swift; sourceTree = "<group>"; };
 		1D9CF0CC8E3B0D63EAB76F1C /* LicenseSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseSettingsView.swift; sourceTree = "<group>"; };
 		1E3AA486D70473072EA23B03 /* WireBarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WireBarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		22CA2D33111225DDB605B76F /* VPNState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNState.swift; sourceTree = "<group>"; };
@@ -120,6 +128,8 @@
 		A4442F88F31548728E3A7818 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		A4F837C7760BC97FBD15E48B /* VPNSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNSettingsView.swift; sourceTree = "<group>"; };
 		A5D86EF773344659435E27E9 /* VPNSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNSectionView.swift; sourceTree = "<group>"; };
+		A83D066371A11B1545134C1A /* MockLicenseValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockLicenseValidator.swift; sourceTree = "<group>"; };
+		AA79C59B33B3944B205DC7EF /* LicenseValidating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseValidating.swift; sourceTree = "<group>"; };
 		B66B8076A85F2A5EA70B2197 /* HotkeyBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyBinding.swift; sourceTree = "<group>"; };
 		B6750FA586522A244D435122 /* NotificationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceTests.swift; sourceTree = "<group>"; };
 		B685D03742E886D6FA3EA3B1 /* ScannedNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannedNetwork.swift; sourceTree = "<group>"; };
@@ -129,6 +139,8 @@
 		DB5D5505B3CF1AFCADB2192D /* SystemVPNProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemVPNProvider.swift; sourceTree = "<group>"; };
 		DF2672D50E37D0BF12F4E1A5 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		E003438B77C69146DB9AB97E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		E27F9B09A85B584C94767530 /* LemonSqueezyClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LemonSqueezyClient.swift; sourceTree = "<group>"; };
+		E66CA1BAFD284CBD30FC1183 /* LicenseManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseManagerTests.swift; sourceTree = "<group>"; };
 		F07900C54849F9439B9C107D /* SettingsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStoreTests.swift; sourceTree = "<group>"; };
 		F254B62475DD6A9D4D39AE69 /* UNNotificationDispatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UNNotificationDispatcher.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -183,6 +195,9 @@
 		30A380C1BDD14B27BD4D0DDB /* LicenseManager */ = {
 			isa = PBXGroup;
 			children = (
+				1BAA460B3A99A365B4D7CCC5 /* KeychainStorage.swift */,
+				E27F9B09A85B584C94767530 /* LemonSqueezyClient.swift */,
+				1819D3420A370F726E1AF77D /* LicenseConfig.swift */,
 				7B7C998CC73EB5397F242E1B /* LicenseManager.swift */,
 			);
 			path = LicenseManager;
@@ -290,6 +305,7 @@
 		8CFE9340C8833A7C7A74AB9D /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
+				A83D066371A11B1545134C1A /* MockLicenseValidator.swift */,
 				1B1E9E2C4CB4AFC74D12C4B0 /* MockNotificationDispatcher.swift */,
 				37BE17839D7976F2A836D42C /* MockVPNConfigurationProvider.swift */,
 				99708002CD7C58EA95EF6010 /* MockWiFiScanner.swift */,
@@ -319,6 +335,7 @@
 			children = (
 				5A5210B4ED7F306F164BB83D /* HotkeyManagerTests.swift */,
 				30848E620F947D3CDF20800C /* IPServiceTests.swift */,
+				E66CA1BAFD284CBD30FC1183 /* LicenseManagerTests.swift */,
 				A1364E6AE1CA3A9808B8C339 /* NetworkMonitorTests.swift */,
 				B6750FA586522A244D435122 /* NotificationServiceTests.swift */,
 				6291335C98333BE5115ADD5F /* PingServiceTests.swift */,
@@ -375,6 +392,7 @@
 		F6DBF331E9EF506EF026FDE5 /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
+				AA79C59B33B3944B205DC7EF /* LicenseValidating.swift */,
 				B8DB014CEB367D8AC181ECB1 /* NetworkPathProviding.swift */,
 				3079FFF58AE6C998D53CA27F /* NotificationDispatching.swift */,
 				8C5753AB09F816929C5C4070 /* VPNConfigurationProviding.swift */,
@@ -491,6 +509,8 @@
 			files = (
 				2C6733098FAAC3CF437D27F7 /* HotkeyManagerTests.swift in Sources */,
 				0F9D3E07051970B8EACF033D /* IPServiceTests.swift in Sources */,
+				310F484231A9E55EF4327B43 /* LicenseManagerTests.swift in Sources */,
+				617FAC7CEC60FAD382E15C1E /* MockLicenseValidator.swift in Sources */,
 				DACDC2BB80F4EA2D0D76B22A /* MockNotificationDispatcher.swift in Sources */,
 				9324AEF61B150ECEA6321F67 /* MockVPNConfigurationProvider.swift in Sources */,
 				6261EC74967A7B7964BF38A8 /* MockWiFiScanner.swift in Sources */,
@@ -520,8 +540,12 @@
 				109B497FA007188AF4CAEEB5 /* IPPingView.swift in Sources */,
 				2CCE3B5BD4B5DAD1883DCF40 /* IPService.swift in Sources */,
 				F1041433EB6131DB14277A24 /* KeyboardShortcutsSettingsView.swift in Sources */,
+				064ECBA43A07C9767FC7D742 /* KeychainStorage.swift in Sources */,
+				245F725AA8E44707E0E62420 /* LemonSqueezyClient.swift in Sources */,
+				1195F01916122EC603F9ADE1 /* LicenseConfig.swift in Sources */,
 				2F3BABEBF7E7D4424E4000F9 /* LicenseManager.swift in Sources */,
 				2382BDBF16E326C59C347895 /* LicenseSettingsView.swift in Sources */,
+				97699FD2B459AB890F21D2B3 /* LicenseValidating.swift in Sources */,
 				3E0F507861561C5F67C89184 /* LocationPermissionManager.swift in Sources */,
 				601C459EB0AA1B75AB614BEC /* NetworkDetailsSettingsView.swift in Sources */,
 				092315EF46FDDF22E7AC5F01 /* NetworkListView.swift in Sources */,
@@ -597,6 +621,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.scottkostolni.WireBar;
 				PRODUCT_NAME = WireBar;
 				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 			};
 			name = Release;
 		};
@@ -742,6 +767,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.scottkostolni.WireBar;
 				PRODUCT_NAME = WireBar;
 				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG BETA_UNLOCK_PAID";
 			};
 			name = Debug;
 		};

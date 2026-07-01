@@ -67,7 +67,8 @@ struct PopoverView: View {
         ) {
             ConnectionInfoView(
                 networkMonitor: networkMonitor,
-                settingsStore: settingsStore
+                settingsStore: settingsStore,
+                isPaid: licenseManager.isPaid
             )
         }
 
@@ -142,6 +143,7 @@ struct PopoverView: View {
         )) {
             Label(String(localized: "Wi-Fi"), systemImage: "wifi")
                 .font(.caption)
+                .fixedSize()
         }
         .toggleStyle(.switch)
         .controlSize(.small)
@@ -172,16 +174,20 @@ struct PopoverView: View {
         if let localIP = ipService.localIP {
             lines.append("Local IP: \(localIP)")
         }
-        if let externalIP = ipService.externalIP {
-            lines.append("External IP: \(externalIP)")
+        if licenseManager.isPaid {
+            if let externalIP = ipService.externalIP {
+                lines.append("External IP: \(externalIP)")
+            }
         }
 
         if networkMonitor.state.isEthernetConnected, let ethIP = networkMonitor.state.ethernetIPAddress {
             lines.append("Ethernet IP: \(ethIP)")
         }
 
-        for vpn in vpnManager.vpnStates {
-            lines.append("VPN: \(vpn.displayName) (\(vpn.status.label))")
+        if licenseManager.isPaid {
+            for vpn in vpnManager.vpnStates {
+                lines.append("VPN: \(vpn.displayName) (\(vpn.status.label))")
+            }
         }
 
         let text = lines.joined(separator: "\n")

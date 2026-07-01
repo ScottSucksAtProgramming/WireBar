@@ -28,7 +28,9 @@ struct IPPingSettingsView: View {
                 if isLocked {
                     Group {
                         lockedPicker(String(localized: "Refresh mode"), value: String(localized: "On demand"))
+                            .accessibilityLabel(String(localized: "Refresh mode, locked"))
                         lockedPicker(String(localized: "Refresh interval"), value: String(localized: "1 minute"))
+                            .accessibilityLabel(String(localized: "Refresh interval, locked"))
                     }
                     .opacity(0.4)
                 } else {
@@ -43,9 +45,11 @@ struct IPPingSettingsView: View {
                     Group {
                         Toggle(String(localized: "Show ping latency"), isOn: .constant(false))
                             .disabled(true)
+                            .accessibilityLabel(String(localized: "Show ping latency, locked"))
                         LabeledContent(String(localized: "Ping target")) {
                             Text("1.1.1.1")
                         }
+                        .accessibilityLabel(String(localized: "Ping target, locked"))
                     }
                     .opacity(0.4)
                 } else {
