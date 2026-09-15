@@ -9,6 +9,8 @@ final class WiFiManager: ObservableObject, @unchecked Sendable {
     @Published private(set) var scanError: Error?
     @Published private(set) var joinError: Error?
     @Published private(set) var isJoining: Bool = false
+    /// SSIDs WireBar has a password stored for. Never holds the passwords themselves.
+    @Published private(set) var savedNetworkSSIDs: [String] = []
 
     private nonisolated(unsafe) let scanner: WiFiScanning
     private nonisolated(unsafe) let keychain: KeychainStoring
@@ -23,6 +25,35 @@ final class WiFiManager: ObservableObject, @unchecked Sendable {
         self.scanner = scanner
         self.keychain = keychain
         self.isWiFiPoweredOn = scanner.isPoweredOn()
+        self.savedNetworkSSIDs = keychain.allKeys()
+    }
+
+    // MARK: - Saved passwords
+
+    /// Stores or replaces the password for `ssid`. Returns false if the keychain
+    /// refused the write, which the caller must surface: `save` deletes before it
+    /// adds, so a rejected write leaves nothing behind.
+    @discardableResult
+    func savePassword(_ password: String, for ssid: String) -> Bool {
+        let saved = keychain.save(key: ssid, value: password)
+        savedNetworkSSIDs = keychain.allKeys()
+        return saved
+    }
+
+    func hasSavedPassword(for ssid: String) -> Bool {
+        keychain.load(key: ssid) != nil
+    }
+
+    func forgetPassword(for ssid: String) {
+        keychain.delete(key: ssid)
+        savedNetworkSSIDs = keychain.allKeys()
+    }
+
+    func forgetAllPasswords() {
+        for ssid in keychain.allKeys() {
+            keychain.delete(key: ssid)
+        }
+        savedNetworkSSIDs = keychain.allKeys()
     }
 
     func scan() {
@@ -109,6 +140,7 @@ final class WiFiManager: ObservableObject, @unchecked Sendable {
                 // discarded; the next successful join overwrites it.
                 if failure == nil, let password {
                     keychain.save(key: ssid, value: password)
+                    self.savedNetworkSSIDs = keychain.allKeys()
                 }
                 self.joinError = failure
                 self.isJoining = false

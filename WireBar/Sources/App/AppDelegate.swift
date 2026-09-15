@@ -11,7 +11,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     let settingsStore = SettingsStore()
     let licenseManager = LicenseManager()
     private let networkMonitor = NetworkMonitor()
-    private lazy var wifiManager = WiFiManager()
+    lazy var wifiManager = WiFiManager()
     private let locationManager = LocationPermissionManager()
     private lazy var ipService = IPService(licenseManager: licenseManager)
     private lazy var pingService = PingService(licenseManager: licenseManager)
@@ -225,6 +225,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             settingsStore: settingsStore,
             licenseManager: licenseManager,
             vpnManager: vpnManager,
+            wifiManager: wifiManager,
             updaterController: updaterController
         )
         let hostingController = NSHostingController(rootView: settingsView)

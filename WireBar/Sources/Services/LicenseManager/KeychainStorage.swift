@@ -7,6 +7,9 @@ protocol KeychainStoring: Sendable {
     func save(key: String, value: String) -> Bool
     func load(key: String) -> String?
     func delete(key: String) -> Bool
+    /// Every account stored under this service. Scoped to the service, so one
+    /// service's keys never leak into another's list.
+    func allKeys() -> [String]
     func saveDate(key: String, value: Date) -> Bool
     func loadDate(key: String) -> Date?
 }
@@ -62,6 +65,23 @@ struct KeychainStorage: KeychainStoring, Sendable {
         return SecItemDelete(baseQuery(key: key) as CFDictionary) == errSecSuccess
     }
 
+    func allKeys() -> [String] {
+        var query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecReturnAttributes as String: true,
+            kSecMatchLimit as String: kSecMatchLimitAll,
+        ]
+        query[kSecReturnData as String] = false
+        var result: AnyObject?
+        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess,
+              let items = result as? [[String: Any]]
+        else {
+            return []
+        }
+        return items.compactMap { $0[kSecAttrAccount as String] as? String }.sorted()
+    }
+
     func saveDate(key: String, value: Date) -> Bool {
         let timestamp = String(value.timeIntervalSince1970)
         return save(key: key, value: timestamp)
@@ -91,6 +111,10 @@ final class InMemoryKeychainStorage: KeychainStoring, @unchecked Sendable {
 
     func delete(key: String) -> Bool {
         store.removeValue(forKey: key) != nil
+    }
+
+    func allKeys() -> [String] {
+        store.keys.sorted()
     }
 
     func saveDate(key: String, value: Date) -> Bool {

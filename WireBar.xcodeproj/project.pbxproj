@@ -68,6 +68,7 @@
 		EEEA923FF098934173CBA3CD /* CoreWLANScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DB47FABA9BE9CF702DCE35 /* CoreWLANScanner.swift */; };
 		F1041433EB6131DB14277A24 /* KeyboardShortcutsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395345C117931984B828F7DD /* KeyboardShortcutsSettingsView.swift */; };
 		FB9F2D0E55F8CCD84419B20D /* SystemVPNProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5D5505B3CF1AFCADB2192D /* SystemVPNProvider.swift */; };
+		FCE8D9A027BD5AB7F4452A41 /* SavedNetworksSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70DA421136D2C6DE5F6286EF /* SavedNetworksSettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,6 +112,7 @@
 		65182B3447F0ABDAF0E68F7B /* VPNManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNManager.swift; sourceTree = "<group>"; };
 		6BAFAAEAA8F5B3FBD40600AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		6C64F8FF9413274044CBA15A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		70DA421136D2C6DE5F6286EF /* SavedNetworksSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedNetworksSettingsView.swift; sourceTree = "<group>"; };
 		713F20A0F4A1A519509EC972 /* KeychainStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStorageTests.swift; sourceTree = "<group>"; };
 		78DB47FABA9BE9CF702DCE35 /* CoreWLANScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreWLANScanner.swift; sourceTree = "<group>"; };
 		7B7C998CC73EB5397F242E1B /* LicenseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseManager.swift; sourceTree = "<group>"; };
@@ -282,6 +284,7 @@
 				1D9CF0CC8E3B0D63EAB76F1C /* LicenseSettingsView.swift */,
 				92C0DEFA4DE07234C7FD3C26 /* NetworkDetailsSettingsView.swift */,
 				55DD56DEE266209DFCC65A22 /* NotificationSettingsView.swift */,
+				70DA421136D2C6DE5F6286EF /* SavedNetworksSettingsView.swift */,
 				E003438B77C69146DB9AB97E /* SettingsView.swift */,
 				A4F837C7760BC97FBD15E48B /* VPNSettingsView.swift */,
 			);
@@ -563,6 +566,7 @@
 				05D82A958B9EE460C56E5E76 /* PingService.swift in Sources */,
 				BAC77F76A4353A4BA6B6E7B3 /* PopoverView.swift in Sources */,
 				D04A7B0773B936C5D0F9A798 /* SMAppServiceSpike.swift in Sources */,
+				FCE8D9A027BD5AB7F4452A41 /* SavedNetworksSettingsView.swift in Sources */,
 				A2A3F78E09D5953865FFC728 /* ScannedNetwork.swift in Sources */,
 				7CCD7ECFEAB1810F4EB1DB73 /* SettingsStore.swift in Sources */,
 				BD95D7280E8006885A8AAA69 /* SettingsView.swift in Sources */,

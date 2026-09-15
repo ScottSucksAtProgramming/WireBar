@@ -5,6 +5,16 @@ import Combine
 @MainActor
 final class LicenseManagerTests: XCTestCase {
 
+    /// LicenseManager's setOnMain applies updates synchronously when it happens to be
+    /// on the main thread and via DispatchQueue.main.async otherwise. An async
+    /// continuation can resume on either, so after `await validateLicense()` the state
+    /// change may still be queued. Drain the main queue before asserting.
+    private func drainMainQueue() async {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async { continuation.resume() }
+        }
+    }
+
     private func makeSUT(
         validator: MockLicenseValidator = MockLicenseValidator(),
         keychain: InMemoryKeychainStorage = InMemoryKeychainStorage()
@@ -101,6 +111,7 @@ final class LicenseManagerTests: XCTestCase {
 
         // Init restored from keychain, now validate explicitly
         await sut.validateLicense()
+        await drainMainQueue()
 
         XCTAssertTrue(sut.isPaid)
         XCTAssertEqual(sut.licenseStatus, .activated)
@@ -288,6 +299,7 @@ final class LicenseManagerTests: XCTestCase {
         let (sut, _, _) = makeSUT(validator: validator, keychain: keychain)
 
         await sut.validateLicense()
+        await drainMainQueue()
 
         XCTAssertEqual(sut.licenseStatus, .gracePeriod)
         XCTAssertTrue(sut.isPaid, "Grace period should keep paid features active")
@@ -303,6 +315,7 @@ final class LicenseManagerTests: XCTestCase {
         let (sut, _, _) = makeSUT(validator: validator, keychain: keychain)
 
         await sut.validateLicense()
+        await drainMainQueue()
 
         XCTAssertEqual(sut.licenseStatus, .validationPending)
         XCTAssertFalse(sut.isPaid, "Expired grace period should disable paid features")
@@ -318,6 +331,7 @@ final class LicenseManagerTests: XCTestCase {
         let (sut, _, _) = makeSUT(validator: validator, keychain: keychain)
 
         await sut.validateLicense()
+        await drainMainQueue()
 
         XCTAssertEqual(sut.licenseStatus, .validationPending)
         XCTAssertFalse(sut.isPaid, "No cached timestamp should disable paid features on network error")
@@ -333,6 +347,7 @@ final class LicenseManagerTests: XCTestCase {
         let (sut, _, _) = makeSUT(validator: validator, keychain: keychain)
 
         await sut.validateLicense()
+        await drainMainQueue()
 
         XCTAssertEqual(sut.licenseStatus, .validationPending, "Clock rolled back should invalidate cached validation")
         XCTAssertFalse(sut.isPaid)

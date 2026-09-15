@@ -36,6 +36,11 @@ struct PasswordInputView: View {
                 }
                 .accessibilityLabel(String(localized: "Cancel joining network"))
             }
+
+            Text(String(localized: "WireBar saves this in your Mac's keychain so it won't ask again. It stays on this Mac."))
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.vertical, 4)
         .onAppear {

@@ -4,6 +4,7 @@ import Sparkle
 enum SettingsTab: String, CaseIterable, Identifiable {
     case general
     case networkDetails
+    case savedNetworks
     case ipLatency
     case vpn
     case notifications
@@ -17,6 +18,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         switch self {
         case .general: String(localized: "General")
         case .networkDetails: String(localized: "Network Details")
+        case .savedNetworks: String(localized: "Saved Networks")
         case .ipLatency: String(localized: "IP & Latency")
         case .vpn: String(localized: "VPN")
         case .notifications: String(localized: "Notifications")
@@ -30,6 +32,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         switch self {
         case .general: "gear"
         case .networkDetails: "network"
+        case .savedNetworks: "lock.shield"
         case .ipLatency: "globe"
         case .vpn: "shield.lefthalf.filled"
         case .notifications: "bell"
@@ -43,6 +46,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         switch self {
         case .general: .blue
         case .networkDetails: .green
+        case .savedNetworks: .teal
         case .ipLatency: .purple
         case .vpn: .orange
         case .notifications: .red
@@ -54,7 +58,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
 
     var group: Int {
         switch self {
-        case .general, .networkDetails, .ipLatency, .vpn: 0
+        case .general, .networkDetails, .savedNetworks, .ipLatency, .vpn: 0
         case .notifications, .shortcuts: 1
         case .license, .about: 2
         }
@@ -83,6 +87,7 @@ struct SettingsView: View {
     @ObservedObject var settingsStore: SettingsStore
     @ObservedObject var licenseManager: LicenseManager
     @ObservedObject var vpnManager: VPNManager
+    @ObservedObject var wifiManager: WiFiManager
     let updaterController: SPUStandardUpdaterController
 
     @State private var selectedTab: SettingsTab = .general
@@ -113,6 +118,8 @@ struct SettingsView: View {
                 GeneralSettingsView(settingsStore: settingsStore, licenseManager: licenseManager)
             case .networkDetails:
                 NetworkDetailsSettingsView(settingsStore: settingsStore, licenseManager: licenseManager)
+            case .savedNetworks:
+                SavedNetworksSettingsView(wifiManager: wifiManager)
             case .ipLatency:
                 IPPingSettingsView(settingsStore: settingsStore, licenseManager: licenseManager)
             case .vpn:

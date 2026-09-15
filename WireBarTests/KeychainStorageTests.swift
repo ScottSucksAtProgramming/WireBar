@@ -10,7 +10,10 @@ final class KeychainStorageTests: XCTestCase {
     private lazy var sut = KeychainStorage(service: service)
 
     override func tearDown() {
-        sut.delete(key: "probe")
+        // Remove everything the test created: residue here lands in a real login keychain.
+        for key in sut.allKeys() {
+            sut.delete(key: key)
+        }
         super.tearDown()
     }
 
@@ -38,5 +41,35 @@ final class KeychainStorageTests: XCTestCase {
 
     func testLoadReturnsNilForMissingKey() {
         XCTAssertNil(sut.load(key: "no-such-key"))
+    }
+
+    func testAllKeysListsEveryStoredAccount() {
+        XCTAssertTrue(sut.save(key: "probe", value: "a"))
+        XCTAssertTrue(sut.save(key: "probe-2", value: "b"))
+        XCTAssertTrue(sut.save(key: "probe-3", value: "c"))
+
+        XCTAssertEqual(sut.allKeys(), ["probe", "probe-2", "probe-3"])
+    }
+
+    func testAllKeysIsEmptyWhenNothingStored() {
+        XCTAssertTrue(sut.allKeys().isEmpty)
+    }
+
+    func testAllKeysIsScopedToThisService() {
+        XCTAssertTrue(sut.save(key: "probe", value: "a"))
+
+        let other = KeychainStorage(service: "com.scottkostolni.WireBar.tests.keychain.other")
+        XCTAssertTrue(other.save(key: "not-mine", value: "b"))
+        defer { other.delete(key: "not-mine") }
+
+        XCTAssertEqual(sut.allKeys(), ["probe"])
+    }
+
+    func testAllKeysDropsDeletedAccounts() {
+        XCTAssertTrue(sut.save(key: "probe", value: "a"))
+        XCTAssertTrue(sut.save(key: "probe-2", value: "b"))
+        XCTAssertTrue(sut.delete(key: "probe"))
+
+        XCTAssertEqual(sut.allKeys(), ["probe-2"])
     }
 }

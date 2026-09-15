@@ -215,6 +215,68 @@ final class WiFiManagerTests: XCTestCase {
         XCTAssertFalse(message.contains("hunter2"))
     }
 
+    // MARK: - Managing saved passwords
+
+    func testSavePasswordAddsNetworkToSavedList() {
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+
+        XCTAssertTrue(sut.savePassword("pw", for: "Home"))
+
+        XCTAssertEqual(sut.savedNetworkSSIDs, ["Home"])
+        XCTAssertTrue(sut.hasSavedPassword(for: "Home"))
+    }
+
+    func testSavePasswordReplacesAnExistingOne() {
+        mockKeychain.save(key: "Home", value: "old-pw")
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+
+        XCTAssertTrue(sut.savePassword("new-pw", for: "Home"))
+
+        XCTAssertEqual(sut.savedNetworkSSIDs, ["Home"])
+        XCTAssertEqual(mockKeychain.load(key: "Home"), "new-pw")
+    }
+
+    func testForgetPasswordRemovesOnlyThatNetwork() {
+        mockKeychain.save(key: "Home", value: "a")
+        mockKeychain.save(key: "Cafe", value: "b")
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+
+        sut.forgetPassword(for: "Home")
+
+        XCTAssertEqual(sut.savedNetworkSSIDs, ["Cafe"])
+    }
+
+    func testForgetAllPasswordsClearsEveryNetwork() {
+        mockKeychain.save(key: "Home", value: "a")
+        mockKeychain.save(key: "Cafe", value: "b")
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+
+        sut.forgetAllPasswords()
+
+        XCTAssertTrue(sut.savedNetworkSSIDs.isEmpty)
+        XCTAssertNil(mockKeychain.load(key: "Home"))
+        XCTAssertNil(mockKeychain.load(key: "Cafe"))
+    }
+
+    func testSavedListPicksUpAPasswordStoredByJoining() {
+        let network = makeNetwork(ssid: "Cafe", rssi: -50, isKnown: false)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+        XCTAssertTrue(sut.savedNetworkSSIDs.isEmpty)
+
+        sut.joinNetwork(network, password: "secret123")
+        waitForJoinToFinish(sut)
+
+        XCTAssertEqual(sut.savedNetworkSSIDs, ["Cafe"])
+    }
+
+    func testSavedListIsPopulatedAtInit() {
+        mockKeychain.save(key: "Home", value: "a")
+
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+
+        XCTAssertEqual(sut.savedNetworkSSIDs, ["Home"])
+    }
+
     // MARK: - Power Toggle
 
     func testTogglePowerOff() {

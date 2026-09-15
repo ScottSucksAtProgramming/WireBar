@@ -10,6 +10,7 @@ struct WireBarApp: App {
                 settingsStore: appDelegate.settingsStore,
                 licenseManager: appDelegate.licenseManager,
                 vpnManager: appDelegate.vpnManager,
+                wifiManager: appDelegate.wifiManager,
                 updaterController: appDelegate.updaterController
             )
         }
