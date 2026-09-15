@@ -104,6 +104,10 @@ wifi-menubar/
   dist/  (release outputs, gitignored; old hand-made DMGs in dist/old/)
   design/
     app-icon/wirebar_icon.png  (source art for the app icon, 1254px)
+  docs/
+    guides/
+      beta-keys.md  (how Scott makes and sends beta keys)
+      releasing.md  (how Scott publishes a new version)
   archive/
     completed-phases.taskpaper
   handoffs/          (local only, .gitignored — session handoff docs)
