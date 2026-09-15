@@ -4,10 +4,12 @@ import Combine
 
 final class WiFiManagerTests: XCTestCase {
     private var mockScanner: MockWiFiScanner!
+    private var mockKeychain: InMemoryKeychainStorage!
 
     override func setUp() {
         super.setUp()
         mockScanner = MockWiFiScanner()
+        mockKeychain = InMemoryKeychainStorage()
     }
 
     // MARK: - Scanning
@@ -19,7 +21,7 @@ final class WiFiManagerTests: XCTestCase {
             makeNetwork(ssid: "HomeNetwork", rssi: -60, isKnown: true),
         ]
 
-        let sut = WiFiManager(scanner: mockScanner)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
         sut.scan()
         waitForScanToFinish(sut)
 
@@ -35,7 +37,7 @@ final class WiFiManagerTests: XCTestCase {
             makeNetwork(ssid: "Medium", rssi: -55, isKnown: false),
         ]
 
-        let sut = WiFiManager(scanner: mockScanner)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
         sut.scan()
         waitForScanToFinish(sut)
 
@@ -51,7 +53,7 @@ final class WiFiManagerTests: XCTestCase {
             makeNetwork(ssid: "AMB-Public", rssi: -61, isKnown: true, bssid: "AA:00:00:00:00:04"),
         ]
 
-        let sut = WiFiManager(scanner: mockScanner)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
         sut.scan()
         waitForScanToFinish(sut)
 
@@ -67,7 +69,7 @@ final class WiFiManagerTests: XCTestCase {
             makeNetwork(ssid: "SBMA", rssi: -75, isKnown: false, bssid: "BB:00:00:00:00:01"),
         ]
 
-        let sut = WiFiManager(scanner: mockScanner)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
         sut.scan()
         waitForScanToFinish(sut)
 
@@ -81,7 +83,7 @@ final class WiFiManagerTests: XCTestCase {
             makeNetwork(ssid: "Other", rssi: -60, isKnown: false),
         ]
 
-        let sut = WiFiManager(scanner: mockScanner)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
         sut.scan()
         waitForScanToFinish(sut)
 
@@ -94,7 +96,7 @@ final class WiFiManagerTests: XCTestCase {
             makeNetwork(ssid: "Visible", rssi: -50, isKnown: false),
         ]
 
-        let sut = WiFiManager(scanner: mockScanner)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
         sut.scan()
         waitForScanToFinish(sut)
 
@@ -105,7 +107,7 @@ final class WiFiManagerTests: XCTestCase {
     func testScanFailureSetsErrorState() {
         mockScanner.scanShouldThrow = true
 
-        let sut = WiFiManager(scanner: mockScanner)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
         sut.scan()
         waitForScanToFinish(sut)
 
@@ -117,7 +119,7 @@ final class WiFiManagerTests: XCTestCase {
 
     func testJoinKnownNetworkCallsAssociateWithNilPassword() {
         let network = makeNetwork(ssid: "Home", rssi: -50, isKnown: true, bssid: "AA:BB:CC:DD:EE:FF")
-        let sut = WiFiManager(scanner: mockScanner)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
 
         sut.joinNetwork(network, password: nil)
         waitForJoinToFinish(sut)
@@ -128,7 +130,7 @@ final class WiFiManagerTests: XCTestCase {
 
     func testJoinUnknownNetworkCallsAssociateWithPassword() {
         let network = makeNetwork(ssid: "Cafe", rssi: -50, isKnown: false, bssid: "11:22:33:44:55:66")
-        let sut = WiFiManager(scanner: mockScanner)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
 
         sut.joinNetwork(network, password: "secret123")
         waitForJoinToFinish(sut)
@@ -140,7 +142,7 @@ final class WiFiManagerTests: XCTestCase {
     func testJoinFailureSetsJoinError() {
         mockScanner.associateShouldThrow = true
         let network = makeNetwork(ssid: "Bad", rssi: -50, isKnown: false, bssid: "FF:FF:FF:FF:FF:FF")
-        let sut = WiFiManager(scanner: mockScanner)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
 
         sut.joinNetwork(network, password: "pw")
         waitForJoinToFinish(sut)
@@ -217,7 +219,7 @@ final class WiFiManagerTests: XCTestCase {
 
     func testTogglePowerOff() {
         mockScanner.isPowered = true
-        let sut = WiFiManager(scanner: mockScanner)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
 
         sut.togglePower()
 
@@ -227,7 +229,7 @@ final class WiFiManagerTests: XCTestCase {
 
     func testTogglePowerOn() {
         mockScanner.isPowered = false
-        let sut = WiFiManager(scanner: mockScanner)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
 
         sut.togglePower()
 
