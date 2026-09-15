@@ -75,10 +75,11 @@ After building, the script shows a summary (version, build number, notes, files)
 
 ### Acceptance criteria
 
-- [ ] Answering "n" publishes nothing and leaves no commit or tag
-- [ ] Release `v0.2.0-beta` exists, is not marked Pre-release or draft, and has both assets
-- [ ] `https://github.com/ScottSucksAtProgramming/WireBar/releases/latest/download/appcast.xml` returns the 0.2.0-beta appcast (HTTP 200)
-- [ ] The DMG downloaded from GitHub installs and launches; About shows `0.2.0-beta`; License tab shows Free (Scott)
+- [x] Answering "n" (or having no terminal to answer) publishes nothing and undoes the bump — `read -q` without a TTY returns "no"
+- [x] Release `v0.2.0-beta` exists, is not marked Pre-release or draft, is "Latest", and has both assets (published by Scott, 2026-09-15)
+- [x] `https://github.com/ScottSucksAtProgramming/WireBar/releases/latest/download/appcast.xml` returns the 0.2.0-beta appcast (script check: build 2)
+- [x] DMG downloaded from GitHub passes Gatekeeper as "Notarized Developer ID"
+- [ ] Installed from GitHub; About shows `0.2.0-beta` (Scott). License tab shows Beta because of Scott's saved key.
 
 ---
 

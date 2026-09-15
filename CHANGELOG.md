@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- Confirms in-app updates work: this release is delivered through WireBar's built-in updater
+
 ## [0.2.0-beta] - 2026-09-15
 
 ### Added
