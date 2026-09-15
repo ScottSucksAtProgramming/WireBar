@@ -57,8 +57,8 @@ struct PasswordInputView: View {
             // An 802.1X network takes a work or school account, not a shared Wi-Fi
             // key, so say plainly what is being kept.
             Text(isEnterprise
-                ? String(localized: "WireBar saves this account in your User Keychain so it won't ask again. It stays on this Mac.")
-                : String(localized: "WireBar saves this in your User Keychain so it won't ask again. It stays on this Mac."))
+                ? String(localized: "WireBar saves this account in your Mac's keychain so it won't ask again. It stays on this Mac.")
+                : String(localized: "WireBar saves this in your Mac's keychain so it won't ask again. It stays on this Mac."))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)

@@ -12,115 +12,97 @@ struct SavedNetworksSettingsView: View {
     @State private var saveFailed: Bool = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Outside the Form so this reads as panel text rather than a settings row.
-            VStack(alignment: .leading, spacing: 8) {
-                Text(String(localized: "WireBar can store your network passwords locally to make network switching easier. These passwords are used only to connect to Wi-Fi networks and are never sent anywhere else."))
+        Form {
+            Section(String(localized: "How WireBar stores these")) {
+                Text(String(localized: "Passwords you save here are kept in your Mac's keychain, the same place Safari keeps the passwords it remembers for you. They stay on this Mac. WireBar never sends them to us or to anyone else."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Text(String(localized: "You can remove stored passwords at any time."))
+                Text(String(localized: "Anyone who can unlock your Mac can look them up, the same as any other password you've saved. You can remove any of them below at any time."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(String(localized: "Work or school networks sign you in with an account rather than a shared password. For those, WireBar keeps the username and password you enter, the same way and in the same place."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(String(localized: "macOS keeps its own copy of your Wi-Fi passwords that WireBar isn't allowed to read, which is why WireBar needs its own."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            .font(.caption)
-            .foregroundStyle(.secondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
-            .padding(.bottom, 8)
 
-            Form {
-                Section(String(localized: "About Storing Passwords in WireBar")) {
-                    Text(String(localized: "WireBar does not access the Wi-Fi passwords stored by your Mac. Instead, WireBar stores the password in your User Keychain, the same place Safari stores passwords it remembers for you."))
+            Section(String(localized: "Saved networks")) {
+                if wifiManager.savedNetworkSSIDs.isEmpty {
+                    Text(String(localized: "No saved passwords yet."))
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    Text(String(localized: "Anyone who can unlock your Mac can access these passwords. Consider how comfortable you are with that before saving passwords in WireBar."))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                Section(String(localized: "Enterprise Networks")) {
-                    Text(String(localized: "WireBar will need to store the username and password that work and school networks require. These accounts are often used to access multiple systems. Review your network's security policies before storing the password in WireBar."))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                Section(String(localized: "Saved networks")) {
-                    if wifiManager.savedNetworkSSIDs.isEmpty {
-                        Text(String(localized: "No saved passwords yet."))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    } else {
-                        ForEach(wifiManager.savedNetworkSSIDs, id: \.self) { ssid in
-                            savedRow(ssid)
-                        }
-
-                        Button(role: .destructive) {
-                            confirmingForgetAll = true
-                        } label: {
-                            Text(String(localized: "Forget All"))
-                        }
-                        .accessibilityLabel(String(localized: "Forget all saved Wi-Fi passwords"))
-                        .confirmationDialog(
-                            String(localized: "Forget all saved Wi-Fi passwords?"),
-                            isPresented: $confirmingForgetAll,
-                            titleVisibility: .visible
-                        ) {
-                            Button(String(localized: "Forget All"), role: .destructive) {
-                                wifiManager.forgetAllPasswords()
-                            }
-                            Button(String(localized: "Cancel"), role: .cancel) {}
-                        } message: {
-                            Text(String(localized: "WireBar will ask for the password the next time you join these networks. Your Mac's own saved networks are not affected."))
-                        }
+                } else {
+                    ForEach(wifiManager.savedNetworkSSIDs, id: \.self) { ssid in
+                        savedRow(ssid)
                     }
-                }
 
-                Section(String(localized: "Add a network")) {
-                    TextField(String(localized: "Network name (SSID)"), text: $newSSID)
-                        .textFieldStyle(.roundedBorder)
-                        .accessibilityLabel(String(localized: "Network name to save a password for"))
-
-                    TextField(String(localized: "Username (work or school networks only)"), text: $newUsername)
-                        .textFieldStyle(.roundedBorder)
-                        .accessibilityLabel(String(localized: "Username, only needed for work or school networks"))
-
-                    SecureField(String(localized: "Password"), text: $newPassword)
-                        .textFieldStyle(.roundedBorder)
-                        .accessibilityLabel(String(localized: "Password for the network being added"))
-
-                    Button(String(localized: "Save")) {
-                        saveFailed = !wifiManager.savePassword(
-                            newPassword,
-                            username: trimmedNewUsername.isEmpty ? nil : trimmedNewUsername,
-                            for: trimmedNewSSID
-                        )
-                        if !saveFailed {
-                            newSSID = ""
-                            newUsername = ""
-                            newPassword = ""
-                        }
+                    Button(role: .destructive) {
+                        confirmingForgetAll = true
+                    } label: {
+                        Text(String(localized: "Forget All"))
                     }
-                    .disabled(trimmedNewSSID.isEmpty || newPassword.isEmpty)
-                    .accessibilityLabel(String(localized: "Save password for this network"))
-
-                    if saveFailed {
-                        Text(String(localized: "Your Mac's keychain refused to save that. Nothing was stored."))
-                            .font(.caption)
-                            .foregroundStyle(.red)
-                            .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityLabel(String(localized: "Forget all saved Wi-Fi passwords"))
+                    .confirmationDialog(
+                        String(localized: "Forget all saved Wi-Fi passwords?"),
+                        isPresented: $confirmingForgetAll,
+                        titleVisibility: .visible
+                    ) {
+                        Button(String(localized: "Forget All"), role: .destructive) {
+                            wifiManager.forgetAllPasswords()
+                        }
+                        Button(String(localized: "Cancel"), role: .cancel) {}
+                    } message: {
+                        Text(String(localized: "WireBar will ask for the password next time you join these networks. Your Mac's own saved networks are not affected."))
                     }
                 }
             }
-            .formStyle(.grouped)
+
+            Section(String(localized: "Add a network")) {
+                TextField(String(localized: "Network name (SSID)"), text: $newSSID)
+                    .textFieldStyle(.roundedBorder)
+                    .accessibilityLabel(String(localized: "Network name to save a password for"))
+
+                TextField(String(localized: "Username (work or school networks only)"), text: $newUsername)
+                    .textFieldStyle(.roundedBorder)
+                    .accessibilityLabel(String(localized: "Username, only needed for work or school networks"))
+
+                SecureField(String(localized: "Password"), text: $newPassword)
+                    .textFieldStyle(.roundedBorder)
+                    .accessibilityLabel(String(localized: "Password for the network being added"))
+
+                Button(String(localized: "Save")) {
+                    saveFailed = !wifiManager.savePassword(
+                        newPassword,
+                        username: trimmedNewUsername.isEmpty ? nil : trimmedNewUsername,
+                        for: trimmedNewSSID
+                    )
+                    if !saveFailed {
+                        newSSID = ""
+                        newUsername = ""
+                        newPassword = ""
+                    }
+                }
+                .disabled(trimmedNewSSID.isEmpty || newPassword.isEmpty)
+                .accessibilityLabel(String(localized: "Save password for this network"))
+
+                if saveFailed {
+                    Text(String(localized: "Your Mac's keychain refused to save that. Nothing was stored."))
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
         }
-        // A Form fills its container; a bare VStack shrink-wraps, and
-        // NSHostingController propagates that rigid size to the settings window,
-        // which then refuses to resize. Expand to match the other settings views.
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .formStyle(.grouped)
     }
 
     private var trimmedNewSSID: String {

@@ -134,14 +134,6 @@ struct SettingsView: View {
                 AboutView(updaterController: updaterController)
             }
         }
-        // Pin the size the whole split view reports. Without this each tab reports
-        // its own content size and the window jumps when you switch tabs, which the
-        // Saved Networks tab made obvious. maxWidth/maxHeight stay infinite so the
-        // user can still resize the window themselves.
-        .frame(
-            minWidth: 700, idealWidth: 780, maxWidth: .infinity,
-            minHeight: 450, idealHeight: 650, maxHeight: .infinity
-        )
     }
 }
 
