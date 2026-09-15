@@ -2,14 +2,15 @@ WireBar Development Plan:
 
 Pre-Development — Environment & Account Setup:
 	- @done Verify Developer ID Application certificate exists in Apple Developer account (Scott) @tags(scott, blocking) @done(2026-06-22)
-	- Create Developer ID Application certificate if missing (Scott) @tags(scott, blocking) — NOT NEEDED, cert exists
-	- Create app-specific password for notarytool via Apple ID → Security (Scott) @tags(scott)
+	- Create Developer ID Application certificate if missing (Scott) @tags(scott, blocking) — NOT NEEDED, cert exists @done
+	- Create app-specific password for notarytool via Apple ID → Security (Scott) @tags(scott) @done(2026-09-15)
 	- @done Research and validate app name "WireBar" — check Mac App Store, USPTO (TESS), domain availability @tags(research) @done(2026-07-01)
-	- Brainstorm alternative names if "WireBar" is taken @tags(research) — NOT NEEDED, WireBar is clear
+	- Brainstorm alternative names if "WireBar" is taken @tags(research) — NOT NEEDED, WireBar is clear @done
 	- @done Update all project docs if name changes @tags(docs) @done(2026-07-01)
 	- @done Set up Git repo and push to GitHub @done(2026-06-22)
 
 Parallel Business Tasks — Start During Early Phases:
+	- Back up Developer ID cert, Sparkle private key (keychain item https://sparkle-project.org), and ~/.wirebar/beta-signing-key to offline/secure storage (Scott) @tags(scott, critical)
 	- @done Create LemonSqueezy account (identity verification, banking, tax forms) (Scott) @tags(scott, lead-time) @done(2026-07-01) — submitted for KYC approval, awaiting review (1-2 business days)
 	- Create WireBar product listing on LemonSqueezy ($12.99, license keys enabled, activation limit 3) (Scott) @tags(scott, blocking) — blocked on KYC approval
 	- Enable LemonSqueezy test mode and generate test license keys (Scott) @tags(scott) — blocked on KYC approval
@@ -19,7 +20,6 @@ Parallel Business Tasks — Start During Early Phases:
 	- @done Competitive research pass 1 — survey macOS network utilities, validate $12.99 pricing @tags(research) @done(2026-07-01) — sticking with $12.99
 
 Phase 6 — Remaining (blocked on LemonSqueezy KYC):
-	- Back up Developer ID cert and Sparkle private key to offline/secure storage (Scott) @tags(scott, critical)
 	- Manual test: purchase flow with LemonSqueezy test mode (Scott) @tags(scott) — blocked on KYC approval
 	- Manual test: offline license validation (disconnect network, verify paid features remain)
 	- Manual test: device transfer flow
@@ -27,13 +27,12 @@ Phase 6 — Remaining (blocked on LemonSqueezy KYC):
 
 Phase 7 — Onboarding + Accessibility Audit:
 	Branch: phase/7-onboarding-accessibility
-	- Add Quit WireBar button to the popover or Settings menu
-	- Check Location Services authorization on launch and prompt user if not granted (SSID requires it)
-	- Add menu bar option to show Wi-Fi signal strength (e.g. dBm or signal bars) next to the icon
+	- Add Quit WireBar button to the popover or Settings menu @done(2026-07-06)
+	- Check Location Services authorization on launch and prompt user if not granted (SSID requires it) @done(2026-07-06)
+	- Add menu bar option to show Wi-Fi signal strength (e.g. dBm or signal bars) next to the icon @done(2026-07-06)
 	- Implement first-run detection (check for first launch flag in UserDefaults)
 	- Implement OnboardingView — welcome screen introducing WireBar
 	- Implement setup wizard step: Location Services explanation and permission request
-	- (Removed — privileged helper no longer needed with Network Extension framework)
 	- Implement setup wizard step: auto-detect installed VPNs, present for user confirmation
 	- Implement setup wizard step: configure menu bar display preferences
 	- Implement setup wizard completion — app is ready
@@ -43,12 +42,10 @@ Phase 7 — Onboarding + Accessibility Audit:
 	- Accessibility audit — respect reduced motion system setting
 	- Accessibility audit — respect high contrast / increased contrast system settings
 	- Edge case polish: Wi-Fi off state
-	- Edge case polish: missing VPN CLI (grayed out with warning icon and tooltip)
 	- Edge case polish: external IP fetch failure ("Unavailable" with retry)
 	- Edge case polish: no VPN profiles found (helpful message)
 	- Edge case polish: no networks available
 	- Edge case polish: very long network names (truncation)
-	- Edge case polish: empty VPN list
 	- Full Settings window review — all tabs consistent, all options functional
 	- Update .taskpaper with any discoveries or adjustments
 	- Manual test against PRD user stories 55-58 (first-run experience)
@@ -77,7 +74,6 @@ Phase 8 — Release Prep:
 		- (Moved to Parallel Business Tasks — account created 2026-07-01, product listing + license keys blocked on KYC)
 		- Test purchase flow end-to-end with test mode (Scott) @tags(scott)
 	Pre-Release Cleanup:
-		- Clean up git history (squash/rebase early commits) before making release-ready
 		- Remove any TODO/FIXME comments or resolve them
 		- Final code review pass
 		- Verify all user-facing strings use String(localized:)
@@ -85,22 +81,20 @@ Phase 8 — Release Prep:
 	Name & Branding:
 		- Final name decision (if "WireBar" had conflicts, apply chosen name everywhere)
 		- Register domain name (Scott) @tags(scott)
-		- Update bundle display name, app icon, and all branding assets
+		- Update bundle display name and remaining branding assets (app icon shipped in 0.2.2-beta)
 	Competitive Research:
 		- Competitive research pass 2 — refine marketing angle and positioning @tags(research)
 	Beta Testing:
 		- Recruit 3-5 beta testers from friends (Scott) @tags(scott)
 		- Request at least one tester on older macOS (Sequoia or earlier) @tags(scott)
-		- Distribute .dmg directly to beta testers (Scott) @tags(scott)
+		- Send testers the GitHub download link and a beta key — see docs/guides/beta-keys.md (Scott) @tags(scott)
 		- Collect feedback (group chat or simple form) (Scott) @tags(scott)
 		- 2-week beta window
 		- Exit criteria: no crashes and no broken user stories for 3 consecutive days
 		- Fix all critical issues found during beta
 		- Collect DiagnosticReports from beta testers for crash visibility
 	Launch:
-		- Build final release .dmg
-		- Run full release pipeline (sign, notarize, staple)
-		- Create GitHub Release with .dmg and appcast
+		- Run scripts/release.sh 1.0.0 — builds, notarizes, and publishes the GitHub Release + appcast; see docs/guides/releasing.md (Scott) @tags(scott)
 		- Publish product on LemonSqueezy (Scott) @tags(scott)
 		- Update README / landing page with download link
 		- Scott's go/no-go decision (Scott) @tags(scott)
@@ -113,12 +107,6 @@ Post-Launch — V1.x Roadmap:
 		- Implement per-crash consent dialog for non-opted-in users ("WireBar quit unexpectedly. Send a crash report?")
 		- Sentry SDK only initializes after user opts in — never before
 		- Keep Sentry DSN out of public repo (environment variable or build setting)
-	V1.x — Custom VPN Support:
-		- Implement non-elevated custom VPN support (user provides name + CLI commands)
-		- Custom VPN commands run at user-level permissions only (no privileged helper)
-		- Settings UI for adding/editing/removing custom VPNs
-	V1.x — VPN Library Expansion:
-		- Add pre-configured CLI commands for popular VPNs: Mullvad, NordVPN, ExpressVPN, ProtonVPN, Surfshark, CyberGhost, OpenVPN, Cisco AnyConnect, GlobalProtect
 	Future Improvements:
 		- Move release pipeline to GitHub Actions CI
 		- Landing page / marketing website (when domain is secured)
