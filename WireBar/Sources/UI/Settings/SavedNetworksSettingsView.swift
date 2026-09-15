@@ -117,6 +117,10 @@ struct SavedNetworksSettingsView: View {
             }
             .formStyle(.grouped)
         }
+        // A Form fills its container; a bare VStack shrink-wraps, and
+        // NSHostingController propagates that rigid size to the settings window,
+        // which then refuses to resize. Expand to match the other settings views.
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     private var trimmedNewSSID: String {
