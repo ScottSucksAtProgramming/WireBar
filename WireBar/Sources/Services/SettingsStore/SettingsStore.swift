@@ -13,6 +13,11 @@ final class SettingsStore: ObservableObject {
         didSet { defaults.set(launchAtLogin, forKey: Keys.launchAtLogin) }
     }
 
+    /// False until the user has explicitly chosen a launch-at-login preference.
+    var hasLaunchAtLoginPreference: Bool {
+        defaults.object(forKey: Keys.launchAtLogin) != nil
+    }
+
     @Published var showNetworkName: Bool = true {
         didSet { defaults.set(showNetworkName, forKey: Keys.showNetworkName) }
     }

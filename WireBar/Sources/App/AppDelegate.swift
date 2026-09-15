@@ -2,6 +2,7 @@ import AppKit
 import SwiftUI
 import Combine
 import Sparkle
+import ServiceManagement
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -18,6 +19,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var notificationService = NotificationService(licenseManager: licenseManager, settingsStore: settingsStore)
     private lazy var hotkeyManager = HotkeyManager(licenseManager: licenseManager, settingsStore: settingsStore)
     private var cancellables = Set<AnyCancellable>()
+    private var isSyncingLaunchAtLogin = false
     private var settingsWindow: NSWindow?
     let updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
 
@@ -35,6 +37,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         observeVPNStateChanges()
         setupNotificationService()
         setupHotkeyManager()
+        setupLaunchAtLogin()
         showLocationAlertIfNeeded()
     }
 
@@ -227,6 +230,80 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.activate(ignoringOtherApps: true)
 
         settingsWindow = window
+    }
+
+    private func setupLaunchAtLogin() {
+        syncLaunchAtLoginWithSystem()
+
+        settingsStore.$launchAtLogin
+            .dropFirst()
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] enabled in
+                guard let self, !self.isSyncingLaunchAtLogin else { return }
+                self.applyLaunchAtLogin(enabled)
+            }
+            .store(in: &cancellables)
+    }
+
+    /// The system is the source of truth: the user can remove the login item in
+    /// System Settings without the app knowing, so mirror the real status into the
+    /// toggle. On first run there is no stored preference yet, so honour the default.
+    private func syncLaunchAtLoginWithSystem() {
+        let status = SMAppService.mainApp.status
+
+        guard settingsStore.hasLaunchAtLoginPreference else {
+            if settingsStore.launchAtLogin, status != .enabled {
+                applyLaunchAtLogin(true)
+            }
+            // Persist the choice so a later removal in System Settings isn't undone
+            // by this first-run branch on the next launch.
+            setLaunchAtLoginWithoutApplying(settingsStore.launchAtLogin)
+            return
+        }
+
+        let isEnabled = (status == .enabled)
+        guard settingsStore.launchAtLogin != isEnabled else { return }
+
+        isSyncingLaunchAtLogin = true
+        settingsStore.launchAtLogin = isEnabled
+        isSyncingLaunchAtLogin = false
+    }
+
+    private func applyLaunchAtLogin(_ enabled: Bool) {
+        do {
+            if enabled {
+                if SMAppService.mainApp.status != .enabled {
+                    try SMAppService.mainApp.register()
+                }
+            } else {
+                try SMAppService.mainApp.unregister()
+            }
+        } catch {
+            setLaunchAtLoginWithoutApplying(!enabled)
+            showLaunchAtLoginError(error, wasEnabling: enabled)
+        }
+    }
+
+    private func setLaunchAtLoginWithoutApplying(_ value: Bool) {
+        isSyncingLaunchAtLogin = true
+        settingsStore.launchAtLogin = value
+        isSyncingLaunchAtLogin = false
+    }
+
+    private func showLaunchAtLoginError(_ error: Error, wasEnabling: Bool) {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = wasEnabling
+            ? String(localized: "Couldn't turn on Launch at Login")
+            : String(localized: "Couldn't turn off Launch at Login")
+        if SMAppService.mainApp.status == .requiresApproval {
+            alert.informativeText = String(localized: "macOS needs your approval. Open System Settings > General > Login Items and allow WireBar.")
+        } else {
+            alert.informativeText = String(localized: "macOS reported: \(error.localizedDescription)\n\nIf WireBar is running from a disk image or your Downloads folder, move it to your Applications folder and try again.")
+        }
+        alert.addButton(withTitle: String(localized: "OK"))
+        alert.runModal()
     }
 
     private func showLocationAlertIfNeeded() {
