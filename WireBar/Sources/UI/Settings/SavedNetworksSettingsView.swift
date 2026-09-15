@@ -25,7 +25,7 @@ struct SavedNetworksSettingsView: View {
 
                 Text(String(localized: "macOS keeps its own copy of your Wi-Fi passwords that WireBar isn't allowed to read, which is why WireBar needs its own."))
                     .font(.caption)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
 
@@ -62,9 +62,11 @@ struct SavedNetworksSettingsView: View {
 
             Section(String(localized: "Add a network")) {
                 TextField(String(localized: "Network name (SSID)"), text: $newSSID)
+                    .textFieldStyle(.roundedBorder)
                     .accessibilityLabel(String(localized: "Network name to save a password for"))
 
                 SecureField(String(localized: "Password"), text: $newPassword)
+                    .textFieldStyle(.roundedBorder)
                     .accessibilityLabel(String(localized: "Password for the network being added"))
 
                 Button(String(localized: "Save")) {
@@ -86,7 +88,6 @@ struct SavedNetworksSettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .navigationTitle(String(localized: "Saved Networks"))
     }
 
     private var trimmedNewSSID: String {
@@ -127,6 +128,7 @@ struct SavedNetworksSettingsView: View {
                 // saved password cannot be read off the screen.
                 HStack {
                     SecureField(String(localized: "New password"), text: $replacementPassword)
+                        .textFieldStyle(.roundedBorder)
                         .accessibilityLabel(String(localized: "New password for \(ssid)"))
 
                     Button(String(localized: "Save")) {
