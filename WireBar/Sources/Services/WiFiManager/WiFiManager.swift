@@ -92,10 +92,9 @@ final class WiFiManager: ObservableObject, @unchecked Sendable {
                 guard let self else { return }
                 self.joinError = failure
                 self.isJoining = false
-                // Refresh so the connected checkmark moves off the old row.
-                if failure == nil {
-                    self.scan()
-                }
+                // Rescan on failure too: a failed association still tears down the
+                // previous connection, so the old row must stop claiming to be current.
+                self.scan()
             }
         }
     }
