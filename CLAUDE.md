@@ -99,6 +99,8 @@ wifi-menubar/
 
   scripts/
     make-beta-key.swift  (makes 90-day beta license keys; signing key lives outside the repo)
+    release.sh  (builds a signed release .dmg into dist/<version>/; see plans/phase8-release-pipeline.md)
+  dist/  (release outputs, gitignored; old hand-made DMGs in dist/old/)
   archive/
     completed-phases.taskpaper
   handoffs/          (local only, .gitignored — session handoff docs)

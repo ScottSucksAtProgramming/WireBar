@@ -5,7 +5,7 @@ import Combine
 final class VPNManagerTests: XCTestCase {
 
     private func makePaidLicense() -> LicenseManager {
-        let license = LicenseManager()
+        let license = LicenseManager(keychain: InMemoryKeychainStorage())
         license.isPaid = true
         return license
     }
@@ -101,7 +101,7 @@ final class VPNManagerTests: XCTestCase {
     // MARK: - Paid Gate
 
     func testRefreshReturnsEmptyWhenNotPaid() {
-        let license = LicenseManager()
+        let license = LicenseManager(keychain: InMemoryKeychainStorage())
         license.isPaid = false
         let sut = VPNManager(provider: makeProvider(configs: sampleConfigs), licenseManager: license)
 

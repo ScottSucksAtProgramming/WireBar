@@ -22,7 +22,7 @@ final class IPServiceTests: XCTestCase {
     }
 
     private func makePaidLicense() -> LicenseManager {
-        let license = LicenseManager()
+        let license = LicenseManager(keychain: InMemoryKeychainStorage())
         license.isPaid = true
         return license
     }
@@ -42,7 +42,7 @@ final class IPServiceTests: XCTestCase {
     }
 
     func testExternalIPBlockedWhenNotPaid() {
-        let license = LicenseManager()
+        let license = LicenseManager(keychain: InMemoryKeychainStorage())
         let resolver = MockExternalIPResolver(result: .success("1.2.3.4"))
         let sut = IPService(resolver: resolver, licenseManager: license)
 

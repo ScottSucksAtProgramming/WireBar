@@ -11,7 +11,7 @@ final class PingServiceTests: XCTestCase {
     }
 
     private func makePaidLicense() -> LicenseManager {
-        let license = LicenseManager()
+        let license = LicenseManager(keychain: InMemoryKeychainStorage())
         license.isPaid = true
         return license
     }
@@ -23,7 +23,7 @@ final class PingServiceTests: XCTestCase {
     }
 
     func testStartBlockedWhenNotPaid() {
-        let license = LicenseManager()
+        let license = LicenseManager(keychain: InMemoryKeychainStorage())
         let sut = PingService(licenseManager: license)
 
         sut.start()
@@ -56,7 +56,7 @@ final class PingServiceTests: XCTestCase {
     }
 
     func testMeasureOnceBlockedWhenNotPaid() {
-        let license = LicenseManager()
+        let license = LicenseManager(keychain: InMemoryKeychainStorage())
         let sut = PingService(licenseManager: license)
 
         sut.measureOnce()
