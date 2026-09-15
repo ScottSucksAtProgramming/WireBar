@@ -241,6 +241,7 @@ All hotkeys are user-configurable:
 
 - **VPN management via Network Extension framework** — no privileged helper, no CLI commands. The OS handles all VPN connection management and privilege escalation natively through `NEVPNManager`.
 - **No data logging.** All network info is in-memory only, never written to disk.
+- **Wi-Fi passwords.** macOS keeps saved Wi-Fi passwords in the root-owned System keychain, which third-party apps cannot read. So that joining a saved network does not prompt every time, a password the user types into WireBar is stored in WireBar's own keychain item (service `com.scottkostolni.WireBar.wifi`), in the data-protection keychain, marked `WhenUnlockedThisDeviceOnly` and non-syncing — so it is bound to this app's code signature, unreadable while the Mac is locked, and never sent to iCloud or migrated to another machine. WireBar never reads from or writes to the system Wi-Fi keychain, and only stores a password after it has successfully connected. This is the single exception to the in-memory-only rule above.
 - **Opt-in crash reporting** via Sentry (V1.1+). Off by default; consent dialog shown per-crash.
 - **External IP fetched via DNS query only** (Cloudflare / OpenDNS). No HTTPS API calls for IP lookup.
 - **Location Services permission** required for SSID reading (Apple requirement). First-run wizard explains why.

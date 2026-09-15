@@ -148,6 +148,71 @@ final class WiFiManagerTests: XCTestCase {
         XCTAssertNotNil(sut.joinError)
     }
 
+    // MARK: - Stored Passwords
+
+    func testSuccessfulJoinRemembersUserSuppliedPassword() {
+        let keychain = InMemoryKeychainStorage()
+        let network = makeNetwork(ssid: "Cafe", rssi: -50, isKnown: false)
+        let sut = WiFiManager(scanner: mockScanner, keychain: keychain)
+
+        sut.joinNetwork(network, password: "secret123")
+        waitForJoinToFinish(sut)
+
+        XCTAssertEqual(keychain.load(key: "Cafe"), "secret123")
+    }
+
+    func testJoinReusesStoredPasswordWhenNoneSupplied() {
+        let keychain = InMemoryKeychainStorage()
+        keychain.save(key: "Home", value: "stored-pw")
+        let network = makeNetwork(ssid: "Home", rssi: -50, isKnown: true)
+        let sut = WiFiManager(scanner: mockScanner, keychain: keychain)
+
+        sut.joinNetwork(network, password: nil)
+        waitForJoinToFinish(sut)
+
+        XCTAssertEqual(mockScanner.associateCalledWith?.password, "stored-pw")
+    }
+
+    func testFailedJoinDoesNotDiscardStoredPassword() {
+        let keychain = InMemoryKeychainStorage()
+        keychain.save(key: "Home", value: "stored-pw")
+        mockScanner.associateShouldThrow = true
+        let network = makeNetwork(ssid: "Home", rssi: -50, isKnown: true)
+        let sut = WiFiManager(scanner: mockScanner, keychain: keychain)
+
+        sut.joinNetwork(network, password: nil)
+        waitForJoinToFinish(sut)
+
+        // Out of range, AP down and timeouts all fail here too -- a failure is not
+        // evidence the password is wrong, so it must survive.
+        XCTAssertEqual(keychain.load(key: "Home"), "stored-pw")
+    }
+
+    func testFailedJoinDoesNotStorePassword() {
+        let keychain = InMemoryKeychainStorage()
+        mockScanner.associateShouldThrow = true
+        let network = makeNetwork(ssid: "Cafe", rssi: -50, isKnown: false)
+        let sut = WiFiManager(scanner: mockScanner, keychain: keychain)
+
+        sut.joinNetwork(network, password: "wrong-pw")
+        waitForJoinToFinish(sut)
+
+        XCTAssertNil(keychain.load(key: "Cafe"))
+    }
+
+    func testJoinErrorNeverContainsThePassword() {
+        let keychain = InMemoryKeychainStorage()
+        mockScanner.associateShouldThrow = true
+        let network = makeNetwork(ssid: "Cafe", rssi: -50, isKnown: false)
+        let sut = WiFiManager(scanner: mockScanner, keychain: keychain)
+
+        sut.joinNetwork(network, password: "hunter2")
+        waitForJoinToFinish(sut)
+
+        let message = sut.joinError?.localizedDescription ?? ""
+        XCTAssertFalse(message.contains("hunter2"))
+    }
+
     // MARK: - Power Toggle
 
     func testTogglePowerOff() {

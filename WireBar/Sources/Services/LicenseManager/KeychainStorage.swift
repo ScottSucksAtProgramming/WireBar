@@ -15,32 +15,48 @@ protocol KeychainStoring: Sendable {
 
 struct KeychainStorage: KeychainStoring, Sendable {
     private let service: String
+    private let useDataProtection: Bool
 
-    init(service: String = LicenseConfig.keychainServiceName) {
+    /// `useDataProtection` opts into the modern (iOS-style) keychain, where items are
+    /// bound to this app's code signature and `kSecAttrAccessible` is honoured. It is
+    /// off by default: the license item predates this and lives in the file-based
+    /// keychain, and switching it would orphan already-stored licenses.
+    init(service: String = LicenseConfig.keychainServiceName, useDataProtection: Bool = false) {
         self.service = service
+        self.useDataProtection = useDataProtection
+    }
+
+    private func baseQuery(key: String) -> [String: Any] {
+        var query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: key,
+        ]
+        if useDataProtection {
+            query[kSecUseDataProtectionKeychain as String] = true
+            // Never sync secrets to iCloud.
+            query[kSecAttrSynchronizable as String] = false
+        }
+        return query
     }
 
     func save(key: String, value: String) -> Bool {
         guard let data = value.data(using: .utf8) else { return false }
         delete(key: key)
 
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: key,
-            kSecValueData as String: data,
-        ]
+        var query = baseQuery(key: key)
+        query[kSecValueData as String] = data
+        if useDataProtection {
+            // Unreadable while the device is locked, and never restored to another Mac.
+            query[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        }
         return SecItemAdd(query as CFDictionary, nil) == errSecSuccess
     }
 
     func load(key: String) -> String? {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: key,
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne,
-        ]
+        var query = baseQuery(key: key)
+        query[kSecReturnData as String] = true
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
         var result: AnyObject?
         guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess,
               let data = result as? Data,
@@ -53,12 +69,7 @@ struct KeychainStorage: KeychainStoring, Sendable {
 
     @discardableResult
     func delete(key: String) -> Bool {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: key,
-        ]
-        return SecItemDelete(query as CFDictionary) == errSecSuccess
+        return SecItemDelete(baseQuery(key: key) as CFDictionary) == errSecSuccess
     }
 
     func saveDate(key: String, value: Date) -> Bool {

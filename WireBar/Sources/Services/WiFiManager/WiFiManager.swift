@@ -11,9 +11,17 @@ final class WiFiManager: ObservableObject, @unchecked Sendable {
     @Published private(set) var isJoining: Bool = false
 
     private nonisolated(unsafe) let scanner: WiFiScanning
+    private nonisolated(unsafe) let keychain: KeychainStoring
 
-    init(scanner: WiFiScanning = CoreWLANScanner()) {
+    /// Separate from the license item so Wi-Fi passwords are their own keychain service.
+    static let keychainService = "com.scottkostolni.WireBar.wifi"
+
+    init(
+        scanner: WiFiScanning = CoreWLANScanner(),
+        keychain: KeychainStoring = KeychainStorage(service: WiFiManager.keychainService, useDataProtection: true)
+    ) {
         self.scanner = scanner
+        self.keychain = keychain
         self.isWiFiPoweredOn = scanner.isPoweredOn()
     }
 
@@ -78,18 +86,30 @@ final class WiFiManager: ObservableObject, @unchecked Sendable {
         isJoining = true
 
         let scanner = self.scanner
+        let keychain = self.keychain
         let ssid = network.ssid
+        // macOS keeps saved Wi-Fi passwords in the root-owned System keychain, which
+        // third-party apps cannot read, so remember what the user typed ourselves.
+        let effectivePassword = password ?? keychain.load(key: ssid)
+
         // associate() blocks for seconds; running it inline froze the popover.
         DispatchQueue.global(qos: .userInitiated).async {
             var failure: Error?
             do {
-                try scanner.associateToNetwork(ssid: ssid, password: password)
+                try scanner.associateToNetwork(ssid: ssid, password: effectivePassword)
             } catch {
                 failure = error
             }
 
             DispatchQueue.main.async { [weak self] in
                 guard let self else { return }
+                // Only remember a password the user actually typed, and only once it
+                // worked. A failure is not evidence the stored one is wrong -- out of
+                // range, AP down and timeouts all land here too -- so nothing is
+                // discarded; the next successful join overwrites it.
+                if failure == nil, let password {
+                    keychain.save(key: ssid, value: password)
+                }
                 self.joinError = failure
                 self.isJoining = false
                 // Rescan on failure too: a failed association still tears down the
