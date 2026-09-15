@@ -55,6 +55,7 @@
 		BE1AFDE6A5C32F1C41001944 /* PingServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6291335C98333BE5115ADD5F /* PingServiceTests.swift */; };
 		C17F760CA3ADC96EBED1CBD5 /* VPNSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F837C7760BC97FBD15E48B /* VPNSettingsView.swift */; };
 		C3C99E39597CB309459F1BDF /* CollapsibleSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A326E473373B6EC94305F8A1 /* CollapsibleSectionView.swift */; };
+		C4344B4547A01686D47384E1 /* KeychainStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 713F20A0F4A1A519509EC972 /* KeychainStorageTests.swift */; };
 		C8FEF167A46486D0D20A60B4 /* VPNManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65182B3447F0ABDAF0E68F7B /* VPNManager.swift */; };
 		CC7B8D3CBA4D3F5CA3A00066 /* WiFiManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E84D4662586484CFBB75B46 /* WiFiManagerTests.swift */; };
 		CFE423354F0D0BC357756040 /* NotificationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD56DEE266209DFCC65A22 /* NotificationSettingsView.swift */; };
@@ -110,6 +111,7 @@
 		65182B3447F0ABDAF0E68F7B /* VPNManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNManager.swift; sourceTree = "<group>"; };
 		6BAFAAEAA8F5B3FBD40600AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		6C64F8FF9413274044CBA15A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		713F20A0F4A1A519509EC972 /* KeychainStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStorageTests.swift; sourceTree = "<group>"; };
 		78DB47FABA9BE9CF702DCE35 /* CoreWLANScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreWLANScanner.swift; sourceTree = "<group>"; };
 		7B7C998CC73EB5397F242E1B /* LicenseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseManager.swift; sourceTree = "<group>"; };
 		83175D42F4A612E32FFD95EF /* LocationPermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPermissionManager.swift; sourceTree = "<group>"; };
@@ -335,6 +337,7 @@
 			children = (
 				5A5210B4ED7F306F164BB83D /* HotkeyManagerTests.swift */,
 				30848E620F947D3CDF20800C /* IPServiceTests.swift */,
+				713F20A0F4A1A519509EC972 /* KeychainStorageTests.swift */,
 				E66CA1BAFD284CBD30FC1183 /* LicenseManagerTests.swift */,
 				A1364E6AE1CA3A9808B8C339 /* NetworkMonitorTests.swift */,
 				B6750FA586522A244D435122 /* NotificationServiceTests.swift */,
@@ -509,6 +512,7 @@
 			files = (
 				2C6733098FAAC3CF437D27F7 /* HotkeyManagerTests.swift in Sources */,
 				0F9D3E07051970B8EACF033D /* IPServiceTests.swift in Sources */,
+				C4344B4547A01686D47384E1 /* KeychainStorageTests.swift in Sources */,
 				310F484231A9E55EF4327B43 /* LicenseManagerTests.swift in Sources */,
 				617FAC7CEC60FAD382E15C1E /* MockLicenseValidator.swift in Sources */,
 				DACDC2BB80F4EA2D0D76B22A /* MockNotificationDispatcher.swift in Sources */,
@@ -617,11 +621,11 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = "0.1.1-beta";
 				PRODUCT_BUNDLE_IDENTIFIER = com.scottkostolni.WireBar;
 				PRODUCT_NAME = WireBar;
 				SDKROOT = macosx;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = BETA_UNLOCK_PAID;
 			};
 			name = Release;
 		};
@@ -763,7 +767,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = "0.1.1-beta";
 				PRODUCT_BUNDLE_IDENTIFIER = com.scottkostolni.WireBar;
 				PRODUCT_NAME = WireBar;
 				SDKROOT = macosx;

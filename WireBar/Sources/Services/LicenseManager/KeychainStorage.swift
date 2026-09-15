@@ -15,29 +15,23 @@ protocol KeychainStoring: Sendable {
 
 struct KeychainStorage: KeychainStoring, Sendable {
     private let service: String
-    private let useDataProtection: Bool
 
-    /// `useDataProtection` opts into the modern (iOS-style) keychain, where items are
-    /// bound to this app's code signature and `kSecAttrAccessible` is honoured. It is
-    /// off by default: the license item predates this and lives in the file-based
-    /// keychain, and switching it would orphan already-stored licenses.
-    init(service: String = LicenseConfig.keychainServiceName, useDataProtection: Bool = false) {
+    // Deliberately the file-based keychain, not the data-protection one. The modern
+    // keychain (kSecUseDataProtectionKeychain) needs an application-identifier or
+    // keychain-access-groups entitlement, which only a provisioning profile grants;
+    // a Developer ID build has neither, and every SecItemAdd fails with -34018
+    // errSecMissingEntitlement. The file-based keychain is still encrypted at rest and
+    // ACLs each item to the creating application's code signature.
+    init(service: String = LicenseConfig.keychainServiceName) {
         self.service = service
-        self.useDataProtection = useDataProtection
     }
 
     private func baseQuery(key: String) -> [String: Any] {
-        var query: [String: Any] = [
+        [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: key,
         ]
-        if useDataProtection {
-            query[kSecUseDataProtectionKeychain as String] = true
-            // Never sync secrets to iCloud.
-            query[kSecAttrSynchronizable as String] = false
-        }
-        return query
     }
 
     func save(key: String, value: String) -> Bool {
@@ -46,10 +40,6 @@ struct KeychainStorage: KeychainStoring, Sendable {
 
         var query = baseQuery(key: key)
         query[kSecValueData as String] = data
-        if useDataProtection {
-            // Unreadable while the device is locked, and never restored to another Mac.
-            query[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
-        }
         return SecItemAdd(query as CFDictionary, nil) == errSecSuccess
     }
 

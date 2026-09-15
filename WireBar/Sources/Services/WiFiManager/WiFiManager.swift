@@ -18,7 +18,7 @@ final class WiFiManager: ObservableObject, @unchecked Sendable {
 
     init(
         scanner: WiFiScanning = CoreWLANScanner(),
-        keychain: KeychainStoring = KeychainStorage(service: WiFiManager.keychainService, useDataProtection: true)
+        keychain: KeychainStoring = KeychainStorage(service: WiFiManager.keychainService)
     ) {
         self.scanner = scanner
         self.keychain = keychain
