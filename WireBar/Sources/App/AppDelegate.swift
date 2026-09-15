@@ -229,10 +229,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             updaterController: updaterController
         )
         let hostingController = NSHostingController(rootView: settingsView)
-        // By default the hosting controller reports SwiftUI's preferred size to the
-        // window, so switching tabs resizes the window to fit whichever tab is shown.
-        // The window owns its size here: see setContentSize and minSize below.
-        hostingController.sizingOptions = []
 
         let window = NSWindow(contentViewController: hostingController)
         window.title = String(localized: "WireBar Settings")
