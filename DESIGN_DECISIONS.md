@@ -434,12 +434,12 @@ Paid: VPN monitoring/toggles, external IP, custom VPNs, configurable menu bar di
 
 ## Q44: Release Pipeline — Local Script, Normal GitHub Releases (2026-09-15)
 
-**Decision:** Releases are built by one script on Scott's Mac, which asks "Publish? (y/n)" before uploading. Each release is a normal (not Pre-release) GitHub release with the `.dmg` and a fresh `appcast.xml` attached. Beta status lives in the version name (`0.2.0-beta`). The build number goes up by 1 every release, automatically. Release notes come from `CHANGELOG.md`. Notarization (profile `wirebar-notary`) is built in but off until the Apple Developer membership renewal clears; it must be on before any `.dmg` reaches beta testers. Updates are proven by publishing 0.2.0-beta and then a tiny 0.2.1-beta the same day. The "beta key has expired" message stays visible on the License tab (resolves the open question from Q43's session).
+**Decision:** Releases are built by one script on Scott's Mac, which asks "Publish? (y/n)" before uploading. Each release is a normal (not Pre-release) GitHub release with the `.dmg` and a fresh `appcast.xml` attached. Beta status lives in the version name (`0.2.0-beta`). The build number goes up by 1 every release, automatically. Release notes come from `CHANGELOG.md`. Every release is notarized and stapled (keychain profile `wirebar-notary`, set up by Scott the same day), so no un-notarized build is ever published. Updates are proven by publishing 0.2.0-beta and then a tiny 0.2.1-beta the same day. The "beta key has expired" message stays visible on the License tab (resolves the open question from Q43's session).
 
 **Why:** `SUFeedURL` points at `/releases/latest/download/`, which skips pre-releases. A local script keeps the signing cert, Sparkle key, and Apple credentials off GitHub (the repo is public). Sparkle compares the build number, so a forgotten bump means no update is offered. A broken updater can't be fixed by an update, so it gets tested before anyone installs.
 
 **Tradeoffs:**
 - GitHub shows beta builds as "Latest" with no warning badge
 - Releases need Scott's Mac to be awake for the run
-- Un-notarized builds need "Open Anyway" in System Settings on first install
+- Each release waits on Apple's notarization service (usually a few minutes, twice: app and `.dmg`)
 - Plain `.dmg` window for now (no styled background)

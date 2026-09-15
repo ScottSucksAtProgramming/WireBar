@@ -17,7 +17,7 @@ Durable decisions that apply across all phases:
 - **DMG**: plain `hdiutil` image containing `WireBar.app` + an `/Applications` symlink. No styled background (can be added later).
 - **Release notes**: `CHANGELOG.md` is the single source. The script renames `## [Unreleased]` to `## [<version>] - <date>`, refuses to continue if that section is empty, converts it to HTML next to the DMG (same basename) so Sparkle's update window shows it, and uses the same text for the GitHub release body.
 - **Sparkle tools**: `generate_appcast` / `sign_update` are located under the newest `~/Library/Developer/Xcode/DerivedData/WireBar-*/SourcePackages/artifacts/sparkle/Sparkle/bin/`. If missing, the script stops with "build WireBar in Xcode first". Never hardcode a hash path.
-- **Notarization**: a step in the script behind a switch, **off** until Scott's Apple Developer membership renewal clears. Keychain profile name: `wirebar-notary`. When on: notarize + staple the app, then the DMG; fail early if the profile is missing. The agent never handles Apple credentials.
+- **Notarization**: always on (Scott set up the `wirebar-notary` keychain profile on 2026-09-15, earlier than expected, so no release is ever published un-notarized). The script checks the profile first, then notarizes + staples the app, then notarizes + staples the DMG, and checks both with Gatekeeper (`spctl`). The agent never handles Apple credentials.
 - **Build config**: Release configuration only. `BETA_UNLOCK_PAID` must not be present (Debug-only per Q43).
 - **Test gate**: the script runs the test suite before building and checks the **executed test count** (currently 153), not the pass/fail banner — `LicenseManagerTests` is flaky and can crash partway while still printing a banner.
 
@@ -99,18 +99,12 @@ Publish a tiny same-day release `0.2.1-beta` (changelog: "Confirms in-app update
 
 ---
 
-## Phase 5: Turn notarization on and re-verify
+## Phase 5: Notarization (folded into Phase 1)
 
-**User stories**: 61, 62 — **blocked on Scott's Apple Developer membership renewal**
-
-### What to build
-
-Scott re-runs `xcrun notarytool store-credentials wirebar-notary …` once renewal clears. Switch the notarization step on (app notarized + stapled, DMG notarized + stapled) and repeat the Phase 3–4 install-then-update test with notarized releases. **No DMG goes to beta testers until this phase passes.**
-
-### Acceptance criteria
+Scott's membership renewal cleared the same day, so notarization went straight into the Phase 1 script and every release is notarized from 0.2.0-beta on. Phases 3–4 therefore test the shipping configuration. Remaining checks, verified during Phases 1, 3 and 4:
 
 - [ ] Script fails early with a clear message if the `wirebar-notary` profile is missing
 - [ ] `xcrun stapler validate` passes on the app and the DMG
 - [ ] `spctl --assess --type execute` accepts the app; `spctl --assess --type open --context context:primary-signature` accepts the DMG
 - [ ] A fresh download from GitHub opens without "Open Anyway" (Scott)
-- [ ] Updating from the previous notarized release to the next one works end to end (Scott)
+- [ ] Updating from 0.2.0-beta to 0.2.1-beta works end to end (Scott, Phase 4)

@@ -6,6 +6,8 @@ set -euo pipefail
 
 SIGN_IDENTITY="Developer ID Application: Scott Kostolni (5N69HV7X7S)"
 TEAM_ID="5N69HV7X7S"
+# Created by Scott with `xcrun notarytool store-credentials wirebar-notary`; the password stays in his keychain.
+NOTARY_PROFILE="wirebar-notary"
 
 fail() { print -u2 "\n✗ $1"; exit 1; }
 step() { print "\n▸ $1"; }
@@ -28,6 +30,8 @@ step "Checking the repo"
 [[ ! -e "$OUT_DIR" ]] || fail "$OUT_DIR already exists. Move it aside to rebuild this version."
 security find-identity -v -p codesigning | grep -q "$SIGN_IDENTITY" || fail "Signing certificate not found: $SIGN_IDENTITY"
 command -v xcodegen >/dev/null || fail "xcodegen is not installed (brew install xcodegen)"
+xcrun notarytool history --keychain-profile "$NOTARY_PROFILE" >/dev/null 2>&1 \
+  || fail "Notarization login '$NOTARY_PROFILE' isn't working. Run: xcrun notarytool store-credentials $NOTARY_PROFILE --apple-id <email> --team-id $TEAM_ID"
 
 CURRENT_VERSION=$(sed -n 's/^ *MARKETING_VERSION: "\(.*\)"/\1/p' project.yml)
 CURRENT_BUILD=$(sed -n 's/^ *CURRENT_PROJECT_VERSION: "\(.*\)"/\1/p' project.yml)
@@ -99,6 +103,24 @@ BUILT_BUILD=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$APP/Contents/
 [[ "$BUILT_VERSION" == "$VERSION" && "$BUILT_BUILD" == "$NEW_BUILD" ]] \
   || fail "Built app says $BUILT_VERSION ($BUILT_BUILD), expected $VERSION ($NEW_BUILD)"
 
+# Notarize the app itself too, so a copy dragged out of the .dmg carries its own ticket.
+notarize() {  # $1 = file to submit, $2 = what to staple
+  local log="$BUILD_DIR/notarize-${1:t}.log"
+  xcrun notarytool submit "$1" --keychain-profile "$NOTARY_PROFILE" --wait >"$log" 2>&1 \
+    || fail "Notarization submit failed. Log: $log"
+  grep -q "status: Accepted" "$log" \
+    || fail "Apple did not accept ${1:t}. Log: $log  (details: xcrun notarytool log <submission id> --keychain-profile $NOTARY_PROFILE)"
+  xcrun stapler staple "$2" >>"$log" 2>&1 || fail "Stapling failed. Log: $log"
+  xcrun stapler validate "$2" >/dev/null 2>&1 || fail "Stapled ticket didn't validate on $2"
+}
+
+step "Notarizing the app (usually a few minutes)"
+APP_ZIP="$BUILD_DIR/WireBar.zip"
+rm -f "$APP_ZIP"
+ditto -c -k --keepParent "$APP" "$APP_ZIP"
+notarize "$APP_ZIP" "$APP"
+spctl --assess --type execute "$APP" 2>/dev/null || fail "Gatekeeper rejects the notarized app"
+
 # --- DMG -----------------------------------------------------------------------
 step "Making the .dmg"
 STAGE="$BUILD_DIR/dmg"
@@ -109,6 +131,10 @@ ln -s /Applications "$STAGE/Applications"
 hdiutil create -volname "WireBar" -srcfolder "$STAGE" -ov -format UDZO "$DMG" >/dev/null
 codesign --sign "$SIGN_IDENTITY" --timestamp "$DMG"
 codesign --verify "$DMG" || fail "Signature check failed on $DMG"
+
+step "Notarizing the .dmg"
+notarize "$DMG" "$DMG"
+spctl --assess --type open --context context:primary-signature "$DMG" 2>/dev/null || fail "Gatekeeper rejects the .dmg"
 
 FINISHED=1
 print "\n✓ Built $DMG"
