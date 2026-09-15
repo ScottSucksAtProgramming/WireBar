@@ -4,6 +4,7 @@ struct SavedNetworksSettingsView: View {
     @ObservedObject var wifiManager: WiFiManager
 
     @State private var newSSID: String = ""
+    @State private var newUsername: String = ""
     @State private var newPassword: String = ""
     @State private var editingSSID: String?
     @State private var replacementPassword: String = ""
@@ -19,6 +20,11 @@ struct SavedNetworksSettingsView: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 Text(String(localized: "Anyone who can unlock your Mac can look them up, the same as any other password you've saved. You can remove any of them below at any time."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(String(localized: "Work or school networks sign you in with an account rather than a shared password. For those, WireBar keeps the username and password you enter, the same way and in the same place."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -65,14 +71,23 @@ struct SavedNetworksSettingsView: View {
                     .textFieldStyle(.roundedBorder)
                     .accessibilityLabel(String(localized: "Network name to save a password for"))
 
+                TextField(String(localized: "Username (work or school networks only)"), text: $newUsername)
+                    .textFieldStyle(.roundedBorder)
+                    .accessibilityLabel(String(localized: "Username, only needed for work or school networks"))
+
                 SecureField(String(localized: "Password"), text: $newPassword)
                     .textFieldStyle(.roundedBorder)
                     .accessibilityLabel(String(localized: "Password for the network being added"))
 
                 Button(String(localized: "Save")) {
-                    saveFailed = !wifiManager.savePassword(newPassword, for: trimmedNewSSID)
+                    saveFailed = !wifiManager.savePassword(
+                        newPassword,
+                        username: trimmedNewUsername.isEmpty ? nil : trimmedNewUsername,
+                        for: trimmedNewSSID
+                    )
                     if !saveFailed {
                         newSSID = ""
+                        newUsername = ""
                         newPassword = ""
                     }
                 }
@@ -94,6 +109,10 @@ struct SavedNetworksSettingsView: View {
         newSSID.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
+    private var trimmedNewUsername: String {
+        newUsername.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     @ViewBuilder
     private func savedRow(_ ssid: String) -> some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -102,8 +121,17 @@ struct SavedNetworksSettingsView: View {
                     .foregroundStyle(.secondary)
                     .accessibilityHidden(true)
 
-                Text(ssid)
-                    .lineLimit(1)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(ssid)
+                        .lineLimit(1)
+
+                    if let username = wifiManager.savedUsername(for: ssid) {
+                        Text(username)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+                }
 
                 Spacer()
 
@@ -132,7 +160,11 @@ struct SavedNetworksSettingsView: View {
                         .accessibilityLabel(String(localized: "New password for \(ssid)"))
 
                     Button(String(localized: "Save")) {
-                        saveFailed = !wifiManager.savePassword(replacementPassword, for: ssid)
+                        saveFailed = !wifiManager.savePassword(
+                            replacementPassword,
+                            username: wifiManager.savedUsername(for: ssid),
+                            for: ssid
+                        )
                         if !saveFailed {
                             editingSSID = nil
                             replacementPassword = ""

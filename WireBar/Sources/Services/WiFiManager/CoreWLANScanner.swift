@@ -56,6 +56,20 @@ final class CoreWLANScanner: WiFiScanning, @unchecked Sendable {
         try iface.associate(to: target, password: password)
     }
 
+    func associateToEnterpriseNetwork(ssid: String, username: String, password: String) throws {
+        guard let iface = interface else { return }
+        let networks = try iface.scanForNetworks(withName: ssid)
+        guard let target = networks.max(by: { $0.rssiValue < $1.rssiValue }) else {
+            throw NSError(
+                domain: "WiFiManager",
+                code: -1,
+                userInfo: [NSLocalizedDescriptionKey: String(localized: "\(ssid) is no longer in range.")]
+            )
+        }
+        // identity is for certificate-based 802.1X, which WireBar does not collect.
+        try iface.associate(toEnterpriseNetwork: target, identity: nil, username: username, password: password)
+    }
+
     func setPower(_ on: Bool) throws {
         guard let iface = interface else { return }
         try iface.setPower(on)

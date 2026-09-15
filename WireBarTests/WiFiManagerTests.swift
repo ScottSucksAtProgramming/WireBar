@@ -153,21 +153,26 @@ final class WiFiManagerTests: XCTestCase {
     // MARK: - Stored Passwords
 
     func testSuccessfulJoinRemembersUserSuppliedPassword() {
-        let keychain = InMemoryKeychainStorage()
         let network = makeNetwork(ssid: "Cafe", rssi: -50, isKnown: false)
-        let sut = WiFiManager(scanner: mockScanner, keychain: keychain)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
 
         sut.joinNetwork(network, password: "secret123")
         waitForJoinToFinish(sut)
 
-        XCTAssertEqual(keychain.load(key: "Cafe"), "secret123")
+        // Assert on behaviour rather than the stored encoding: a later join must
+        // reuse it without being given the password again.
+        mockScanner.associateCalledWith = nil
+        let reloaded = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+        reloaded.joinNetwork(network, password: nil)
+        waitForJoinToFinish(reloaded)
+
+        XCTAssertEqual(mockScanner.associateCalledWith?.password, "secret123")
     }
 
     func testJoinReusesStoredPasswordWhenNoneSupplied() {
-        let keychain = InMemoryKeychainStorage()
-        keychain.save(key: "Home", value: "stored-pw")
+        mockKeychain.save(key: "Home", value: "stored-pw")
         let network = makeNetwork(ssid: "Home", rssi: -50, isKnown: true)
-        let sut = WiFiManager(scanner: mockScanner, keychain: keychain)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
 
         sut.joinNetwork(network, password: nil)
         waitForJoinToFinish(sut)
@@ -176,37 +181,34 @@ final class WiFiManagerTests: XCTestCase {
     }
 
     func testFailedJoinDoesNotDiscardStoredPassword() {
-        let keychain = InMemoryKeychainStorage()
-        keychain.save(key: "Home", value: "stored-pw")
+        mockKeychain.save(key: "Home", value: "stored-pw")
         mockScanner.associateShouldThrow = true
         let network = makeNetwork(ssid: "Home", rssi: -50, isKnown: true)
-        let sut = WiFiManager(scanner: mockScanner, keychain: keychain)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
 
         sut.joinNetwork(network, password: nil)
         waitForJoinToFinish(sut)
 
         // Out of range, AP down and timeouts all fail here too -- a failure is not
         // evidence the password is wrong, so it must survive.
-        XCTAssertEqual(keychain.load(key: "Home"), "stored-pw")
+        XCTAssertEqual(mockKeychain.load(key: "Home"), "stored-pw")
     }
 
     func testFailedJoinDoesNotStorePassword() {
-        let keychain = InMemoryKeychainStorage()
         mockScanner.associateShouldThrow = true
         let network = makeNetwork(ssid: "Cafe", rssi: -50, isKnown: false)
-        let sut = WiFiManager(scanner: mockScanner, keychain: keychain)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
 
         sut.joinNetwork(network, password: "wrong-pw")
         waitForJoinToFinish(sut)
 
-        XCTAssertNil(keychain.load(key: "Cafe"))
+        XCTAssertNil(mockKeychain.load(key: "Cafe"))
     }
 
     func testJoinErrorNeverContainsThePassword() {
-        let keychain = InMemoryKeychainStorage()
         mockScanner.associateShouldThrow = true
         let network = makeNetwork(ssid: "Cafe", rssi: -50, isKnown: false)
-        let sut = WiFiManager(scanner: mockScanner, keychain: keychain)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
 
         sut.joinNetwork(network, password: "hunter2")
         waitForJoinToFinish(sut)
@@ -220,7 +222,7 @@ final class WiFiManagerTests: XCTestCase {
     func testSavePasswordAddsNetworkToSavedList() {
         let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
 
-        XCTAssertTrue(sut.savePassword("pw", for: "Home"))
+        XCTAssertTrue(sut.savePassword("pw", username: nil, for: "Home"))
 
         XCTAssertEqual(sut.savedNetworkSSIDs, ["Home"])
         XCTAssertTrue(sut.hasSavedPassword(for: "Home"))
@@ -230,10 +232,13 @@ final class WiFiManagerTests: XCTestCase {
         mockKeychain.save(key: "Home", value: "old-pw")
         let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
 
-        XCTAssertTrue(sut.savePassword("new-pw", for: "Home"))
+        XCTAssertTrue(sut.savePassword("new-pw", username: nil, for: "Home"))
 
         XCTAssertEqual(sut.savedNetworkSSIDs, ["Home"])
-        XCTAssertEqual(mockKeychain.load(key: "Home"), "new-pw")
+        let network = makeNetwork(ssid: "Home", rssi: -50, isKnown: true)
+        sut.joinNetwork(network, password: nil)
+        waitForJoinToFinish(sut)
+        XCTAssertEqual(mockScanner.associateCalledWith?.password, "new-pw")
     }
 
     func testForgetPasswordRemovesOnlyThatNetwork() {
@@ -275,6 +280,111 @@ final class WiFiManagerTests: XCTestCase {
         let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
 
         XCTAssertEqual(sut.savedNetworkSSIDs, ["Home"])
+    }
+
+    // MARK: - Enterprise networks
+
+    func testEnterpriseJoinUsesTheEnterpriseAssociation() {
+        let network = makeNetwork(ssid: "CorpNet", rssi: -50, isKnown: false, securityType: .wpa2Enterprise)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+
+        sut.joinNetwork(network, password: "pw", username: "alice")
+        waitForJoinToFinish(sut)
+
+        XCTAssertEqual(mockScanner.enterpriseAssociateCalledWith?.ssid, "CorpNet")
+        XCTAssertEqual(mockScanner.enterpriseAssociateCalledWith?.username, "alice")
+        XCTAssertEqual(mockScanner.enterpriseAssociateCalledWith?.password, "pw")
+        XCTAssertNil(mockScanner.associateCalledWith)
+    }
+
+    func testEnterpriseJoinWithoutUsernameFailsWithoutAssociating() {
+        let network = makeNetwork(ssid: "CorpNet", rssi: -50, isKnown: true, securityType: .wpa2Enterprise)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+
+        sut.joinNetwork(network, password: "pw", username: nil)
+        waitForJoinToFinish(sut)
+
+        XCTAssertNotNil(sut.joinError)
+        XCTAssertNil(mockScanner.enterpriseAssociateCalledWith)
+    }
+
+    func testEnterpriseJoinRemembersTheUsername() {
+        let network = makeNetwork(ssid: "CorpNet", rssi: -50, isKnown: false, securityType: .wpa2Enterprise)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+
+        sut.joinNetwork(network, password: "pw", username: "alice")
+        waitForJoinToFinish(sut)
+
+        XCTAssertEqual(sut.savedUsername(for: "CorpNet"), "alice")
+    }
+
+    func testEnterpriseJoinReusesStoredCredentials() {
+        let network = makeNetwork(ssid: "CorpNet", rssi: -50, isKnown: true, securityType: .wpa2Enterprise)
+        let seed = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+        seed.joinNetwork(network, password: "pw", username: "alice")
+        waitForJoinToFinish(seed)
+        mockScanner.enterpriseAssociateCalledWith = nil
+
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+        sut.joinNetwork(network, password: nil, username: nil)
+        waitForJoinToFinish(sut)
+
+        XCTAssertEqual(mockScanner.enterpriseAssociateCalledWith?.username, "alice")
+        XCTAssertEqual(mockScanner.enterpriseAssociateCalledWith?.password, "pw")
+    }
+
+    func testCorrectingOnlyTheUsernameIsPersisted() {
+        let network = makeNetwork(ssid: "CorpNet", rssi: -50, isKnown: true, securityType: .wpa2Enterprise)
+        let seed = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+        seed.joinNetwork(network, password: "pw", username: "wrong")
+        waitForJoinToFinish(seed)
+
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+        sut.joinNetwork(network, password: nil, username: "alice")
+        waitForJoinToFinish(sut)
+
+        XCTAssertEqual(sut.savedUsername(for: "CorpNet"), "alice")
+    }
+
+    func testChangingThePasswordKeepsTheUsername() {
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+        XCTAssertTrue(sut.savePassword("pw", username: "alice", for: "CorpNet"))
+
+        XCTAssertTrue(sut.savePassword("new-pw", username: sut.savedUsername(for: "CorpNet"), for: "CorpNet"))
+
+        XCTAssertEqual(sut.savedUsername(for: "CorpNet"), "alice")
+    }
+
+    // MARK: - Entries written before usernames existed
+
+    func testReadsALegacyBarePasswordEntry() {
+        // Entries already on disk are the raw password, not JSON.
+        mockKeychain.save(key: "Home", value: "legacy-pw")
+        let network = makeNetwork(ssid: "Home", rssi: -50, isKnown: true)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+
+        sut.joinNetwork(network, password: nil)
+        waitForJoinToFinish(sut)
+
+        XCTAssertEqual(mockScanner.associateCalledWith?.password, "legacy-pw")
+        XCTAssertNil(sut.savedUsername(for: "Home"))
+    }
+
+    func testRewritingALegacyEntryKeepsThePassword() {
+        mockKeychain.save(key: "Home", value: "legacy-pw")
+        let network = makeNetwork(ssid: "Home", rssi: -50, isKnown: true)
+        let sut = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+
+        sut.joinNetwork(network, password: "typed-pw")
+        waitForJoinToFinish(sut)
+
+        // Stored as JSON now, but still readable and still the right password.
+        let reloaded = WiFiManager(scanner: mockScanner, keychain: mockKeychain)
+        mockScanner.associateCalledWith = nil
+        reloaded.joinNetwork(network, password: nil)
+        waitForJoinToFinish(reloaded)
+
+        XCTAssertEqual(mockScanner.associateCalledWith?.password, "typed-pw")
     }
 
     // MARK: - Power Toggle
@@ -331,7 +441,8 @@ final class WiFiManagerTests: XCTestCase {
         ssid: String,
         rssi: Int,
         isKnown: Bool,
-        bssid: String = "00:00:00:00:00:00"
+        bssid: String = "00:00:00:00:00:00",
+        securityType: NetworkSecurityType = .wpa2
     ) -> ScannedNetwork {
         ScannedNetwork(
             id: bssid,
@@ -339,7 +450,7 @@ final class WiFiManagerTests: XCTestCase {
             bssid: bssid,
             rssi: rssi,
             channelNumber: 6,
-            securityType: .wpa2,
+            securityType: securityType,
             isKnown: isKnown,
             isCurrent: false
         )

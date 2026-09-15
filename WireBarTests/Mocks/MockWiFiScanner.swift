@@ -7,6 +7,7 @@ final class MockWiFiScanner: WiFiScanning, @unchecked Sendable {
     var isPowered: Bool = true
     var currentSSIDValue: String? = "HomeNetwork"
     var associateCalledWith: (ssid: String, password: String?)? = nil
+    var enterpriseAssociateCalledWith: (ssid: String, username: String, password: String)? = nil
     var setPowerCalledWith: Bool? = nil
     var scanShouldThrow: Bool = false
     var associateShouldThrow: Bool = false
@@ -27,6 +28,13 @@ final class MockWiFiScanner: WiFiScanning, @unchecked Sendable {
             throw NSError(domain: "CoreWLAN", code: -3905, userInfo: [NSLocalizedDescriptionKey: "Association failed"])
         }
         associateCalledWith = (ssid, password)
+    }
+
+    func associateToEnterpriseNetwork(ssid: String, username: String, password: String) throws {
+        if associateShouldThrow {
+            throw NSError(domain: "CoreWLAN", code: -3905, userInfo: [NSLocalizedDescriptionKey: "Association failed"])
+        }
+        enterpriseAssociateCalledWith = (ssid, username, password)
     }
 
     func setPower(_ on: Bool) throws {

@@ -66,10 +66,12 @@ struct NetworkListView: View {
             if let network = networkAwaitingPassword {
                 PasswordInputView(
                     networkName: network.ssid,
-                    onJoin: { password in
+                    isEnterprise: network.securityType.isEnterprise,
+                    initialUsername: wifiManager.savedUsername(for: network.ssid),
+                    onJoin: { username, password in
                         lastAttemptedNetwork = network
                         lastAttemptUsedStoredPassword = false
-                        wifiManager.joinNetwork(network, password: password)
+                        wifiManager.joinNetwork(network, password: password, username: username)
                         networkAwaitingPassword = nil
                     },
                     onCancel: {
@@ -200,6 +202,14 @@ struct NetworkListView: View {
         // Try without one, but remember that we did, so a failure can fall back to
         // asking rather than just stranding the user offline.
         lastAttemptUsedStoredPassword = network.isKnown && network.securityType.isSecured
+
+        // 802.1X cannot be attempted without a username, so go straight to the
+        // prompt unless WireBar already has one stored.
+        if network.securityType.isEnterprise,
+           wifiManager.savedUsername(for: network.ssid) == nil {
+            networkAwaitingPassword = network
+            return
+        }
 
         if network.isKnown || !network.securityType.isSecured {
             wifiManager.joinNetwork(network, password: nil)
