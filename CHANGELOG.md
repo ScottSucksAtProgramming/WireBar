@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.2.2-beta] - 2026-09-15
+
 ### Added
 - WireBar has its own app icon, shown in Finder, the update window, and a larger version in Settings → About
 
