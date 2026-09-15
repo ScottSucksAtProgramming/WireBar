@@ -104,7 +104,7 @@ Publish a tiny same-day release `0.2.1-beta` (changelog: "Confirms in-app update
 Scott's membership renewal cleared the same day, so notarization went straight into the Phase 1 script and every release is notarized from 0.2.0-beta on. Phases 3–4 therefore test the shipping configuration. Remaining checks, verified during Phases 1, 3 and 4:
 
 - [ ] Script fails early with a clear message if the `wirebar-notary` profile is missing
-- [ ] `xcrun stapler validate` passes on the app and the DMG
-- [ ] `spctl --assess --type execute` accepts the app; `spctl --assess --type open --context context:primary-signature` accepts the DMG
+- [x] `xcrun stapler validate` passes on the app (including the copy inside the DMG) and the DMG
+- [x] `spctl --assess --type execute` accepts the app; `spctl --assess --type open --context context:primary-signature` accepts the DMG (both "Notarized Developer ID")
 - [ ] A fresh download from GitHub opens without "Open Anyway" (Scott)
 - [ ] Updating from 0.2.0-beta to 0.2.1-beta works end to end (Scott, Phase 4)
