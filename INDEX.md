@@ -30,6 +30,13 @@ Quick-reference for finding content in this directory. For conventions, see `con
 | ~~`PrivilegedHelper/`~~ | *(Removed — Network Extension framework eliminates the need for a privileged helper)* |
 | `WireBarTests/` | Unit tests — NetworkMonitor, WiFiManager, SettingsStore, IPService, PingService, VPNManager + mocks |
 
+## docs/guides/
+
+| File | Purpose |
+|------|---------|
+| `beta-keys.md` | Making beta keys, sending them to testers, protecting the signing key |
+| `releasing.md` | Publishing a new version with `scripts/release.sh`, plus what to do when it stops |
+
 ## context/
 
 | File | Purpose |
