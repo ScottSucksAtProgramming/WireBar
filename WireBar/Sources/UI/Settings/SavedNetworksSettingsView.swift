@@ -13,23 +13,35 @@ struct SavedNetworksSettingsView: View {
 
     var body: some View {
         Form {
+            Section {
+                Text(String(localized: "If you switch networks often, WireBar can store passwords locally. If you choose not to store your passwords with WireBar you will need to enter the network password each time you switch to it."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(String(localized: "These passwords are used only to connect to Wi-Fi networks and are never sent to the cloud, to developers, or to anyone else."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(String(localized: "You can remove these passwords at any time."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
             Section(String(localized: "About Storing Passwords in WireBar")) {
-                Text(String(localized: "Your Mac already stores Wi-Fi passwords which it uses to automatically connect to networks. As a security feature of macOS, WireBar cannot access these passwords."))
+                Text(String(localized: "Your Mac already stores Wi-Fi passwords which it uses to automatically connect to networks. WireBar cannot access these passwords."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Text(String(localized: "If you switch networks often, WireBar can store passwords locally. These are stored within your Mac's keychain, the same place where Safari stores passwords it remembers for you. Anything in the keychain is accessible by anyone who can unlock your Mac."))
+                Text(String(localized: "Passwords stored by WireBar are stored locally, in your User Keychain, the same place Safari stores passwords it remembers for you. Anyone who can unlock your user account is able to access and read these passwords."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Text(String(localized: "Passwords stored by WireBar are only stored locally, on your Mac. They are not sent to the cloud, to developers, or to anyone else. You can remove these passwords at any time."))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Text(String(localized: "Consider how comfortable you are with that before saving passwords in WireBar. If you do not store your passwords with WireBar you will be prompted to enter the password each time you switch networks."))
+                Text(String(localized: "Consider how comfortable you are with that before saving passwords in WireBar."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -37,6 +49,11 @@ struct SavedNetworksSettingsView: View {
 
             Section(String(localized: "Enterprise Networks")) {
                 Text(String(localized: "Work and school networks sign you in with an account instead of a shared password. For those, WireBar keeps the username and password you enter, in the same place and the same way."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(String(localized: "These accounts are often used to access multiple systems. Review your network's security policies before storing the password in WireBar."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
