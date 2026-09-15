@@ -235,13 +235,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func setupLaunchAtLogin() {
         syncLaunchAtLoginWithSystem()
 
+        // No .receive(on:) here: AppDelegate is @MainActor and the only writers are
+        // the Settings toggle and setLaunchAtLoginWithoutApplying(_:). Synchronous
+        // delivery is what lets isSyncingLaunchAtLogin suppress our own writes.
         settingsStore.$launchAtLogin
             .dropFirst()
             .removeDuplicates()
-            .receive(on: DispatchQueue.main)
             .sink { [weak self] enabled in
                 guard let self, !self.isSyncingLaunchAtLogin else { return }
-                self.applyLaunchAtLogin(enabled)
+                self.applyLaunchAtLogin(enabled, showErrors: true)
             }
             .store(in: &cancellables)
     }
@@ -252,9 +254,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func syncLaunchAtLoginWithSystem() {
         let status = SMAppService.mainApp.status
 
+        // .requiresApproval means macOS is waiting on the user, not that it's off.
+        let isEnabled = (status == .enabled || status == .requiresApproval)
+
         guard settingsStore.hasLaunchAtLoginPreference else {
-            if settingsStore.launchAtLogin, status != .enabled {
-                applyLaunchAtLogin(true)
+            // Errors are silent here: an unsigned build, or one run from a disk image
+            // or DerivedData, is expected to fail, and a modal alert would block launch.
+            if settingsStore.launchAtLogin, !isEnabled {
+                applyLaunchAtLogin(true, showErrors: false)
             }
             // Persist the choice so a later removal in System Settings isn't undone
             // by this first-run branch on the next launch.
@@ -262,15 +269,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
-        let isEnabled = (status == .enabled)
         guard settingsStore.launchAtLogin != isEnabled else { return }
-
-        isSyncingLaunchAtLogin = true
-        settingsStore.launchAtLogin = isEnabled
-        isSyncingLaunchAtLogin = false
+        setLaunchAtLoginWithoutApplying(isEnabled)
     }
 
-    private func applyLaunchAtLogin(_ enabled: Bool) {
+    private func applyLaunchAtLogin(_ enabled: Bool, showErrors: Bool) {
         do {
             if enabled {
                 if SMAppService.mainApp.status != .enabled {
@@ -281,7 +284,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         } catch {
             setLaunchAtLoginWithoutApplying(!enabled)
-            showLaunchAtLoginError(error, wasEnabling: enabled)
+            if showErrors {
+                showLaunchAtLoginError(error, wasEnabling: enabled)
+            }
         }
     }
 

@@ -21,6 +21,13 @@ final class SettingsStoreTests: XCTestCase {
         XCTAssertTrue(store.launchAtLogin)
     }
 
+    func testHasLaunchAtLoginPreferenceIsFalseUntilSet() {
+        let store = SettingsStore(defaults: testDefaults)
+        XCTAssertFalse(store.hasLaunchAtLoginPreference)
+        store.launchAtLogin = false
+        XCTAssertTrue(store.hasLaunchAtLoginPreference)
+    }
+
     func testSetLaunchAtLoginPersists() {
         let store = SettingsStore(defaults: testDefaults)
         store.launchAtLogin = false
