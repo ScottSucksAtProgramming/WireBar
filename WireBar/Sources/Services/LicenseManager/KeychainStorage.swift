@@ -98,32 +98,35 @@ struct KeychainStorage: KeychainStoring, Sendable {
 // MARK: - In-memory implementation for tests
 
 final class InMemoryKeychainStorage: KeychainStoring, @unchecked Sendable {
+    // Callers use it from background threads (LicenseManager's init-time validation,
+    // WiFiManager joins), so the dictionary is guarded like the real keychain.
+    private let lock = NSLock()
     private var store: [String: String] = [:]
 
     func save(key: String, value: String) -> Bool {
-        store[key] = value
+        lock.withLock { store[key] = value }
         return true
     }
 
     func load(key: String) -> String? {
-        store[key]
+        lock.withLock { store[key] }
     }
 
     func delete(key: String) -> Bool {
-        store.removeValue(forKey: key) != nil
+        lock.withLock { store.removeValue(forKey: key) != nil }
     }
 
     func allKeys() -> [String] {
-        store.keys.sorted()
+        lock.withLock { store.keys.sorted() }
     }
 
     func saveDate(key: String, value: Date) -> Bool {
-        store[key] = String(value.timeIntervalSince1970)
+        lock.withLock { store[key] = String(value.timeIntervalSince1970) }
         return true
     }
 
     func loadDate(key: String) -> Date? {
-        guard let string = store[key], let interval = TimeInterval(string) else { return nil }
+        guard let string = load(key: key), let interval = TimeInterval(string) else { return nil }
         return Date(timeIntervalSince1970: interval)
     }
 }
