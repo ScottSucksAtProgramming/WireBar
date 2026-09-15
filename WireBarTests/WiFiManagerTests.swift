@@ -42,6 +42,38 @@ final class WiFiManagerTests: XCTestCase {
         XCTAssertEqual(sut.networks.map(\.ssid), ["Strong", "Medium", "Weak"])
     }
 
+    func testScanCollapsesDuplicateSSIDsKeepingStrongest() {
+        mockScanner.currentSSIDValue = nil
+        mockScanner.networksToReturn = [
+            makeNetwork(ssid: "AMB-Public", rssi: -70, isKnown: true, bssid: "AA:00:00:00:00:01"),
+            makeNetwork(ssid: "AMB-Public", rssi: -45, isKnown: true, bssid: "AA:00:00:00:00:02"),
+            makeNetwork(ssid: "AMB-Public", rssi: -82, isKnown: true, bssid: "AA:00:00:00:00:03"),
+            makeNetwork(ssid: "AMB-Public", rssi: -61, isKnown: true, bssid: "AA:00:00:00:00:04"),
+        ]
+
+        let sut = WiFiManager(scanner: mockScanner)
+        sut.scan()
+        waitForScanToFinish(sut)
+
+        XCTAssertEqual(sut.networks.count, 1)
+        XCTAssertEqual(sut.networks.first?.rssi, -45)
+    }
+
+    func testScanKeepsDistinctSSIDs() {
+        mockScanner.currentSSIDValue = nil
+        mockScanner.networksToReturn = [
+            makeNetwork(ssid: "AMB-Public", rssi: -70, isKnown: false, bssid: "AA:00:00:00:00:01"),
+            makeNetwork(ssid: "AMB-Public", rssi: -45, isKnown: false, bssid: "AA:00:00:00:00:02"),
+            makeNetwork(ssid: "SBMA", rssi: -75, isKnown: false, bssid: "BB:00:00:00:00:01"),
+        ]
+
+        let sut = WiFiManager(scanner: mockScanner)
+        sut.scan()
+        waitForScanToFinish(sut)
+
+        XCTAssertEqual(sut.networks.map(\.ssid), ["AMB-Public", "SBMA"])
+    }
+
     func testScanMarksCurrentNetwork() {
         mockScanner.currentSSIDValue = "HomeNetwork"
         mockScanner.networksToReturn = [
@@ -88,8 +120,9 @@ final class WiFiManagerTests: XCTestCase {
         let sut = WiFiManager(scanner: mockScanner)
 
         sut.joinNetwork(network, password: nil)
+        waitForJoinToFinish(sut)
 
-        XCTAssertEqual(mockScanner.associateCalledWith?.bssid, "AA:BB:CC:DD:EE:FF")
+        XCTAssertEqual(mockScanner.associateCalledWith?.ssid, "Home")
         XCTAssertNil(mockScanner.associateCalledWith?.password)
     }
 
@@ -98,8 +131,9 @@ final class WiFiManagerTests: XCTestCase {
         let sut = WiFiManager(scanner: mockScanner)
 
         sut.joinNetwork(network, password: "secret123")
+        waitForJoinToFinish(sut)
 
-        XCTAssertEqual(mockScanner.associateCalledWith?.bssid, "11:22:33:44:55:66")
+        XCTAssertEqual(mockScanner.associateCalledWith?.ssid, "Cafe")
         XCTAssertEqual(mockScanner.associateCalledWith?.password, "secret123")
     }
 
@@ -109,6 +143,7 @@ final class WiFiManagerTests: XCTestCase {
         let sut = WiFiManager(scanner: mockScanner)
 
         sut.joinNetwork(network, password: "pw")
+        waitForJoinToFinish(sut)
 
         XCTAssertNotNil(sut.joinError)
     }
@@ -136,6 +171,19 @@ final class WiFiManagerTests: XCTestCase {
     }
 
     // MARK: - Helpers
+
+    private func waitForJoinToFinish(_ manager: WiFiManager, timeout: TimeInterval = 2) {
+        let expectation = XCTestExpectation(description: "Join completes")
+        var cancellable: AnyCancellable?
+        cancellable = manager.$isJoining
+            .dropFirst()
+            .filter { !$0 }
+            .sink { _ in
+                expectation.fulfill()
+                cancellable?.cancel()
+            }
+        wait(for: [expectation], timeout: timeout)
+    }
 
     private func waitForScanToFinish(_ manager: WiFiManager, timeout: TimeInterval = 2) {
         let expectation = XCTestExpectation(description: "Scan completes")

@@ -65,9 +65,6 @@ struct NetworkListView: View {
                     onJoin: { password in
                         wifiManager.joinNetwork(network, password: password)
                         networkAwaitingPassword = nil
-                        if wifiManager.joinError != nil {
-                            showJoinError = true
-                        }
                     },
                     onCancel: {
                         networkAwaitingPassword = nil
@@ -76,15 +73,18 @@ struct NetworkListView: View {
             }
 
             if showJoinError, let error = wifiManager.joinError {
+                // Wraps and stays selectable: association errors carry the only
+                // diagnostic detail the user ever sees, so never truncate them.
                 Text(String(localized: "Failed to join: \(error.localizedDescription)"))
                     .font(.caption)
                     .foregroundStyle(.red)
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                            showJoinError = false
-                        }
-                    }
+                    .fixedSize(horizontal: false, vertical: true)
+                    .textSelection(.enabled)
+                    .accessibilityLabel(String(localized: "Failed to join: \(error.localizedDescription)"))
             }
+        }
+        .onChange(of: wifiManager.joinError == nil) { _ in
+            showJoinError = wifiManager.joinError != nil
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(String(localized: "Available Wi-Fi networks"))
@@ -178,9 +178,6 @@ struct NetworkListView: View {
 
         if network.isKnown || !network.securityType.isSecured {
             wifiManager.joinNetwork(network, password: nil)
-            if wifiManager.joinError != nil {
-                showJoinError = true
-            }
         } else {
             networkAwaitingPassword = network
         }

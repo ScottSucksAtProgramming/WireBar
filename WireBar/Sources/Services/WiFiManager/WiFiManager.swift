@@ -8,6 +8,7 @@ final class WiFiManager: ObservableObject, @unchecked Sendable {
     @Published private(set) var isScanning: Bool = false
     @Published private(set) var scanError: Error?
     @Published private(set) var joinError: Error?
+    @Published private(set) var isJoining: Bool = false
 
     private nonisolated(unsafe) let scanner: WiFiScanning
 
@@ -48,6 +49,8 @@ final class WiFiManager: ObservableObject, @unchecked Sendable {
                 return n
             }
 
+            scanned = dedupeBySSID(scanned)
+
             let known = scanned.filter(\.isKnown).sorted { $0.rssi > $1.rssi }
             let other = scanned.filter { !$0.isKnown }.sorted { $0.rssi > $1.rssi }
             return .success(known + other)
@@ -56,14 +59,44 @@ final class WiFiManager: ObservableObject, @unchecked Sendable {
         }
     }
 
+    /// A scan returns one entry per access point radio, so a network served by
+    /// several APs appears several times. The user picks a network, not a radio —
+    /// keep only the strongest entry for each SSID.
+    private static func dedupeBySSID(_ networks: [ScannedNetwork]) -> [ScannedNetwork] {
+        var strongest: [String: ScannedNetwork] = [:]
+        for network in networks {
+            if let existing = strongest[network.ssid], existing.rssi >= network.rssi {
+                continue
+            }
+            strongest[network.ssid] = network
+        }
+        return Array(strongest.values)
+    }
+
     func joinNetwork(_ network: ScannedNetwork, password: String?) {
         joinError = nil
-        guard let bssid = network.bssid else { return }
+        isJoining = true
 
-        do {
-            try scanner.associateToNetwork(bssid: bssid, password: password)
-        } catch {
-            joinError = error
+        let scanner = self.scanner
+        let ssid = network.ssid
+        // associate() blocks for seconds; running it inline froze the popover.
+        DispatchQueue.global(qos: .userInitiated).async {
+            var failure: Error?
+            do {
+                try scanner.associateToNetwork(ssid: ssid, password: password)
+            } catch {
+                failure = error
+            }
+
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                self.joinError = failure
+                self.isJoining = false
+                // Refresh so the connected checkmark moves off the old row.
+                if failure == nil {
+                    self.scan()
+                }
+            }
         }
     }
 
