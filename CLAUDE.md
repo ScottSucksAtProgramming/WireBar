@@ -81,6 +81,7 @@ wifi-menubar/
     Resources/
       Info.plist
       WireBar.entitlements
+      Assets.xcassets/  (AppIcon.appiconset — sizes generated from design/app-icon/wirebar_icon.png)
   WireBarTests/
     NetworkMonitorTests.swift
     SettingsStoreTests.swift
@@ -101,6 +102,8 @@ wifi-menubar/
     make-beta-key.swift  (makes 90-day beta license keys; signing key lives outside the repo)
     release.sh  (builds a signed release .dmg into dist/<version>/; see plans/phase8-release-pipeline.md)
   dist/  (release outputs, gitignored; old hand-made DMGs in dist/old/)
+  design/
+    app-icon/wirebar_icon.png  (source art for the app icon, 1254px)
   archive/
     completed-phases.taskpaper
   handoffs/          (local only, .gitignored — session handoff docs)

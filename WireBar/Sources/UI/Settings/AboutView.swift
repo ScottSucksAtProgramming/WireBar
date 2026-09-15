@@ -11,7 +11,7 @@ struct AboutView: View {
                     if let icon = NSImage(named: NSImage.applicationIconName) {
                         Image(nsImage: icon)
                             .resizable()
-                            .frame(width: 64, height: 64)
+                            .frame(width: 128, height: 128)
                             .accessibilityLabel(String(localized: "WireBar app icon"))
                     }
                     Text(String(localized: "WireBar"))
