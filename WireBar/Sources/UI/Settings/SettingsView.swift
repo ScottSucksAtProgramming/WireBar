@@ -4,6 +4,7 @@ import Sparkle
 enum SettingsTab: String, CaseIterable, Identifiable {
     case general
     case networkDetails
+    case savedNetworks
     case ipLatency
     case vpn
     case notifications
@@ -17,6 +18,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         switch self {
         case .general: String(localized: "General")
         case .networkDetails: String(localized: "Network Details")
+        case .savedNetworks: String(localized: "Saved Networks")
         case .ipLatency: String(localized: "IP & Latency")
         case .vpn: String(localized: "VPN")
         case .notifications: String(localized: "Notifications")
@@ -30,6 +32,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         switch self {
         case .general: "gear"
         case .networkDetails: "network"
+        case .savedNetworks: "lock.shield"
         case .ipLatency: "globe"
         case .vpn: "shield.lefthalf.filled"
         case .notifications: "bell"
@@ -43,6 +46,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         switch self {
         case .general: .blue
         case .networkDetails: .green
+        case .savedNetworks: .teal
         case .ipLatency: .purple
         case .vpn: .orange
         case .notifications: .red
@@ -54,7 +58,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
 
     var group: Int {
         switch self {
-        case .general, .networkDetails, .ipLatency, .vpn: 0
+        case .general, .networkDetails, .savedNetworks, .ipLatency, .vpn: 0
         case .notifications, .shortcuts: 1
         case .license, .about: 2
         }
@@ -83,6 +87,7 @@ struct SettingsView: View {
     @ObservedObject var settingsStore: SettingsStore
     @ObservedObject var licenseManager: LicenseManager
     @ObservedObject var vpnManager: VPNManager
+    @ObservedObject var wifiManager: WiFiManager
     let updaterController: SPUStandardUpdaterController
 
     @State private var selectedTab: SettingsTab = .general
@@ -113,6 +118,8 @@ struct SettingsView: View {
                 GeneralSettingsView(settingsStore: settingsStore, licenseManager: licenseManager)
             case .networkDetails:
                 NetworkDetailsSettingsView(settingsStore: settingsStore, licenseManager: licenseManager)
+            case .savedNetworks:
+                SavedNetworksSettingsView(wifiManager: wifiManager)
             case .ipLatency:
                 IPPingSettingsView(settingsStore: settingsStore, licenseManager: licenseManager)
             case .vpn:
@@ -178,6 +185,18 @@ struct GeneralSettingsView: View {
             }
 
             Section(String(localized: "Menu Bar Display")) {
+                Toggle(String(localized: "Show signal strength"), isOn: $settingsStore.menuBarShowSignalStrength)
+                    .accessibilityLabel(String(localized: "Show Wi-Fi signal strength icon in menu bar"))
+
+                if settingsStore.menuBarShowSignalStrength, licenseManager.isPaid {
+                    Picker(String(localized: "Signal format"), selection: $settingsStore.menuBarSignalFormat) {
+                        Text(String(localized: "Bars")).tag(0)
+                        Text(String(localized: "Percentage")).tag(1)
+                        Text(String(localized: "dBm")).tag(2)
+                    }
+                    .accessibilityLabel(String(localized: "Signal strength display format"))
+                }
+
                 if licenseManager.isPaid {
                     Toggle(String(localized: "Show network name"), isOn: $settingsStore.menuBarShowNetworkName)
                         .accessibilityLabel(String(localized: "Show Wi-Fi network name in menu bar"))
@@ -185,6 +204,8 @@ struct GeneralSettingsView: View {
                         .accessibilityLabel(String(localized: "Show VPN connection indicator in menu bar"))
                     Toggle(String(localized: "Show IP address"), isOn: $settingsStore.menuBarShowIP)
                         .accessibilityLabel(String(localized: "Show local IP address in menu bar"))
+                    Toggle(String(localized: "Show hotspot icon"), isOn: $settingsStore.menuBarShowHotspot)
+                        .accessibilityLabel(String(localized: "Show personal hotspot icon when connected to a hotspot"))
                 } else {
                     PaidFeatureNotice(
                         icon: "menubar.rectangle",
@@ -193,6 +214,10 @@ struct GeneralSettingsView: View {
                         color: .blue
                     )
                 }
+
+                Text(String(localized: "On smaller screens or notched MacBooks, some menu bar items may be hidden by macOS."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
         .formStyle(.grouped)

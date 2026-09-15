@@ -4,6 +4,8 @@ struct NetworkListView: View {
     @ObservedObject var wifiManager: WiFiManager
     @State private var networkAwaitingPassword: ScannedNetwork?
     @State private var showJoinError: Bool = false
+    @State private var lastAttemptedNetwork: ScannedNetwork?
+    @State private var lastAttemptUsedStoredPassword: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -12,10 +14,12 @@ struct NetworkListView: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
                 Spacer()
-                if wifiManager.isScanning {
+                if wifiManager.isScanning || wifiManager.isJoining {
                     ProgressView()
                         .scaleEffect(0.6)
-                        .accessibilityLabel(String(localized: "Scanning for networks"))
+                        .accessibilityLabel(wifiManager.isJoining
+                            ? String(localized: "Joining network")
+                            : String(localized: "Scanning for networks"))
                 } else {
                     Button {
                         wifiManager.scan()
@@ -62,12 +66,13 @@ struct NetworkListView: View {
             if let network = networkAwaitingPassword {
                 PasswordInputView(
                     networkName: network.ssid,
-                    onJoin: { password in
-                        wifiManager.joinNetwork(network, password: password)
+                    isEnterprise: network.securityType.isEnterprise,
+                    initialUsername: wifiManager.savedUsername(for: network.ssid),
+                    onJoin: { username, password in
+                        lastAttemptedNetwork = network
+                        lastAttemptUsedStoredPassword = false
+                        wifiManager.joinNetwork(network, password: password, username: username)
                         networkAwaitingPassword = nil
-                        if wifiManager.joinError != nil {
-                            showJoinError = true
-                        }
                     },
                     onCancel: {
                         networkAwaitingPassword = nil
@@ -76,14 +81,30 @@ struct NetworkListView: View {
             }
 
             if showJoinError, let error = wifiManager.joinError {
+                // Wraps and stays selectable: association errors carry the only
+                // diagnostic detail the user ever sees, so never truncate them.
                 Text(String(localized: "Failed to join: \(error.localizedDescription)"))
                     .font(.caption)
                     .foregroundStyle(.red)
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                            showJoinError = false
-                        }
-                    }
+                    .fixedSize(horizontal: false, vertical: true)
+                    .textSelection(.enabled)
+                    .accessibilityLabel(String(localized: "Failed to join: \(error.localizedDescription)"))
+            }
+        }
+        .onChange(of: wifiManager.isJoining) { isJoining in
+            guard !isJoining else { return }
+            guard wifiManager.joinError != nil else {
+                showJoinError = false
+                return
+            }
+            if lastAttemptUsedStoredPassword, let network = lastAttemptedNetwork {
+                // The saved password didn't get us on. Ask for it instead of
+                // leaving the user disconnected with only an error.
+                lastAttemptUsedStoredPassword = false
+                showJoinError = false
+                networkAwaitingPassword = network
+            } else {
+                showJoinError = true
             }
         }
         .accessibilityElement(children: .contain)
@@ -176,11 +197,22 @@ struct NetworkListView: View {
     private func handleNetworkTap(_ network: ScannedNetwork) {
         guard !network.isCurrent else { return }
 
+        lastAttemptedNetwork = network
+        // A "known" profile does not guarantee macOS will hand us the stored PSK.
+        // Try without one, but remember that we did, so a failure can fall back to
+        // asking rather than just stranding the user offline.
+        lastAttemptUsedStoredPassword = network.isKnown && network.securityType.isSecured
+
+        // 802.1X cannot be attempted without a username, so go straight to the
+        // prompt unless WireBar already has one stored.
+        if network.securityType.isEnterprise,
+           wifiManager.savedUsername(for: network.ssid) == nil {
+            networkAwaitingPassword = network
+            return
+        }
+
         if network.isKnown || !network.securityType.isSecured {
             wifiManager.joinNetwork(network, password: nil)
-            if wifiManager.joinError != nil {
-                showJoinError = true
-            }
         } else {
             networkAwaitingPassword = network
         }

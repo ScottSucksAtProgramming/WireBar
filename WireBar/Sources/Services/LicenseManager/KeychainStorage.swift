@@ -7,6 +7,9 @@ protocol KeychainStoring: Sendable {
     func save(key: String, value: String) -> Bool
     func load(key: String) -> String?
     func delete(key: String) -> Bool
+    /// Every account stored under this service. Scoped to the service, so one
+    /// service's keys never leak into another's list.
+    func allKeys() -> [String]
     func saveDate(key: String, value: Date) -> Bool
     func loadDate(key: String) -> Date?
 }
@@ -16,31 +19,37 @@ protocol KeychainStoring: Sendable {
 struct KeychainStorage: KeychainStoring, Sendable {
     private let service: String
 
+    // Deliberately the file-based keychain, not the data-protection one. The modern
+    // keychain (kSecUseDataProtectionKeychain) needs an application-identifier or
+    // keychain-access-groups entitlement, which only a provisioning profile grants;
+    // a Developer ID build has neither, and every SecItemAdd fails with -34018
+    // errSecMissingEntitlement. The file-based keychain is still encrypted at rest and
+    // ACLs each item to the creating application's code signature.
     init(service: String = LicenseConfig.keychainServiceName) {
         self.service = service
+    }
+
+    private func baseQuery(key: String) -> [String: Any] {
+        [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: key,
+        ]
     }
 
     func save(key: String, value: String) -> Bool {
         guard let data = value.data(using: .utf8) else { return false }
         delete(key: key)
 
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: key,
-            kSecValueData as String: data,
-        ]
+        var query = baseQuery(key: key)
+        query[kSecValueData as String] = data
         return SecItemAdd(query as CFDictionary, nil) == errSecSuccess
     }
 
     func load(key: String) -> String? {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: key,
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne,
-        ]
+        var query = baseQuery(key: key)
+        query[kSecReturnData as String] = true
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
         var result: AnyObject?
         guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess,
               let data = result as? Data,
@@ -53,12 +62,24 @@ struct KeychainStorage: KeychainStoring, Sendable {
 
     @discardableResult
     func delete(key: String) -> Bool {
-        let query: [String: Any] = [
+        return SecItemDelete(baseQuery(key: key) as CFDictionary) == errSecSuccess
+    }
+
+    func allKeys() -> [String] {
+        var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
-            kSecAttrAccount as String: key,
+            kSecReturnAttributes as String: true,
+            kSecMatchLimit as String: kSecMatchLimitAll,
         ]
-        return SecItemDelete(query as CFDictionary) == errSecSuccess
+        query[kSecReturnData as String] = false
+        var result: AnyObject?
+        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess,
+              let items = result as? [[String: Any]]
+        else {
+            return []
+        }
+        return items.compactMap { $0[kSecAttrAccount as String] as? String }.sorted()
     }
 
     func saveDate(key: String, value: Date) -> Bool {
@@ -90,6 +111,10 @@ final class InMemoryKeychainStorage: KeychainStoring, @unchecked Sendable {
 
     func delete(key: String) -> Bool {
         store.removeValue(forKey: key) != nil
+    }
+
+    func allKeys() -> [String] {
+        store.keys.sorted()
     }
 
     func saveDate(key: String, value: Date) -> Bool {

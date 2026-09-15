@@ -34,7 +34,7 @@ targets:
         INFOPLIST_FILE: WireBar/Resources/Info.plist
         CODE_SIGN_ENTITLEMENTS: WireBar/Resources/WireBar.entitlements
         PRODUCT_NAME: WireBar
-        MARKETING_VERSION: "1.0.0"
+        MARKETING_VERSION: "0.1.1-beta"
         CURRENT_PROJECT_VERSION: "1"
         GENERATE_INFOPLIST_FILE: false
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -42,7 +42,7 @@ targets:
         Debug:
           SWIFT_ACTIVE_COMPILATION_CONDITIONS: "DEBUG BETA_UNLOCK_PAID"
         Release:
-          SWIFT_ACTIVE_COMPILATION_CONDITIONS: ""
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: "BETA_UNLOCK_PAID"
     entitlements:
       path: WireBar/Resources/WireBar.entitlements
       properties:

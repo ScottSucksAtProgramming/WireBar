@@ -61,6 +61,7 @@ final class NetworkMonitor: ObservableObject, @unchecked Sendable {
         let ifaceName = iface.interfaceName ?? "en0"
         let subnet = Self.getSubnetMask(forInterface: ifaceName)
         let gateway = Self.getDefaultGateway()
+        let isHotspot = Self.detectHotspot(ssid: ssid, gateway: gateway)
         let dns = Self.getDNSServers()
 
         DispatchQueue.main.async { [weak self] in
@@ -70,6 +71,7 @@ final class NetworkMonitor: ObservableObject, @unchecked Sendable {
             self?.state.bssid = bssid
             self?.state.transmitRate = rate
             self?.state.isWiFiPoweredOn = powerOn
+            self?.state.isHotspot = isHotspot
             self?.state.channelNumber = channelNum
             self?.state.channelBand = band
             self?.state.localIPAddress = localIP
@@ -156,6 +158,18 @@ final class NetworkMonitor: ObservableObject, @unchecked Sendable {
             }
         }
         return servers
+    }
+
+    private static func detectHotspot(ssid: String?, gateway: String?) -> Bool {
+        // iPhone/iPad hotspots consistently use the 172.20.10.x subnet
+        if let gw = gateway, gw.hasPrefix("172.20.10.") { return true }
+
+        guard let ssid else { return false }
+        let lowered = ssid.lowercased()
+        if lowered == "iphone" || lowered == "ipad" { return true }
+        if lowered.hasSuffix("\u{2019}s iphone") || lowered.hasSuffix("'s iphone") { return true }
+        if lowered.hasSuffix("\u{2019}s ipad") || lowered.hasSuffix("'s ipad") { return true }
+        return false
     }
 
     private func handlePathUpdate(_ path: NWPath) {

@@ -46,4 +46,13 @@ enum NetworkSecurityType: Sendable {
     var isSecured: Bool {
         self != .open
     }
+
+    /// 802.1X networks need a username (and optionally a client certificate)
+    /// alongside the password, and a different CoreWLAN association call.
+    var isEnterprise: Bool {
+        switch self {
+        case .wpaEnterprise, .wpa2Enterprise, .wpa3Enterprise: true
+        default: false
+        }
+    }
 }

@@ -16,6 +16,8 @@ struct NetworkState: Sendable {
     var isEthernetConnected: Bool = false
     var isWiFiPoweredOn: Bool = true
 
+    var isHotspot: Bool = false
+
     var ethernetIPAddress: String?
     var gatewayAddress: String?
     var subnetMask: String?
@@ -45,4 +47,19 @@ enum SignalQuality: Sendable {
     case good
     case fair
     case poor
+
+    var localizedDescription: String {
+        switch self {
+        case .excellent: String(localized: "excellent")
+        case .good: String(localized: "good")
+        case .fair: String(localized: "fair")
+        case .poor: String(localized: "poor")
+        }
+    }
+}
+
+enum SignalDisplayFormat: Int, Sendable {
+    case bars = 0
+    case percentage = 1
+    case dBm = 2
 }

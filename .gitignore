@@ -106,3 +106,4 @@ AuthKey_*.p8
 
 # Session handoffs
 handoffs/
+.claude/worktrees/

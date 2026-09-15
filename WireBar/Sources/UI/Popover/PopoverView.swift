@@ -8,6 +8,7 @@ struct PopoverView: View {
     @ObservedObject var pingService: PingService
     @ObservedObject var vpnManager: VPNManager
     @ObservedObject var licenseManager: LicenseManager
+    @ObservedObject var locationPermissionManager: LocationPermissionManager
     var onOpenSettings: () -> Void = {}
 
     private var isWiFiOff: Bool {
@@ -19,6 +20,10 @@ struct PopoverView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
+                if !locationPermissionManager.isAuthorized {
+                    locationBanner
+                }
+
                 if isWiFiOff {
                     wifiOffContent
                 } else {
@@ -27,6 +32,9 @@ struct PopoverView: View {
 
                 Divider()
                 quickActions
+
+                Divider()
+                quitButton
             }
             .padding()
         }
@@ -133,6 +141,48 @@ struct PopoverView: View {
             }
             .accessibilityLabel(String(localized: "Open settings"))
         }
+    }
+
+    @ViewBuilder
+    private var quitButton: some View {
+        HStack {
+            Spacer()
+            Button {
+                NSApplication.shared.terminate(nil)
+            } label: {
+                Image(systemName: "power")
+                Text(String(localized: "Quit WireBar"))
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .accessibilityLabel(String(localized: "Quit WireBar"))
+            Spacer()
+        }
+    }
+
+    @ViewBuilder
+    private var locationBanner: some View {
+        Button {
+            if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_LocationServices") {
+                NSWorkspace.shared.open(url)
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "location.slash.fill")
+                    .font(.caption)
+                    .accessibilityHidden(true)
+                Text(String(localized: "Location Services required for network name. Click to open Settings."))
+                    .font(.caption)
+                    .multilineTextAlignment(.leading)
+            }
+            .padding(8)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.yellow.opacity(0.25))
+            .cornerRadius(6)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(String(localized: "Location Services not granted. Network name unavailable."))
+        .accessibilityHint(String(localized: "Opens Location Services settings"))
     }
 
     @ViewBuilder

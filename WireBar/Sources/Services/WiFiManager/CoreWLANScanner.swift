@@ -40,17 +40,34 @@ final class CoreWLANScanner: WiFiScanning, @unchecked Sendable {
         return ssids
     }
 
-    func associateToNetwork(bssid: String, password: String?) throws {
+    func associateToNetwork(ssid: String, password: String?) throws {
         guard let iface = interface else { return }
-        let networks = try iface.scanForNetworks(withName: nil)
-        guard let target = networks.first(where: { $0.bssid == bssid }) else {
+        // Match on SSID, not BSSID: a network served by several access points
+        // rotates BSSIDs between scans, so a BSSID from the previous scan may
+        // legitimately be absent here. Associate to the strongest AP for the SSID.
+        let networks = try iface.scanForNetworks(withName: ssid)
+        guard let target = networks.max(by: { $0.rssiValue < $1.rssiValue }) else {
             throw NSError(
                 domain: "WiFiManager",
                 code: -1,
-                userInfo: [NSLocalizedDescriptionKey: "Network not found"]
+                userInfo: [NSLocalizedDescriptionKey: String(localized: "\(ssid) is no longer in range.")]
             )
         }
         try iface.associate(to: target, password: password)
+    }
+
+    func associateToEnterpriseNetwork(ssid: String, username: String, password: String) throws {
+        guard let iface = interface else { return }
+        let networks = try iface.scanForNetworks(withName: ssid)
+        guard let target = networks.max(by: { $0.rssiValue < $1.rssiValue }) else {
+            throw NSError(
+                domain: "WiFiManager",
+                code: -1,
+                userInfo: [NSLocalizedDescriptionKey: String(localized: "\(ssid) is no longer in range.")]
+            )
+        }
+        // identity is for certificate-based 802.1X, which WireBar does not collect.
+        try iface.associate(toEnterpriseNetwork: target, identity: nil, username: username, password: password)
     }
 
     func setPower(_ on: Bool) throws {
