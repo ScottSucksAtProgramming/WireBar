@@ -92,7 +92,8 @@ xcodebuild -exportArchive -archivePath "$ARCHIVE" -exportPath "$EXPORT_DIR" \
 
 APP="$EXPORT_DIR/WireBar.app"
 codesign --verify --deep --strict "$APP" || fail "Signature check failed on $APP"
-codesign -dvv "$APP" 2>&1 | grep -q "Authority=$SIGN_IDENTITY" || fail "App isn't signed by $SIGN_IDENTITY"
+SIGNATURE=$(codesign -dvv "$APP" 2>&1)
+[[ "$SIGNATURE" == *"Authority=$SIGN_IDENTITY"* ]] || fail "App isn't signed by $SIGN_IDENTITY"
 BUILT_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$APP/Contents/Info.plist")
 BUILT_BUILD=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$APP/Contents/Info.plist")
 [[ "$BUILT_VERSION" == "$VERSION" && "$BUILT_BUILD" == "$NEW_BUILD" ]] \
