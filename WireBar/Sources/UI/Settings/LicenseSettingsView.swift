@@ -48,11 +48,25 @@ struct LicenseSettingsView: View {
         }
     }
 
+    private var planName: String {
+        if licenseManager.betaExpiry != nil { return String(localized: "Beta") }
+        return licenseManager.isPaid ? String(localized: "Paid") : String(localized: "Free")
+    }
+
+    /// Shown under the key field. A beta key that ends while WireBar is running
+    /// sets the error without an activation attempt, so check it directly too.
+    private var activationErrorMessage: String? {
+        if licenseManager.lastError == .betaKeyExpired {
+            return String(localized: "This beta key has expired.")
+        }
+        return activationFailed ? String(localized: "Invalid license key. Please try again.") : nil
+    }
+
     var body: some View {
         Form {
             Section(String(localized: "Current Plan")) {
                 LabeledContent(String(localized: "Plan")) {
-                    Text(licenseManager.isPaid ? String(localized: "Paid") : String(localized: "Free"))
+                    Text(planName)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(licenseManager.isPaid ? .green : .secondary)
                         .padding(.horizontal, 10)
@@ -61,9 +75,13 @@ struct LicenseSettingsView: View {
                             (licenseManager.isPaid ? Color.green : Color.secondary).opacity(0.15),
                             in: Capsule()
                         )
-                        .accessibilityLabel(String(localized: "Current plan: \(licenseManager.isPaid ? "Paid" : "Free")"))
+                        .accessibilityLabel(String(localized: "Current plan: \(planName)"))
                 }
-                if licenseManager.isPaid, let key = licenseManager.licenseKey {
+                if let betaExpiry = licenseManager.betaExpiry {
+                    LabeledContent(String(localized: "Beta Access Ends")) {
+                        Text(betaExpiry.formatted(date: .long, time: .omitted))
+                    }
+                } else if licenseManager.isPaid, let key = licenseManager.licenseKey {
                     LabeledContent(String(localized: "License Key")) {
                         Text("\(key.prefix(4))••••••••")
                             .accessibilityLabel(String(localized: "License key starting with \(key.prefix(4))"))
@@ -124,10 +142,10 @@ struct LicenseSettingsView: View {
                     .disabled(licenseKeyInput.isEmpty || isActivating)
                     .accessibilityLabel(String(localized: "Activate license"))
 
-                    if activationFailed {
-                        Text(String(localized: "Invalid license key. Please try again."))
+                    if let message = activationErrorMessage {
+                        Text(message)
                             .foregroundStyle(.red)
-                            .accessibilityLabel(String(localized: "Activation failed: Invalid license key. Please try again."))
+                            .accessibilityLabel(String(localized: "Activation failed: \(message)"))
                     }
                 } else {
                     Text(String(localized: "Your license is active"))
@@ -146,15 +164,17 @@ struct LicenseSettingsView: View {
                             .accessibilityLabel(message)
                     }
 
-                    Label {
-                        Text(String(localized: "To transfer your license to another device, deactivate it here first, then enter the same license key on your new device."))
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    } icon: {
-                        Image(systemName: "info.circle")
-                            .foregroundStyle(.secondary)
+                    if licenseManager.betaExpiry == nil {
+                        Label {
+                            Text(String(localized: "To transfer your license to another device, deactivate it here first, then enter the same license key on your new device."))
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        } icon: {
+                            Image(systemName: "info.circle")
+                                .foregroundStyle(.secondary)
+                        }
+                        .accessibilityLabel(String(localized: "To transfer your license to another device, deactivate it here first, then enter the same license key on your new device."))
                     }
-                    .accessibilityLabel(String(localized: "To transfer your license to another device, deactivate it here first, then enter the same license key on your new device."))
                 }
             }
         }

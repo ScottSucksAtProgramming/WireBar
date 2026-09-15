@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import CryptoKit
 
 enum LicenseStatus: Sendable, Equatable {
     case free
@@ -13,6 +14,7 @@ enum LicenseError: Error, Sendable, Equatable {
     case activationLimitReached
     case networkError(String)
     case deactivationFailed
+    case betaKeyExpired
     case unknown(String)
 }
 
@@ -20,6 +22,8 @@ final class LicenseManager: ObservableObject, @unchecked Sendable {
     @Published private(set) var licenseStatus: LicenseStatus = .free
     @Published private(set) var licenseKey: String?
     @Published private(set) var lastError: LicenseError?
+    /// End date of the beta key in use, or nil when not unlocked by a beta key.
+    @Published private(set) var betaExpiry: Date?
 
     /// Computed for backward compatibility — used in 15+ views and 5+ test files.
     /// The setter allows tests to do `license.isPaid = true` without knowing about LicenseStatus.
@@ -30,23 +34,36 @@ final class LicenseManager: ObservableObject, @unchecked Sendable {
 
     private let validator: LicenseValidating
     private let keychain: KeychainStoring
+    private let betaPublicKey: Curve25519.Signing.PublicKey
+    private let now: @Sendable () -> Date
+    private var betaExpiryTimer: Timer?
 
     private static let keychainLicenseKey = "license_key"
     private static let keychainInstanceId = "instance_id"
     private static let keychainValidationTimestamp = "validation_timestamp"
+    /// Kept apart from `license_key` so LemonSqueezy validation never sees (and wipes) a beta key.
+    private static let keychainBetaKey = "beta_license_key"
 
     init(
         validator: LicenseValidating = LemonSqueezyClient(),
-        keychain: KeychainStoring = KeychainStorage()
+        keychain: KeychainStoring = KeychainStorage(),
+        betaPublicKey: Curve25519.Signing.PublicKey = LicenseConfig.betaPublicKey,
+        now: @escaping @Sendable () -> Date = { Date() }
     ) {
         self.validator = validator
         self.keychain = keychain
+        self.betaPublicKey = betaPublicKey
+        self.now = now
         restoreFromKeychain()
     }
 
     // MARK: - Public API
 
     func activateLicense(key: String) async -> Bool {
+        if BetaLicenseKey.isBetaKey(key) {
+            return activateBetaKey(key)
+        }
+
         setOnMain { manager in
             manager.lastError = nil
             manager.licenseStatus = .validationPending
@@ -116,6 +133,12 @@ final class LicenseManager: ObservableObject, @unchecked Sendable {
             manager.lastError = nil
         }
 
+        // A beta key is checked locally, so there is no server activation to release.
+        if keychain.load(key: Self.keychainBetaKey) != nil {
+            forceLocalDeactivation()
+            return
+        }
+
         guard let key = keychain.load(key: Self.keychainLicenseKey),
               let instanceId = keychain.load(key: Self.keychainInstanceId)
         else {
@@ -157,9 +180,22 @@ final class LicenseManager: ObservableObject, @unchecked Sendable {
     func forceLocalDeactivation() {
         clearCredentials()
         setOnMain { manager in
+            manager.clearBeta()
             manager.licenseStatus = .free
             manager.licenseKey = nil
             manager.lastError = nil
+        }
+    }
+
+    /// Locks paid features once the beta key in use reaches its end date.
+    func refreshBetaExpiry() {
+        guard let expiry = betaExpiry, now() >= expiry else { return }
+        keychain.delete(key: Self.keychainBetaKey)
+        setOnMain { manager in
+            manager.clearBeta()
+            manager.licenseStatus = .free
+            manager.licenseKey = nil
+            manager.lastError = .betaKeyExpired
         }
     }
 
@@ -172,6 +208,19 @@ final class LicenseManager: ObservableObject, @unchecked Sendable {
             return
         }
         #endif
+
+        if let betaKey = keychain.load(key: Self.keychainBetaKey) {
+            switch BetaLicenseKey.check(betaKey, publicKey: betaPublicKey, now: now()) {
+            case .valid(let beta):
+                applyBeta(key: betaKey, expiry: beta.expiry)
+                return
+            case .expired:
+                keychain.delete(key: Self.keychainBetaKey)
+                lastError = .betaKeyExpired
+            case .invalid:
+                keychain.delete(key: Self.keychainBetaKey)
+            }
+        }
 
         if let key = keychain.load(key: Self.keychainLicenseKey),
            let _ = keychain.load(key: Self.keychainInstanceId) {
@@ -188,6 +237,50 @@ final class LicenseManager: ObservableObject, @unchecked Sendable {
 
             Task { await validateLicense() }
         }
+    }
+
+    private func activateBetaKey(_ key: String) -> Bool {
+        let trimmed = key.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        switch BetaLicenseKey.check(trimmed, publicKey: betaPublicKey, now: now()) {
+        case .valid(let beta):
+            keychain.save(key: Self.keychainBetaKey, value: trimmed)
+            setOnMain { manager in
+                manager.applyBeta(key: trimmed, expiry: beta.expiry)
+            }
+            return true
+        case .expired:
+            setOnMain { manager in
+                manager.licenseStatus = .free
+                manager.lastError = .betaKeyExpired
+            }
+            return false
+        case .invalid:
+            setOnMain { manager in
+                manager.licenseStatus = .free
+                manager.lastError = .invalidKey
+            }
+            return false
+        }
+    }
+
+    private func applyBeta(key: String, expiry: Date) {
+        licenseKey = key
+        betaExpiry = expiry
+        licenseStatus = .activated
+        lastError = nil
+
+        // The app can run for weeks without relaunching, so recheck the end date hourly.
+        betaExpiryTimer?.invalidate()
+        betaExpiryTimer = Timer.scheduledTimer(withTimeInterval: 3600, repeats: true) { [weak self] _ in
+            self?.refreshBetaExpiry()
+        }
+    }
+
+    private func clearBeta() {
+        betaExpiryTimer?.invalidate()
+        betaExpiryTimer = nil
+        betaExpiry = nil
     }
 
     private func applyGracePeriodLogic() {
@@ -226,6 +319,7 @@ final class LicenseManager: ObservableObject, @unchecked Sendable {
         keychain.delete(key: Self.keychainLicenseKey)
         keychain.delete(key: Self.keychainInstanceId)
         keychain.delete(key: Self.keychainValidationTimestamp)
+        keychain.delete(key: Self.keychainBetaKey)
     }
 
     private func setOnMain(_ update: @escaping @Sendable (LicenseManager) -> Void) {

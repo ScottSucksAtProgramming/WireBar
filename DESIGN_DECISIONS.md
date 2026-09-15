@@ -414,3 +414,18 @@ Paid: VPN monitoring/toggles, external IP, custom VPNs, configurable menu bar di
 - Status refresh is on-demand (popover open / app launch), not real-time push. Live updates (SCDynamicStore) deferred as a future nicety.
 - VPN identifier uses SCNetworkService UUID (survives config renames, unlike localizedDescription)
 - Tap-action is user-configurable: "open the VPN app" (default, falls back to System Settings if unknown) or "open System Settings"
+
+---
+
+## Q43: Beta Access — Signed Personal Keys Instead of an Unlocked Build (2026-09-15)
+
+**Decision:** Release builds no longer unlock paid features (`BETA_UNLOCK_PAID` is Debug-only). Beta testers get a personal key: tester name + end date (default 90 days), signed with an Ed25519 private key that lives only on Scott's Mac (`~/.wirebar/beta-signing-key`). The app embeds the public key (`LicenseConfig.betaPublicKey`) and checks keys locally in `LicenseManager` — no server. Keys are made with `scripts/make-beta-key.swift` and entered on the existing License tab.
+
+**Why:** LemonSqueezy has not approved the store yet, and updates will ship through public GitHub Releases (Sparkle). An unlocked Release build would give every downloader the paid tier. Signed keys can't be forged from the public source, and the end date limits a shared key.
+
+**Tradeoffs:**
+- A key can't be revoked remotely and isn't tied to one Mac; the end date is the only limit.
+- Setting the Mac's clock back extends a key. Acceptable for a friends-only beta.
+- The source is public, so anyone can still build their own unlocked copy. Keys stop casual downloaders, not determined ones.
+- If the private key file is lost, no new keys can be made (existing keys keep working); a new key pair means an app update.
+- Temporary: remove `BetaLicenseKey`, the beta paths in `LicenseManager`, `LicenseConfig.betaPublicKey`, and the script before the paid launch.

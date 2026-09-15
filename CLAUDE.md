@@ -51,6 +51,7 @@ wifi-menubar/
           SettingsStore.swift
         LicenseManager/
           LicenseManager.swift
+          BetaLicenseKey.swift
         NotificationService/
           NotificationService.swift
           UNNotificationDispatcher.swift
@@ -89,11 +90,15 @@ wifi-menubar/
     VPNManagerTests.swift
     NotificationServiceTests.swift
     HotkeyManagerTests.swift
+    BetaLicenseKeyTests.swift
+    LicenseManagerBetaKeyTests.swift
     Mocks/
       MockWiFiScanner.swift
       MockVPNConfigurationProvider.swift
       MockNotificationDispatcher.swift
 
+  scripts/
+    make-beta-key.swift  (makes 90-day beta license keys; signing key lives outside the repo)
   archive/
     completed-phases.taskpaper
   handoffs/          (local only, .gitignored — session handoff docs)
