@@ -42,7 +42,7 @@ targets:
         Debug:
           SWIFT_ACTIVE_COMPILATION_CONDITIONS: "DEBUG BETA_UNLOCK_PAID"
         Release:
-          SWIFT_ACTIVE_COMPILATION_CONDITIONS: "BETA_UNLOCK_PAID"
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: ""
     entitlements:
       path: WireBar/Resources/WireBar.entitlements
       properties:
