@@ -12,10 +12,12 @@ struct NetworkListView: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
                 Spacer()
-                if wifiManager.isScanning {
+                if wifiManager.isScanning || wifiManager.isJoining {
                     ProgressView()
                         .scaleEffect(0.6)
-                        .accessibilityLabel(String(localized: "Scanning for networks"))
+                        .accessibilityLabel(wifiManager.isJoining
+                            ? String(localized: "Joining network")
+                            : String(localized: "Scanning for networks"))
                 } else {
                     Button {
                         wifiManager.scan()
