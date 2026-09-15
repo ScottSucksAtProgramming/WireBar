@@ -109,6 +109,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 self?.updateMenuBar()
             }
             .store(in: &cancellables)
+
+        // updateMenuBar() gates the network name, VPN indicator and IP on isPaid,
+        // so the menu bar has to redraw when license state settles -- otherwise
+        // those items stay hidden until some unrelated publisher happens to fire.
+        licenseManager.$licenseStatus
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateMenuBar()
+            }
+            .store(in: &cancellables)
     }
 
     private func updateMenuBar() {
