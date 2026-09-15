@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.2.0-beta] - 2026-09-15
+
 ### Added
 - Saved Networks settings tab: WireBar can remember the Wi-Fi passwords you type, stored in your Mac's keychain and never sent anywhere
 - Add, change, and forget saved passwords, or forget them all at once
