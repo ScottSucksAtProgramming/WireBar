@@ -69,10 +69,10 @@ Phase 8 — Release Prep:
 		- Create BSL LICENSE file with 3-year conversion date
 	Release Infrastructure:
 		Plan: plans/phase8-release-pipeline.md (decisions: DESIGN_DECISIONS.md Q44)
-		- Write release script: xcodebuild → codesign → notarize → staple → create .dmg
-		- Set up Sparkle appcast generation (generate_appcast from .dmg releases)
-		- Configure GitHub Releases for hosting .dmg and appcast XML
-		- Test full release pipeline end-to-end (build, sign, notarize, staple, .dmg, appcast)
+		- Write release script: xcodebuild → codesign → notarize → staple → create .dmg @done(2026-09-15)
+		- Set up Sparkle appcast generation (generate_appcast from .dmg releases) @done(2026-09-15)
+		- Configure GitHub Releases for hosting .dmg and appcast XML @done(2026-09-15)
+		- Test full release pipeline end-to-end (build, sign, notarize, staple, .dmg, appcast) @done(2026-09-15)
 	LemonSqueezy Setup:
 		- (Moved to Parallel Business Tasks — account created 2026-07-01, product listing + license keys blocked on KYC)
 		- Test purchase flow end-to-end with test mode (Scott) @tags(scott)

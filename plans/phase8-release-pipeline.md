@@ -93,10 +93,10 @@ Publish a tiny same-day release `0.2.1-beta` (changelog: "Confirms in-app update
 
 ### Acceptance criteria
 
-- [ ] Feed URL now returns the 0.2.1-beta appcast
-- [ ] Installed 0.2.0-beta offers 0.2.1-beta with the right release notes (Scott)
-- [ ] Update downloads, installs, and relaunches without a Gatekeeper block (Scott)
-- [ ] About shows `0.2.1-beta` afterwards; settings and saved data are intact (Scott)
+- [x] Feed URL now returns the 0.2.1-beta appcast
+- [x] Installed 0.2.0-beta offers 0.2.1-beta with the right release notes (Scott, 2026-09-15)
+- [x] Update downloads, installs, and relaunches without a Gatekeeper block (Scott, 2026-09-15)
+- [x] About shows `0.2.1-beta` afterwards; settings and saved data are intact (Scott, 2026-09-15)
 - [ ] If anything fails, diagnose before publishing anything else — users on a broken updater can't be fixed by an update
 
 ---
@@ -105,8 +105,8 @@ Publish a tiny same-day release `0.2.1-beta` (changelog: "Confirms in-app update
 
 Scott's membership renewal cleared the same day, so notarization went straight into the Phase 1 script and every release is notarized from 0.2.0-beta on. Phases 3–4 therefore test the shipping configuration. Remaining checks, verified during Phases 1, 3 and 4:
 
-- [ ] Script fails early with a clear message if the `wirebar-notary` profile is missing
+- [x] Script fails early with a clear message if the `wirebar-notary` profile is missing (preflight `notarytool history` check)
 - [x] `xcrun stapler validate` passes on the app (including the copy inside the DMG) and the DMG
 - [x] `spctl --assess --type execute` accepts the app; `spctl --assess --type open --context context:primary-signature` accepts the DMG (both "Notarized Developer ID")
-- [ ] A fresh download from GitHub opens without "Open Anyway" (Scott)
-- [ ] Updating from 0.2.0-beta to 0.2.1-beta works end to end (Scott, Phase 4)
+- [x] A fresh download from GitHub opens without "Open Anyway" (Scott)
+- [x] Updating from 0.2.0-beta to 0.2.1-beta works end to end (Scott, Phase 4, 2026-09-15)
