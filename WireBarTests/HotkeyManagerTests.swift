@@ -16,7 +16,7 @@ final class MockHotkeyActionHandler: HotkeyActionHandler {
 final class HotkeyManagerTests: XCTestCase {
 
     private func makePaidLicense() -> LicenseManager {
-        let license = LicenseManager()
+        let license = LicenseManager(keychain: InMemoryKeychainStorage())
         license.isPaid = true
         return license
     }
@@ -40,7 +40,7 @@ final class HotkeyManagerTests: XCTestCase {
     }
 
     func testDispatchBlockedForFreeUsers() {
-        let license = LicenseManager()
+        let license = LicenseManager(keychain: InMemoryKeychainStorage())
         let settings = makeSettings()
         let sut = HotkeyManager(licenseManager: license, settingsStore: settings)
         let handler = MockHotkeyActionHandler()

@@ -6,7 +6,7 @@ import Combine
 final class NotificationServiceTests: XCTestCase {
 
     private func makePaidLicense() -> LicenseManager {
-        let license = LicenseManager()
+        let license = LicenseManager(keychain: InMemoryKeychainStorage())
         license.isPaid = true
         return license
     }
@@ -51,7 +51,7 @@ final class NotificationServiceTests: XCTestCase {
 
     func testVPNDropNotificationBlockedForFreeUsers() async {
         let dispatcher = MockNotificationDispatcher()
-        let license = LicenseManager()
+        let license = LicenseManager(keychain: InMemoryKeychainStorage())
         let settings = makeSettings()
         let vpnManager = VPNManager(provider: MockVPNConfigurationProvider(), licenseManager: makePaidLicense())
         let sut = NotificationService(dispatcher: dispatcher, licenseManager: license, settingsStore: settings)
@@ -165,7 +165,7 @@ final class NotificationServiceTests: XCTestCase {
 
     func testWiFiDisconnectBlockedForFreeUsers() async {
         let dispatcher = MockNotificationDispatcher()
-        let license = LicenseManager()
+        let license = LicenseManager(keychain: InMemoryKeychainStorage())
         let settings = makeSettings()
         let sut = NotificationService(dispatcher: dispatcher, licenseManager: license, settingsStore: settings)
 
@@ -236,7 +236,7 @@ final class NotificationServiceTests: XCTestCase {
 
     func testIPChangeBlockedForFreeUsers() async {
         let dispatcher = MockNotificationDispatcher()
-        let license = LicenseManager()
+        let license = LicenseManager(keychain: InMemoryKeychainStorage())
         let settings = makeSettings()
         let sut = NotificationService(dispatcher: dispatcher, licenseManager: license, settingsStore: settings)
 
