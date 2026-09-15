@@ -32,6 +32,11 @@ APPCAST="$OUT_DIR/appcast.xml"
 # --- Preflight ---------------------------------------------------------------
 step "Checking the repo"
 [[ -z "$(git status --porcelain)" ]] || fail "There are uncommitted changes. Commit or stash them first."
+[[ "$(git branch --show-current)" == "main" ]] || fail "Releases are made from main. Merge your branch and switch to main first."
+git fetch --quiet origin main --tags || fail "Couldn't reach GitHub to check main is up to date"
+[[ "$(git rev-parse HEAD)" == "$(git rev-parse origin/main)" ]] || fail "Local main doesn't match GitHub's main. Pull or push first."
+! git rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null || fail "Tag v$VERSION already exists. Pick a new version."
+! gh release view "v$VERSION" >/dev/null 2>&1 || fail "A GitHub release v$VERSION already exists. Pick a new version."
 [[ ! -e "$OUT_DIR" ]] || fail "$OUT_DIR already exists. Move it aside to rebuild this version."
 security find-identity -v -p codesigning | grep -q "$SIGN_IDENTITY" || fail "Signing certificate not found: $SIGN_IDENTITY"
 command -v xcodegen >/dev/null || fail "xcodegen is not installed (brew install xcodegen)"
@@ -188,7 +193,44 @@ ED_SIGNATURE=$(sed -n 's/.*sparkle:edSignature="\([^"]*\)".*/\1/p' "$APPCAST" | 
   || fail "The update signature in appcast.xml doesn't match the .dmg"
 grep -q "<li>" "$APPCAST" || fail "Release notes weren't embedded in appcast.xml"
 
-FINISHED=1
-print "\n✓ Built $VERSION (build $NEW_BUILD) in $OUT_DIR"
-print "  WireBar-$VERSION.dmg, appcast.xml, WireBar-$VERSION.html"
-print "  project.yml, WireBar.xcodeproj and CHANGELOG.md now carry the new version (uncommitted)."
+# --- Confirm and publish ---------------------------------------------------------
+print "\n✓ Built and checked WireBar $VERSION (build $NEW_BUILD)"
+print "\n  Files:"
+print "    $(du -h "$DMG" | cut -f1)  ${DMG:t}"
+print "    $(du -h "$APPCAST" | cut -f1)  ${APPCAST:t}"
+print "\n  Release notes:"
+sed 's/^/    /' "$NOTES_MD"
+print "\n  Publishing will commit the version bump, tag v$VERSION, push to GitHub, and create a"
+print "  public release. Anyone running WireBar will be offered this update."
+# Anything but "y" (including no terminal to answer) publishes nothing; the EXIT trap undoes the bump.
+if ! read -q "REPLY?  Publish $VERSION to GitHub? (y/n) "; then
+  print "\n\nNot published. Version changes were undone; the build stays in $OUT_DIR."
+  exit 0
+fi
+print
+
+step "Committing and tagging"
+git add project.yml WireBar.xcodeproj CHANGELOG.md
+git commit --quiet -m "release: $VERSION (build $NEW_BUILD)"
+FINISHED=1   # committed now, so a later failure must not undo the version files
+git tag -a "v$VERSION" -m "WireBar $VERSION (build $NEW_BUILD)"
+git push --quiet origin main "v$VERSION" \
+  || fail "Push failed. The release commit and tag exist locally; fix the problem, then: git push origin main v$VERSION"
+
+step "Creating the GitHub release"
+gh release create "v$VERSION" "$DMG" "$APPCAST" \
+  --title "WireBar $VERSION" --notes-file "$NOTES_MD" --latest --verify-tag >/dev/null \
+  || fail "gh release create failed. The tag is pushed; retry: gh release create v$VERSION \"$DMG\" \"$APPCAST\" --title \"WireBar $VERSION\" --notes-file \"$NOTES_MD\" --latest --verify-tag"
+[[ "$(gh release view "v$VERSION" --json isDraft,isPrerelease --jq '"\(.isDraft) \(.isPrerelease)"')" == "false false" ]] \
+  || fail "Release v$VERSION is a draft or pre-release, so the app's update check won't see it"
+
+step "Checking the app's update feed"
+FEED_URL="$REPO_URL/releases/latest/download/appcast.xml"
+for attempt in {1..12}; do
+  curl -sfL "$FEED_URL" | grep -q "<sparkle:version>$NEW_BUILD</sparkle:version>" && break
+  (( attempt < 12 )) || fail "$FEED_URL doesn't show build $NEW_BUILD yet. Check the release page, then retry in a minute."
+  sleep 10
+done
+print "  $FEED_URL → build $NEW_BUILD"
+
+print "\n✓ Published WireBar $VERSION: $REPO_URL/releases/tag/v$VERSION"
