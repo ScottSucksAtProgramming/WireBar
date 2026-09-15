@@ -17,6 +17,7 @@
 		1195F01916122EC603F9ADE1 /* LicenseConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1819D3420A370F726E1AF77D /* LicenseConfig.swift */; };
 		1374C9279572FB9F427E0D9D /* ConnectionInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EE0E4CE68941B5608A94FC /* ConnectionInfoView.swift */; };
 		15B75A2271A4E1F67939BEFF /* PasswordInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7A3BCAA282F29459BA766E /* PasswordInputView.swift */; };
+		183AC4E108B5DCF81E999EC8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 221331E7CC6CD9D5BD755291 /* Assets.xcassets */; };
 		1DCEE932C3A1860BC1E01DEF /* VPNSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D86EF773344659435E27E9 /* VPNSectionView.swift */; };
 		2382BDBF16E326C59C347895 /* LicenseSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9CF0CC8E3B0D63EAB76F1C /* LicenseSettingsView.swift */; };
 		245F725AA8E44707E0E62420 /* LemonSqueezyClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27F9B09A85B584C94767530 /* LemonSqueezyClient.swift */; };
@@ -95,6 +96,7 @@
 		1BAA460B3A99A365B4D7CCC5 /* KeychainStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStorage.swift; sourceTree = "<group>"; };
 		1D9CF0CC8E3B0D63EAB76F1C /* LicenseSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseSettingsView.swift; sourceTree = "<group>"; };
 		1E3AA486D70473072EA23B03 /* WireBarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WireBarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		221331E7CC6CD9D5BD755291 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		22CA2D33111225DDB605B76F /* VPNState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNState.swift; sourceTree = "<group>"; };
 		23EECBFEB946F6266BBFBCEB /* DNSExternalIPResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DNSExternalIPResolver.swift; sourceTree = "<group>"; };
 		28C2EE6B82E93F1AC575A43F /* WLANInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WLANInterface.swift; sourceTree = "<group>"; };
@@ -261,6 +263,7 @@
 		6D58F712830B77EFD172E1B4 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				221331E7CC6CD9D5BD755291 /* Assets.xcassets */,
 				6BAFAAEAA8F5B3FBD40600AB /* Info.plist */,
 				51A5E22B324EDF9A728F1799 /* WireBar.entitlements */,
 			);
@@ -461,6 +464,7 @@
 			buildConfigurationList = 8F2A3E8F04A0D955A2884837 /* Build configuration list for PBXNativeTarget "WireBar" */;
 			buildPhases = (
 				8024E2739FC8B787666CA5FA /* Sources */,
+				F59DFA084EC7186638D3C857 /* Resources */,
 				E456DB1A610AB89F1396BF8D /* Frameworks */,
 			);
 			buildRules = (
@@ -516,6 +520,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F59DFA084EC7186638D3C857 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				183AC4E108B5DCF81E999EC8 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		206F396069D37EECBD99491E /* Sources */ = {
