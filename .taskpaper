@@ -68,6 +68,7 @@ Phase 8 — Release Prep:
 		- Finalize EULA
 		- Create BSL LICENSE file with 3-year conversion date
 	Release Infrastructure:
+		Plan: plans/phase8-release-pipeline.md (decisions: DESIGN_DECISIONS.md Q44)
 		- Write release script: xcodebuild → codesign → notarize → staple → create .dmg
 		- Set up Sparkle appcast generation (generate_appcast from .dmg releases)
 		- Configure GitHub Releases for hosting .dmg and appcast XML
