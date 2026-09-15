@@ -13,23 +13,30 @@ struct SavedNetworksSettingsView: View {
 
     var body: some View {
         Form {
-            Section(String(localized: "How WireBar stores these")) {
-                Text(String(localized: "Passwords you save here are kept in your Mac's keychain, the same place Safari keeps the passwords it remembers for you. They stay on this Mac. WireBar never sends them to us or to anyone else."))
+            Section(String(localized: "About storing passwords in WireBar")) {
+                Text(String(localized: "Your Mac already stores Wi-Fi passwords which it uses to automatically connect to networks. As a security feature of macOS, WireBar cannot access these passwords."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Text(String(localized: "Anyone who can unlock your Mac can look them up, the same as any other password you've saved. You can remove any of them below at any time."))
+                Text(String(localized: "If you switch networks often, WireBar can store passwords locally. These are stored within your Mac's keychain, the same place where Safari stores passwords it remembers for you. Anything WireBar stores there can be looked up by anyone who can unlock your Mac."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Text(String(localized: "Work or school networks sign you in with an account rather than a shared password. For those, WireBar keeps the username and password you enter, the same way and in the same place."))
+                Text(String(localized: "Passwords stored by WireBar are only stored locally, on your Mac. They are not sent to the cloud, to developers, or to anyone else."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Text(String(localized: "macOS keeps its own copy of your Wi-Fi passwords that WireBar isn't allowed to read, which is why WireBar needs its own."))
+                Text(String(localized: "Consider how comfortable you are with that before saving passwords in WireBar. You can remove any of them below at any time."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Section(String(localized: "Enterprise networks")) {
+                Text(String(localized: "Work and school networks sign you in with an account instead of a shared password. For those, WireBar keeps the username and password you enter, in the same place and the same way."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
