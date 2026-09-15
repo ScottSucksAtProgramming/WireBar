@@ -7,6 +7,7 @@
 - Add, change, and forget saved passwords, or forget them all at once
 - Support for work and school (WPA2-Enterprise) networks, which sign in with a username and password
 - Progress indicator while WireBar joins a network
+- Beta testers can enter a personal beta key in Settings → License to unlock paid features until the key's end date
 
 ### Fixed
 - Launch at Login now actually adds WireBar to your Login Items

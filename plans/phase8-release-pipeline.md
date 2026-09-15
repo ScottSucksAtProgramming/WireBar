@@ -38,8 +38,8 @@ A release script that takes a version (e.g. `0.2.0-beta`), runs the tests, bumps
 - [x] `codesign --verify --deep --strict` passes on the built app, signed by "Developer ID Application: Scott Kostolni (5N69HV7X7S)" with hardened runtime and a timestamp
 - [x] Release binary is built without `BETA_UNLOCK_PAID` (script checks Release build settings)
 - [x] DMG contains `WireBar.app` + `Applications` shortcut; app inside reports `0.2.0-beta` (build 2); DMG is signed
-- [ ] Dragging to Applications and launching works after "Open Anyway" (Scott)
-- [ ] About shows `0.2.0-beta` (Scott). License tab: Scott's Mac already holds his beta key, so it shows Beta, not Free. Free-before-a-key is covered by the build-settings check; confirm on a Mac without a key during beta.
+- [x] Dragging the notarized build to Applications and launching works, no "Open Anyway" needed (Scott, 2026-09-15)
+- [x] About shows `0.2.0-beta` (Scott, 2026-09-15). License tab: Scott's Mac already holds his beta key, so it shows Beta, not Free. Free-before-a-key is covered by the build-settings check; confirm on a Mac without a key during beta.
 - [x] No release artifacts show up in `git status`
 - Noticed, not changed: `hdiutil` prints deprecation warnings (suggests `diskutil image`); still works on macOS 27.
 
