@@ -75,6 +75,7 @@ xcuserdata/
 *.xcscmblueprint
 
 # Distribution builds
+dist/
 *.dmg
 *.pkg
 *.zip

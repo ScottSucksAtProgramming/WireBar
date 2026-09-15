@@ -55,12 +55,13 @@ Extend the script so it turns the changelog's Unreleased section into this versi
 
 ### Acceptance criteria
 
-- [ ] Script refuses to run if the Unreleased section is empty
-- [ ] `appcast.xml` contains exactly one item: this version, with `sparkle:version` = the new build number and `sparkle:shortVersionString` = the version
-- [ ] Enclosure URL is `https://github.com/ScottSucksAtProgramming/WireBar/releases/download/v<version>/WireBar-<version>.dmg`
-- [ ] The EdDSA signature in the appcast verifies against the app's `SUPublicEDKey`
-- [ ] Release notes (embedded or linked) match the changelog section
-- [ ] Script stops with a clear message if Sparkle's tools can't be found
+- [x] Script refuses to run if the Unreleased section is empty (tested on a sample changelog)
+- [x] `appcast.xml` contains exactly one item: this version, with `sparkle:version` = the new build number and `sparkle:shortVersionString` = the version
+- [x] Enclosure URL is `https://github.com/ScottSucksAtProgramming/WireBar/releases/download/v<version>/WireBar-<version>.dmg`
+- [x] The EdDSA signature in the appcast verifies (`sign_update --verify`), and the keychain's Sparkle public key equals the app's `SUPublicEDKey`
+- [x] Release notes are embedded in the appcast and match the changelog section
+- [x] Script stops with a clear message if Sparkle's tools can't be found (Sparkle tools now come from the script's own `build/DerivedData`, not a hashed `~/Library` path)
+- [x] `dist/` is gitignored — `appcast.xml` and the notes HTML aren't covered by `*.dmg`, and would have failed the next run's clean-tree check
 
 ---
 
