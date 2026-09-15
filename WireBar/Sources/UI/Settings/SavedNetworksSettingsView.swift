@@ -14,7 +14,7 @@ struct SavedNetworksSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Text(String(localized: "If you switch networks often, WireBar can store passwords locally. If you choose not to store your passwords with WireBar you will need to enter the network password each time you switch to it."))
+                Text(String(localized: "If you switch networks often, WireBar can store passwords locally. If you choose not to store your passwords with WireBar, you will need to enter the network password each time you switch to it."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -31,12 +31,12 @@ struct SavedNetworksSettingsView: View {
             }
 
             Section(String(localized: "About Storing Passwords in WireBar")) {
-                Text(String(localized: "Your Mac already stores Wi-Fi passwords which it uses to automatically connect to networks. WireBar cannot access these passwords."))
+                Text(String(localized: "Your Mac already stores Wi-Fi passwords that it uses to automatically connect to networks. As a security feature of macOS, WireBar cannot access these passwords."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Text(String(localized: "Passwords stored by WireBar are stored locally, in your User Keychain, the same place Safari stores passwords it remembers for you. Anyone who can unlock your user account is able to access and read these passwords."))
+                Text(String(localized: "Passwords saved by WireBar are stored locally, in your User Keychain, the same place Safari stores passwords it remembers for you. Anyone who can unlock your user account can access and read these passwords."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -85,7 +85,7 @@ struct SavedNetworksSettingsView: View {
                         }
                         Button(String(localized: "Cancel"), role: .cancel) {}
                     } message: {
-                        Text(String(localized: "WireBar will ask for the password next time you join these networks. Your Mac's own saved networks are not affected."))
+                        Text(String(localized: "WireBar will ask for the password the next time you join these networks. Your Mac's own saved networks are not affected."))
                     }
                 }
             }
